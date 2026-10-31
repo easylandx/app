@@ -1,5 +1,5 @@
 /* EasyLandX service worker: offline app shell + cached fonts */
-const VERSION = 'v6';
+const VERSION = 'v7';
 const SHELL = `easylandx-shell-${VERSION}`;
 const RUNTIME = `easylandx-runtime-${VERSION}`;
 const SHELL_FILES = [
