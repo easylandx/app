@@ -10,8 +10,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="EasyLandX">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <base target="_blank">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕊️</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -557,12 +557,12 @@
   <div class="navrow">
     <a class="brand" href="#top" target="_self">EasyLandX</a>
     <a class="chatlogo" href="https://easylandx.github.io/chatapp/" target="_blank" rel="noopener" aria-label="ChatApp (opens in a new window)"><svg class="cl-ico" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#4fa8d8"/><path d="M6.5 5.5h11a2.5 2.5 0 0 1 2.5 2.5v6a2.5 2.5 0 0 1-2.5 2.5H12l-3.6 3v-3H6.5A2.5 2.5 0 0 1 4 14V8a2.5 2.5 0 0 1 2.5-2.5z" fill="#fff"/><circle cx="8.6" cy="11" r="1.1" fill="#4fa8d8"/><circle cx="12" cy="11" r="1.1" fill="#4fa8d8"/><circle cx="15.4" cy="11" r="1.1" fill="#4fa8d8"/></svg><span class="cl-txt"><span class="cl-chat">Chat</span><span class="cl-app">App</span></span><span class="cl-cur" aria-hidden="true"></span></a>
-    <a class="navtoggle" href="https://easylandx.github.io/why/ease.html">Español</a>
+    <a class="navtoggle" href="ease.html" target="_self">Español</a>
     <ul class="navlinks" id="navlinks">
       <li><a href="#how" target="_self">Process</a></li>
       <li><a href="#offer" target="_self">Offer</a></li>
       <li><a href="#contact" target="_self">Contact</a></li>
-      <li><a class="es" href="https://easylandx.github.io/why/ease.html">ESPAÑOL →</a></li>
+      <li><a class="es" href="ease.html" target="_self">ESPAÑOL →</a></li>
     </ul>
   </div>
 </header>
@@ -903,6 +903,36 @@
   prevBtn.addEventListener("click",()=>changeChannel(-1));
   nextBtn.addEventListener("click",()=>changeChannel(1));
   loadAllChannels();
+})();
+</script>
+<style>
+#pwa-install{position:fixed;left:16px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:61;display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border:3px solid #171412;border-radius:999px;background:#FFD400;color:#171412;font:800 15px/1 'Poppins',system-ui,sans-serif;cursor:pointer;box-shadow:3px 3px 0 #171412}
+#pwa-install[hidden],#pwa-tip[hidden]{display:none}
+#pwa-install:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #171412}
+#pwa-tip{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:62;max-width:380px;padding:14px 16px;border:3px solid #171412;border-radius:14px;background:#fff;color:#171412;font:600 15px/1.4 'Inter',system-ui,sans-serif;box-shadow:3px 3px 0 #171412}
+#pwa-tip button{margin-top:8px;padding:6px 14px;border:2px solid #171412;border-radius:999px;background:#0066CC;color:#fff;font:700 13px 'Inter',system-ui,sans-serif;cursor:pointer}
+</style>
+<script>
+(function(){
+  var es=(document.documentElement.lang||'').indexOf('es')===0;
+  var T=es?{btn:'📲 Instalar app',ios:'Para instalar: toca Compartir ⬆️ y luego «Añadir a pantalla de inicio».',other:'Para instalar: abre el menú del navegador (⋮) y elige «Instalar app» o «Añadir a pantalla de inicio».',close:'Entendido'}
+           :{btn:'📲 Install app',ios:'To install: tap Share ⬆️ then “Add to Home Screen”.',other:'To install: open the browser menu (⋮) and choose “Install app” or “Add to Home screen”.',close:'Got it'};
+  if((window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone)return;
+  var ua=navigator.userAgent||'';
+  var isIOS=/iphone|ipad|ipod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var isMobile=isIOS||/android/i.test(ua);
+  var dp=null;
+  var b=document.createElement('button');b.id='pwa-install';b.type='button';b.textContent=T.btn;b.hidden=!isMobile;
+  var tip=document.createElement('div');tip.id='pwa-tip';tip.hidden=true;
+  document.body.appendChild(b);document.body.appendChild(tip);
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;b.hidden=false;});
+  window.addEventListener('appinstalled',function(){b.hidden=true;tip.hidden=true;dp=null;});
+  b.addEventListener('click',function(){
+    if(dp){dp.prompt();dp.userChoice.then(function(){dp=null;b.hidden=true;});return;}
+    tip.textContent=isIOS?T.ios:T.other;
+    var c=document.createElement('div');var x=document.createElement('button');x.type='button';x.textContent=T.close;
+    x.addEventListener('click',function(){tip.hidden=true;});c.appendChild(x);tip.appendChild(c);tip.hidden=false;
+  });
 })();
 </script>
 <script>

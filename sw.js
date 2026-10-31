@@ -1,15 +1,16 @@
 /* EasyLandX service worker: offline app shell + cached fonts */
-const VERSION = 'v3';
+const VERSION = 'v6';
 const SHELL = `easylandx-shell-${VERSION}`;
 const RUNTIME = `easylandx-runtime-${VERSION}`;
 const SHELL_FILES = [
   './',
   './index.html',
+  './ease.html',
   './manifest.webmanifest',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/icon-maskable-512.png',
-  './icons/apple-touch-icon.png'
+  './icon-192.png',
+  './icon-512.png',
+  './icon-maskable-512.png',
+  './apple-touch-icon.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -33,16 +34,21 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
-  // Page navigations: network first (fresh content), fall back to cached shell offline.
+  // Page navigations (English index.html / Spanish ease.html): network first, cached copy offline.
   if (req.mode === 'navigate') {
     event.respondWith(
       fetch(req)
         .then((res) => {
-          const copy = res.clone();
-          caches.open(SHELL).then((c) => c.put('./index.html', copy));
+          if (res.ok) {
+            const copy = res.clone();
+            caches.open(SHELL).then((c) => c.put(req, copy));
+          }
           return res;
         })
-        .catch(() => caches.match('./index.html').then((r) => r || caches.match('./')))
+        .catch(() =>
+          caches.match(req, { ignoreSearch: true })
+            .then((r) => r || caches.match('./index.html'))
+        )
     );
     return;
   }
