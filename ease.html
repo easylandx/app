@@ -586,11 +586,83 @@
   .xtv-brand{display:none}
   .xtv-foot{justify-content:center;gap:12px}
 }
+/* ---------- amber phosphor mode toggle (top bar button) ---------- */
+.offerbar{position:relative;}
+.modebtn{position:absolute; right:12px; top:50%; transform:translateY(-50%); display:inline-flex; align-items:center; gap:6px; font:700 .78rem/1 'Inter',system-ui,sans-serif; letter-spacing:.02em; color:#fff; background:rgba(255,255,255,.12); border:1.5px solid rgba(255,255,255,.75); border-radius:9999px; padding:6px 12px; cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent;}
+.modebtn:hover{background:#fff; color:#0066CC;}
+.modebtn svg{width:15px; height:15px; display:block; flex:none;}
+@media (max-width:640px){
+  .offerbar{padding-right:58px;}
+  .modebtn{right:10px; padding:7px 9px;}
+  .modebtn .ml{display:none;}
+}
+
+html.amber{
+  color-scheme:dark;
+  --red:#FFB000; --red-dark:#FFB000; --yellow:#FFB000; --yellow-dark:#FFB000;
+  --green:#FFB000; --green-dark:#FFB000; --paper:#000; --ink:#FFB000; --ink-soft:#D99300;
+  --line:rgba(255,176,0,.38); --whatsapp:#FFB000;
+}
+html.amber body{text-shadow:0 0 6px rgba(255,176,0,.38); font-variant-emoji:text;}
+html.amber *, html.amber *::before, html.amber *::after{
+  background:#000 !important; background-image:none !important;
+  color:#FFB000 !important; border-color:#FFB000 !important;
+  outline-color:#FFB000 !important; fill-opacity:1;
+}
+html.amber img, html.amber svg, html.amber video, html.amber canvas, html.amber iframe{
+  filter:grayscale(1) contrast(1.25) brightness(.78) sepia(1) saturate(4) !important;
+}
+html.amber section{border-top:1px solid rgba(255,176,0,.38);}
+/* inline text must never paint a black box over neighbouring lines (it clipped descenders in the title) */
+html.amber em, html.amber strong, html.amber b, html.amber i, html.amber span, html.amber mark, html.amber small,
+html.amber a:not(.btn):not(.chatlogo):not(.mbar-btn):not(.navtoggle):not(.hero-promo):not(.heroimg){background:transparent !important;}
+html.amber .cl-cur{background:#FFB000 !important;}
+html.amber footer{border-top:3px solid #FFB000;}
+html.amber header.nav{background:#000 !important;}
+html.amber .btn:hover, html.amber .tag:hover, html.amber .mbar-btn:hover, html.amber .navtoggle:hover,
+html.amber #pwa-install:hover, html.amber .sample-menu .btn:hover{background:#FFB000 !important; color:#000 !important;}
+html.amber .navlinks a:hover, html.amber .footgrid a:hover{text-decoration:underline;}
+html.amber a{text-decoration-color:#FFB000;}
+html.amber .xtv-power{background:#FFB000 !important; box-shadow:0 0 8px #FFB000 !important;}
+/* inverted blocks keep the page's hierarchy: bright amber slab with black type */
+html.amber .offerbar, html.amber .offerbar *:not(.modebtn):not(.modebtn *),
+html.amber .offer-box, html.amber .offer-box > *:not(.btn):not(.sample):not(.sample *){
+  background:#FFB000 !important; color:#000 !important; border-color:#000 !important; text-shadow:none;
+}
+html.amber .offer-box *{background:transparent !important; color:#000 !important; border-color:#000 !important; text-shadow:none;}
+html.amber .xtv-emoji{filter:grayscale(1) sepia(1) saturate(4) brightness(.9);}
+html.amber .offer-box .btn, html.amber .offer-box .btn-sample{background:#000 !important; color:#FFB000 !important; border-color:#000 !important;}
+html.amber .offerbar .modebtn{background:#000 !important; color:#FFB000 !important; border-color:#000 !important; text-shadow:none;}
+html.amber .offerbar .modebtn:hover{background:#FFB000 !important; color:#000 !important;}
+html.amber .offerbar .modebtn svg{filter:none !important;}
+html.amber .offerbar .modebtn *{background:transparent !important; color:inherit !important; text-shadow:none;}
+@media (prefers-reduced-motion:no-preference){ html.amber body{transition:none;} }
 </style>
 </head>
 <body>
 
-<div class="offerbar">🔥 Oferta — ¡consigue tu landing page ahora! <a href="89e.html">Oferta Especial →</a></div>
+<div class="offerbar">🔥 Oferta — ¡consigue tu landing page ahora! <a href="89e.html">Oferta Especial →</a>
+  <button type="button" class="modebtn" id="modeBtn" aria-pressed="false" aria-label="Cambiar al modo ámbar fósforo" title="Alternar modo ámbar fósforo"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg><span class="ml" id="modeLbl">Ámbar</span></button>
+</div>
+<script>
+(function(){
+  var h=document.documentElement, b=document.getElementById('modeBtn'), l=document.getElementById('modeLbl'), K='easylandx-amber';
+  var meta=document.querySelector('meta[name="theme-color"]'), base=meta?meta.getAttribute('content'):null;
+  function apply(on){
+    h.classList.toggle('amber',on);
+    b.setAttribute('aria-pressed',on?'true':'false');
+    b.setAttribute('aria-label',on?'Volver al modo a todo color':'Cambiar al modo ámbar fósforo');
+    l.textContent=on?'Color':'Ámbar';
+    if(meta&&base) meta.setAttribute('content',on?'#000000':base);
+  }
+  var on=false; try{on=localStorage.getItem(K)==='1';}catch(e){}
+  apply(on);
+  b.addEventListener('click',function(){
+    var n=!h.classList.contains('amber'); apply(n);
+    try{localStorage.setItem(K,n?'1':'0');}catch(e){}
+  });
+})();
+</script>
 
 <header class="nav">
   <div class="navrow">
