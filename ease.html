@@ -1312,7 +1312,7 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
    - a visitor who arrives with ?ref=CODE is tagged in GA4 (referral_visit) and the code is added
      to this page's WhatsApp messages as "(ref: CODE)" so you can see who referred them */
 (function(){
-  var BASE='https://easylandx.github.io/app/ease.html', MSG="Encontré la opción de maqueta web de cortesía de EasyLandX. Aquí ", TAG='(ref: ';
+  var BASE='https://easylandx.github.io/ease.html', MSG="Encontré la opción de maqueta web de cortesía de EasyLandX. Aquí ", TAG='(ref: ';
   function rnd(){
     var a='abcdefghjkmnpqrstuvwxyz23456789', o='', i, b;
     try{ b=new Uint8Array(6); crypto.getRandomValues(b); for(i=0;i<6;i++) o+=a[b[i]%a.length]; }
@@ -1345,7 +1345,7 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
   // share button
   var btn=document.getElementById('share-btn'); if(!btn) return;
   btn.addEventListener('click',function(){
-    var link=BASE+'?ref='+encodeURIComponent(code);
+    var link=BASE;
     var mobile=/Android|iPhone|iPad|iPod|Mobile|Windows Phone/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
     /* desktop: straight into WhatsApp Web (contact picker only); phones: open the app */
     var url=(mobile?'https://api.whatsapp.com/send?text=':'https://web.whatsapp.com/send?text=')+encodeURIComponent(MSG+link);
