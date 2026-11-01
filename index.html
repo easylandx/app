@@ -622,6 +622,45 @@ html.amber .offerbar .modebtn{background:#000 !important; color:#FFB000 !importa
 html.amber .offerbar .modebtn:hover{background:#FFB000 !important; color:#000 !important;}
 html.amber .offerbar .modebtn svg{filter:none !important;}
 html.amber .offerbar .modebtn *{background:transparent !important; color:inherit !important; text-shadow:none;}
+html.green{
+  color-scheme:dark;
+  --red:#33FF66; --red-dark:#33FF66; --yellow:#33FF66; --yellow-dark:#33FF66;
+  --green:#33FF66; --green-dark:#33FF66; --paper:#000; --ink:#33FF66; --ink-soft:#25CC51;
+  --line:rgba(51,255,102,.38); --whatsapp:#33FF66;
+}
+html.green body{text-shadow:0 0 6px rgba(51,255,102,.38); font-variant-emoji:text;}
+html.green *, html.green *::before, html.green *::after{
+  background:#000 !important; background-image:none !important;
+  color:#33FF66 !important; border-color:#33FF66 !important;
+  outline-color:#33FF66 !important; fill-opacity:1;
+}
+html.green img, html.green svg, html.green video, html.green canvas, html.green iframe{
+  filter:grayscale(1) contrast(1.25) brightness(.78) sepia(1) saturate(4) hue-rotate(78deg) !important;
+}
+html.green section{border-top:1px solid rgba(51,255,102,.38);}
+/* inline text must never paint a black box over neighbouring lines (it clipped descenders in the title) */
+html.green em, html.green strong, html.green b, html.green i, html.green span, html.green mark, html.green small,
+html.green a:not(.btn):not(.chatlogo):not(.mbar-btn):not(.navtoggle):not(.hero-promo):not(.heroimg){background:transparent !important;}
+html.green .cl-cur{background:#33FF66 !important;}
+html.green footer{border-top:3px solid #33FF66;}
+html.green header.nav{background:#000 !important;}
+html.green .btn:hover, html.green .tag:hover, html.green .mbar-btn:hover, html.green .navtoggle:hover,
+html.green #pwa-install:hover, html.green .sample-menu .btn:hover{background:#33FF66 !important; color:#000 !important;}
+html.green .navlinks a:hover, html.green .footgrid a:hover{text-decoration:underline;}
+html.green a{text-decoration-color:#33FF66;}
+html.green .xtv-power{background:#33FF66 !important; box-shadow:0 0 8px #33FF66 !important;}
+/* inverted blocks keep the page's hierarchy: bright amber slab with black type */
+html.green .offerbar, html.green .offerbar *:not(.modebtn):not(.modebtn *),
+html.green .offer-box, html.green .offer-box > *:not(.btn):not(.sample):not(.sample *){
+  background:#33FF66 !important; color:#000 !important; border-color:#000 !important; text-shadow:none;
+}
+html.green .offer-box *{background:transparent !important; color:#000 !important; border-color:#000 !important; text-shadow:none;}
+html.green .xtv-emoji{filter:grayscale(1) sepia(1) saturate(4) hue-rotate(78deg) brightness(.9);}
+html.green .offer-box .btn, html.green .offer-box .btn-sample{background:#000 !important; color:#33FF66 !important; border-color:#000 !important;}
+html.green .offerbar .modebtn{background:#000 !important; color:#33FF66 !important; border-color:#000 !important; text-shadow:none;}
+html.green .offerbar .modebtn:hover{background:#33FF66 !important; color:#000 !important;}
+html.green .offerbar .modebtn svg{filter:none !important;}
+html.green .offerbar .modebtn *{background:transparent !important; color:inherit !important; text-shadow:none;}
 @media (prefers-reduced-motion:no-preference){ html.amber body{transition:none;} }
 </style>
 </head>
@@ -634,18 +673,21 @@ html.amber .offerbar .modebtn *{background:transparent !important; color:inherit
 (function(){
   var h=document.documentElement, b=document.getElementById('modeBtn'), l=document.getElementById('modeLbl'), K='easylandx-amber';
   var meta=document.querySelector('meta[name="theme-color"]'), base=meta?meta.getAttribute('content'):null;
-  function apply(on){
-    h.classList.toggle('amber',on);
-    b.setAttribute('aria-pressed',on?'true':'false');
-    b.setAttribute('aria-label',on?'Switch back to full-color mode':'Switch to amber phosphor mode');
-    l.textContent=on?'Color':'Amber';
-    if(meta&&base) meta.setAttribute('content',on?'#000000':base);
+  var NEXT={'':'amber',amber:'green',green:''};
+  var LBL={'':'Amber',amber:'Green',green:'Color'};
+  var ARIA={'':'Switch to amber phosphor mode',amber:'Switch to green phosphor mode',green:'Switch back to full-color mode'};
+  function cur(){return h.classList.contains('amber')?'amber':h.classList.contains('green')?'green':'';}
+  function apply(m){
+    h.classList.toggle('amber',m==='amber'); h.classList.toggle('green',m==='green');
+    b.setAttribute('aria-pressed',m?'true':'false');
+    b.setAttribute('aria-label',ARIA[m]); l.textContent=LBL[m];
+    if(meta&&base) meta.setAttribute('content',m?'#000000':base);
   }
-  var on=false; try{on=localStorage.getItem(K)==='1';}catch(e){}
-  apply(on);
+  var m=''; try{var v=localStorage.getItem(K); m=(v==='1'||v==='amber')?'amber':(v==='green'?'green':'');}catch(e){}
+  apply(m);
   b.addEventListener('click',function(){
-    var n=!h.classList.contains('amber'); apply(n);
-    try{localStorage.setItem(K,n?'1':'0');}catch(e){}
+    var n=NEXT[cur()]; apply(n);
+    try{localStorage.setItem(K,n);}catch(e){}
   });
 })();
 </script>
