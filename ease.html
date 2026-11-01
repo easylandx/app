@@ -755,6 +755,7 @@ html.green .offerbar .modebtn *{background:transparent !important; color:inherit
             </div>
             <a class="btn btn-red" href="89e.html">🔥 Ver oferta especial</a>
             <a class="btn btn-primary" href="https://api.whatsapp.com/send/?phone=34609204298&text=%C2%A1Hola!%20Me%20gustar%C3%ADa%20recibir%20una%20maqueta%20de%20cortes%C3%ADa%20para%20mi%20negocio.">💬 WhatsApp</a>
+            <button type="button" class="btn btn-blue" id="share-btn" aria-label="Compartir EasyLandX con un amigo por WhatsApp">Compartir con amigo</button>
             <a class="btn btn-ghost" href="https://easylandx.github.io/all">Resultados reales →</a>
             <a class="btn btn-pink" href="hubes.html">Ver Ejemplos</a>
             <a class="btn btn-gold btn-border-ink" href="https://buy.stripe.com/28E7sK3I3ad186WcQo0Jq06" target="_blank" rel="noopener">🛒 Comprar ahora</a>
@@ -1302,6 +1303,55 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
   }
   document.addEventListener('click', handle, true);
   document.addEventListener('auxclick', handle, true);
+})();
+</script>
+<script>
+/* ===== Refer a friend: share link with ?ref= code via WhatsApp =====
+   - each visitor gets a stable random code (localStorage, falls back to a per-load code)
+   - "Share with a friend" opens WhatsApp with a ready-made message + link carrying ?ref=CODE
+   - a visitor who arrives with ?ref=CODE is tagged in GA4 (referral_visit) and the code is added
+     to this page's WhatsApp messages as "(ref: CODE)" so you can see who referred them */
+(function(){
+  var BASE='https://easylandx.github.io/app/ease.html', MSG="Encontré la opción de maqueta web de cortesía de EasyLandX. Échale un vistazo: ", TAG='(ref: ';
+  function rnd(){
+    var a='abcdefghjkmnpqrstuvwxyz23456789', o='', i, b;
+    try{ b=new Uint8Array(6); crypto.getRandomValues(b); for(i=0;i<6;i++) o+=a[b[i]%a.length]; }
+    catch(e){ for(i=0;i<6;i++) o+=a[Math.floor(Math.random()*a.length)]; }
+    return o;
+  }
+  var code; try{ code=localStorage.getItem('elx-ref-code'); }catch(e){}
+  if(!code){ code=rnd(); try{ localStorage.setItem('elx-ref-code',code); }catch(e){} }
+
+  // incoming referral
+  var from=''; try{ from=(new URLSearchParams(location.search).get('ref')||'').trim(); }catch(e){}
+  if(!/^[a-z0-9_-]{3,24}$/i.test(from) || from===code) from='';
+  if(from){
+    try{ localStorage.setItem('elx-ref-from',from); }catch(e){}
+    var seen=false; try{ seen=sessionStorage.getItem('elx-ref-seen')===from; sessionStorage.setItem('elx-ref-seen',from); }catch(e){}
+    if(!seen && window.gtag){ try{ gtag('event','referral_visit',{ref_code:from}); }catch(e){} }
+  } else { try{ from=localStorage.getItem('elx-ref-from')||''; }catch(e){} }
+
+  // tag this page's WhatsApp messages with the referrer
+  if(from){
+    var links=document.querySelectorAll('a[href*="whatsapp.com/send"], a[href*="wa.me"]');
+    for(var i=0;i<links.length;i++){
+      try{
+        var u=new URL(links[i].href), t=u.searchParams.get('text')||'';
+        if(t.indexOf(TAG)<0){ u.searchParams.set('text',(t+' '+TAG+from+')').trim()); links[i].href=u.toString(); }
+      }catch(e){}
+    }
+  }
+
+  // share button
+  var btn=document.getElementById('share-btn'); if(!btn) return;
+  btn.addEventListener('click',function(){
+    var link=BASE+'?ref='+encodeURIComponent(code);
+    var mobile=/Android|iPhone|iPad|iPod|Mobile|Windows Phone/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    /* desktop: straight into WhatsApp Web (contact picker only); phones: open the app */
+    var url=(mobile?'https://api.whatsapp.com/send?text=':'https://web.whatsapp.com/send?text=')+encodeURIComponent(MSG+link);
+    if(window.gtag){ try{ gtag('event','share',{method:'whatsapp',content_type:'referral',item_id:code,cta_location:'hero',transport_type:'beacon'}); }catch(e){} }
+    var w=window.open(url,'_blank'); if(w){ try{ w.opener=null; }catch(e){} } else { location.href=url; }
+  });
 })();
 </script>
 </body>
