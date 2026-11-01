@@ -1312,7 +1312,7 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
    - a visitor who arrives with ?ref=CODE is tagged in GA4 (referral_visit) and the code is added
      to this page's WhatsApp messages as "(ref: CODE)" so you can see who referred them */
 (function(){
-  var BASE='https://easylandx.github.io/app/ease.html', MSG="Encontré la opción de maqueta web de cortesía de EasyLandX. Échale un vistazo: ", TAG='(ref: ';
+  var BASE='https://easylandx.github.io/app/ease.html', MSG="Encontré la opción de maqueta web de cortesía de EasyLandX. Aquí ", TAG='(ref: ';
   function rnd(){
     var a='abcdefghjkmnpqrstuvwxyz23456789', o='', i, b;
     try{ b=new Uint8Array(6); crypto.getRandomValues(b); for(i=0;i<6;i++) o+=a[b[i]%a.length]; }
