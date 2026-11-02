@@ -2,16 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#1c0a5c">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#ffd23f">
 <title>EasyLandX · Mobile Showcase</title>
 <style>
 :root{--gold:#ffd23f;--cyan:#27f0ff;--deep:#1c0a5c;--w:min(100vw,560px,max(390px,50dvh))}
 *{box-sizing:border-box;margin:0}
 html,body{height:100%;overflow:hidden}
-body{background:radial-gradient(circle at 50% 25%,#5b14ff,#1c0a5c 75%);color:#fff;font:15px/1.3 -apple-system,system-ui,"Segoe UI",sans-serif;-webkit-user-select:none;user-select:none}
+html.touch,html.touch body{height:auto;overflow:visible;overscroll-behavior:none}
+html.touch body{min-height:calc(100dvh + 400px)}
+html{background:#ffd23f} /* colour around the notch / island: change here and in the theme-color meta */
+body{background:transparent;color:#fff;font:15px/1.3 -apple-system,system-ui,"Segoe UI",sans-serif;-webkit-user-select:none;user-select:none}
 .bg{position:fixed;inset:0;touch-action:none;cursor:grab}
-.screen{position:fixed;top:env(safe-area-inset-top,0px);bottom:0;width:var(--w);left:calc(50% - var(--w)/2);overflow:hidden;background:#12082e;z-index:1;box-shadow:0 0 70px rgba(0,0,0,.55)}
+.desk{--w:100vw}
+.desk .screen{box-shadow:none}
+.desk .bg{display:none}
+.screen{position:fixed;top:0;bottom:0;width:var(--w);left:calc(50% - var(--w)/2);overflow:hidden;background:#12082e;z-index:1;box-shadow:0 0 70px rgba(0,0,0,.55)}
 .track{position:absolute;inset:0;display:flex;will-change:transform}
 .slide{flex:0 0 100%;position:relative;overflow:hidden;background:#12082e}
 .slide.pop{animation:pop .35s ease}
@@ -20,10 +26,7 @@ body{background:radial-gradient(circle at 50% 25%,#5b14ff,#1c0a5c 75%);color:#ff
 .slide iframe{position:absolute;top:0;left:0;border:0;background:#fff;transform-origin:0 0}
 .zone{position:absolute;top:0;bottom:0;width:26px;z-index:5;touch-action:none;cursor:grab}
 .zl{left:0}.zr{right:0}
-.glass{position:fixed;left:50%;transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:8px;padding:8px;border-radius:18px;background:rgba(24,8,72,.62);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);border:1px solid rgba(255,255,255,.22);box-shadow:0 8px 30px rgba(0,0,0,.45);width:min(96vw,500px)}
-.top{top:max(10px,env(safe-area-inset-top));font-size:13px;padding:6px 8px}
-.top span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
-.top a{color:var(--cyan);text-decoration:none;font-weight:800;padding:4px 6px}
+.glass{touch-action:pan-y;position:fixed;left:50%;transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:8px;padding:8px;border-radius:18px;background:rgba(24,8,72,.62);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);border:1px solid rgba(255,255,255,.22);box-shadow:0 8px 30px rgba(0,0,0,.45);width:min(96vw,500px)}
 .bar{bottom:max(12px,env(safe-area-inset-bottom))}
 .bar.min{width:auto}.bar.min>*:not(#tg){display:none}
 .b{border:0;border-radius:12px;padding:9px 11px;font:700 15px inherit;font-family:inherit;background:var(--gold);color:var(--deep);cursor:pointer;white-space:nowrap;text-decoration:none}
@@ -35,7 +38,7 @@ input:focus{outline:0;border-color:var(--cyan)}
 .res div{padding:8px 12px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.08)}
 .res div:hover,.res .on{background:rgba(39,240,255,.2)}
 .res small{display:block;opacity:.65;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hint{position:fixed;left:50%;top:max(12px,env(safe-area-inset-top));transform:translateX(-50%);z-index:19;background:rgba(0,0,0,.6);padding:7px 12px;border-radius:14px;font-size:12px;white-space:nowrap;pointer-events:none;animation:fade 6s forwards}
+.hint{position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:19;background:rgba(0,0,0,.6);padding:7px 12px;border-radius:14px;font-size:12px;white-space:nowrap;pointer-events:none;animation:fade 6s forwards}
 @keyframes fade{0%,70%{opacity:1}100%{opacity:0}}
 @media(max-width:480px){.b{padding:9px 9px;font-size:14px}.glass{gap:6px;padding:7px}.hint{white-space:normal;width:86vw;text-align:center}}
 </style>
@@ -54,10 +57,12 @@ input:focus{outline:0;border-color:var(--cyan)}
   <button class="b alt" id="next" aria-label="Next site">▶</button>
   <button class="b alt" id="tg" aria-label="Hide or show controls">▾</button>
 </div>
-<div class="hint">Swipe ⇄ to change site · swipe ↕ to scroll · tap the title to search</div>
+<div class="hint">Swipe ⇄ to change site · swipe ↕ to scroll · swipe up on the bar to hide the browser toolbar</div>
 
 <script>
-const IDX='https://easylandx.github.io/all/', W=390; // mobile CSS width, even on desktop
+if(matchMedia('(pointer:coarse)').matches)document.documentElement.classList.add('touch');
+const IDX='https://easylandx.github.io/all/';
+let W=390; // page width in CSS px: phone width, or the real window width on desktop
 const $=s=>document.querySelector(s), track=$('#track'), scr=$('#screen'), q=$('#q'), res=$('#res');
 const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
 const FALL='work make give disc parad core swan scou how brai trig change influence social human choice'.split(' ');
@@ -136,7 +141,7 @@ function endH(dx,dt){
 }
 function mkFrame(i){
   const fr=document.createElement('iframe');
-  fr.title=S[i].t;fr.allow='fullscreen';
+  fr.title=S[i].t;fr.allow='fullscreen';fr.dataset.i=i;
   track.children[i].appendChild(fr);sizeF(fr);
   fr.addEventListener('load',()=>{if(fr.dataset.mode==='doc')hook(fr)});
   loadDoc(fr,i);
@@ -272,6 +277,7 @@ q.addEventListener('keydown',e=>{
 $('#prev').onclick=()=>go(cur-1);
 $('#next').onclick=()=>go(cur+1);
 $('#rnd').onclick=rnd;
+['pointerup','touchend'].forEach(ev=>$('#bar').addEventListener(ev,enterFS,{passive:true})); // touch or swipe the bar -> full screen
 $('#tg').onclick=()=>{const m=$('#bar').classList.toggle('min');$('#tg').textContent=m?'▴':'▾'};
 addEventListener('keydown',e=>{
   if(document.activeElement===q)return;
@@ -280,7 +286,15 @@ addEventListener('keydown',e=>{
   else if(e.key==='r'||e.key==='R')rnd();
   else if(e.key==='/'){e.preventDefault();q.focus()}
 });
-new ResizeObserver(()=>track.querySelectorAll('iframe').forEach(sizeF)).observe(scr);
+function layout(){ // desktop (mouse + wide window): real desktop layout across the whole window; otherwise phone layout
+  const desk=matchMedia('(pointer:fine)').matches&&innerWidth>=800;
+  document.body.classList.toggle('desk',desk);
+  W=desk?Math.max(innerWidth,1024):390;
+  track.querySelectorAll('iframe').forEach(sizeF);
+}
+new ResizeObserver(layout).observe(scr);
+addEventListener('resize',layout);
+layout();
 
 loadList().then(list=>{
   S=list;
