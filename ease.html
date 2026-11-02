@@ -612,6 +612,109 @@
   .xtv-ch{padding:.75rem .75rem 2.4rem}
   .xtv-controls{right:12px;bottom:12px}
 }
+/* ---------- amber phosphor mode toggle (top bar button) ---------- */
+.offerbar{position:relative;}
+.modebtn{position:absolute; right:12px; top:50%; transform:translateY(-50%); display:inline-flex; align-items:center; gap:6px; font:700 .78rem/1 'Inter',system-ui,sans-serif; letter-spacing:.02em; color:#fff; background:rgba(255,255,255,.12); border:1.5px solid rgba(255,255,255,.75); border-radius:9999px; padding:6px 12px; cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent;}
+.modebtn:hover{background:#fff; color:#0066CC;}
+.modebtn svg{width:15px; height:15px; display:block; flex:none;}
+@media (max-width:640px){
+  .offerbar{padding-right:58px;}
+  .modebtn{right:10px; padding:7px 9px;}
+  .modebtn .ml{display:none;}
+}
+
+html.amber{
+  color-scheme:dark;
+  --red:#FFB000; --red-dark:#FFB000; --yellow:#FFB000; --yellow-dark:#FFB000;
+  --green:#FFB000; --green-dark:#FFB000; --paper:#000; --ink:#FFB000; --ink-soft:#D99300;
+  --line:rgba(255,176,0,.38); --whatsapp:#FFB000;
+}
+html.amber body{text-shadow:0 0 6px rgba(255,176,0,.38); font-variant-emoji:text;}
+html.amber *, html.amber *::before, html.amber *::after{
+  background:#000 !important; background-image:none !important;
+  color:#FFB000 !important; border-color:#FFB000 !important;
+  outline-color:#FFB000 !important; fill-opacity:1;
+}
+html.amber img, html.amber svg, html.amber video, html.amber canvas, html.amber iframe{
+  filter:grayscale(1) contrast(1.25) brightness(.78) sepia(1) saturate(4) !important;
+}
+html.amber section{border-top:1px solid rgba(255,176,0,.38);}
+/* inline text must never paint a black box over neighbouring lines (it clipped descenders in the title) */
+html.amber em, html.amber strong, html.amber b, html.amber i, html.amber span, html.amber mark, html.amber small,
+html.amber a:not(.btn):not(.chatlogo):not(.mbar-btn):not(.navtoggle):not(.hero-promo):not(.heroimg){background:transparent !important;}
+html.amber .cl-cur{background:#FFB000 !important;}
+html.amber footer{border-top:3px solid #FFB000;}
+html.amber header.nav{background:#000 !important;}
+html.amber .btn:hover, html.amber .tag:hover, html.amber .mbar-btn:hover, html.amber .navtoggle:hover,
+html.amber #pwa-install:hover, html.amber .sample-menu .btn:hover{background:#FFB000 !important; color:#000 !important;}
+html.amber .navlinks a:hover, html.amber .footgrid a:hover{text-decoration:underline;}
+html.amber a{text-decoration-color:#FFB000;}
+html.amber .xtv-power{background:#FFB000 !important; box-shadow:0 0 8px #FFB000 !important;}
+/* inverted blocks keep the page's hierarchy: bright amber slab with black type */
+html.amber .offerbar, html.amber .offerbar *:not(.modebtn):not(.modebtn *),
+html.amber .offer-box, html.amber .offer-box > *:not(.btn):not(.sample):not(.sample *){
+  background:#FFB000 !important; color:#000 !important; border-color:#000 !important; text-shadow:none;
+}
+html.amber .offer-box *{background:transparent !important; color:#000 !important; border-color:#000 !important; text-shadow:none;}
+html.amber .xtv-emoji{filter:grayscale(1) sepia(1) saturate(4) brightness(.9);}
+html.amber .offer-box .btn, html.amber .offer-box .btn-sample{background:#000 !important; color:#FFB000 !important; border-color:#000 !important;}
+html.amber .offerbar .modebtn{background:#000 !important; color:#FFB000 !important; border-color:#000 !important; text-shadow:none;}
+html.amber .offerbar .modebtn:hover{background:#FFB000 !important; color:#000 !important;}
+html.amber .offerbar .modebtn svg{filter:none !important;}
+html.amber .offerbar .modebtn *{background:transparent !important; color:inherit !important; text-shadow:none;}
+html.green{
+  color-scheme:dark;
+  --red:#33FF66; --red-dark:#33FF66; --yellow:#33FF66; --yellow-dark:#33FF66;
+  --green:#33FF66; --green-dark:#33FF66; --paper:#000; --ink:#33FF66; --ink-soft:#25CC51;
+  --line:rgba(51,255,102,.38); --whatsapp:#33FF66;
+}
+html.green body{text-shadow:0 0 6px rgba(51,255,102,.38); font-variant-emoji:text;}
+html.green *, html.green *::before, html.green *::after{
+  background:#000 !important; background-image:none !important;
+  color:#33FF66 !important; border-color:#33FF66 !important;
+  outline-color:#33FF66 !important; fill-opacity:1;
+}
+html.green img, html.green svg, html.green video, html.green canvas, html.green iframe{
+  filter:grayscale(1) contrast(1.25) brightness(.78) sepia(1) saturate(4) hue-rotate(78deg) !important;
+}
+html.green section{border-top:1px solid rgba(51,255,102,.38);}
+/* inline text must never paint a black box over neighbouring lines (it clipped descenders in the title) */
+html.green em, html.green strong, html.green b, html.green i, html.green span, html.green mark, html.green small,
+html.green a:not(.btn):not(.chatlogo):not(.mbar-btn):not(.navtoggle):not(.hero-promo):not(.heroimg){background:transparent !important;}
+html.green .cl-cur{background:#33FF66 !important;}
+html.green footer{border-top:3px solid #33FF66;}
+html.green header.nav{background:#000 !important;}
+html.green .btn:hover, html.green .tag:hover, html.green .mbar-btn:hover, html.green .navtoggle:hover,
+html.green #pwa-install:hover, html.green .sample-menu .btn:hover{background:#33FF66 !important; color:#000 !important;}
+html.green .navlinks a:hover, html.green .footgrid a:hover{text-decoration:underline;}
+html.green a{text-decoration-color:#33FF66;}
+html.green .xtv-power{background:#33FF66 !important; box-shadow:0 0 8px #33FF66 !important;}
+/* inverted blocks keep the page's hierarchy: bright amber slab with black type */
+html.green .offerbar, html.green .offerbar *:not(.modebtn):not(.modebtn *),
+html.green .offer-box, html.green .offer-box > *:not(.btn):not(.sample):not(.sample *){
+  background:#33FF66 !important; color:#000 !important; border-color:#000 !important; text-shadow:none;
+}
+html.green .offer-box *{background:transparent !important; color:#000 !important; border-color:#000 !important; text-shadow:none;}
+html.green .xtv-emoji{filter:grayscale(1) sepia(1) saturate(4) hue-rotate(78deg) brightness(.9);}
+html.green .offer-box .btn, html.green .offer-box .btn-sample{background:#000 !important; color:#33FF66 !important; border-color:#000 !important;}
+html.green .offerbar .modebtn{background:#000 !important; color:#33FF66 !important; border-color:#000 !important; text-shadow:none;}
+html.green .offerbar .modebtn:hover{background:#33FF66 !important; color:#000 !important;}
+html.green .offerbar .modebtn svg{filter:none !important;}
+html.green .offerbar .modebtn *{background:transparent !important; color:inherit !important; text-shadow:none;}
+@media (prefers-reduced-motion:no-preference){ html.amber body{transition:none;} }
+
+/* ---------- brand logo icon ---------- */
+.hero-titlewrap{position:relative;}
+.elx-logo-hero{position:absolute; left:50%; bottom:100%; transform:translateX(-50%); width:96px; margin:0 0 16px; pointer-events:none;}
+@media (max-width:900px){ .elx-logo-hero{width:60px; margin-bottom:8px;} }
+.elx-logo{display:block; flex:none; height:auto; border-radius:22%;}
+.brand{display:inline-flex; align-items:center; gap:9px;}
+.elx-logo-nav{width:32px;}
+.footbrand{display:flex; align-items:center; gap:10px;}
+.elx-logo-foot{width:36px;}
+.elx-logo-cta{width:76px; margin:0 auto 16px;}
+.elx-logo-offer{width:60px; margin:0 0 14px;}
+@media (max-width:520px){ .elx-logo-nav{width:26px;} .brand{gap:7px;} }
 </style>
 </head>
 <body>
