@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Polite No Hall of Fame | EasyLandX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --yellow:#FFD600;--blue:#0062CC;--red:#E8291C;--green:#25D366;--pink:#E8479A;--ink:#1A1208;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Inter",system-ui,sans-serif;color:var(--ink);background:var(--yellow);line-height:1.55}
+h1,h2,h3,h4,.btn,.chip{font-family:"Poppins","Inter",system-ui,sans-serif}
+a{color:inherit}
+
+/* buttons, same language as the brand: chunky, rounded, offset shadow */
+.btn{display:inline-block;border:2px solid transparent;cursor:pointer;font-weight:700;font-size:.95rem;padding:12px 20px;border-radius:14px;text-decoration:none;color:#fff;transition:transform .1s}
+.btn:hover{transform:translateY(-2px)}
+.btn.blue{background:var(--blue);box-shadow:4px 4px 0 var(--ink);border-color:var(--ink)}
+.btn.red{background:var(--red)}
+.btn.green{background:var(--green);color:var(--ink)}
+.btn.pink{background:var(--pink)}
+.btn.line{background:transparent;color:var(--ink);border-color:var(--ink)}
+
+header.hero{background:var(--yellow);padding:56px 22px 48px}
+.hero .wrap{max-width:900px;margin:0 auto}
+.hero h1{font-weight:900;font-size:clamp(2.4rem,7vw,4.6rem);line-height:1.02;letter-spacing:-.035em;margin:0 0 20px}
+.hero p{font-size:1.12rem;max-width:640px;margin:0 0 26px}
+.hero .row{display:flex;flex-wrap:wrap;gap:12px}
+
+.controls{position:sticky;top:0;z-index:5;background:var(--yellow);border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);padding:12px 16px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center}
+.controls input{padding:10px 14px;border-radius:12px;border:2px solid var(--ink);font:inherit;min-width:230px;background:#fff}
+.chip{border:2px solid var(--ink);background:#fff;border-radius:99px;padding:6px 14px;font-size:.9rem;font-weight:600;cursor:pointer;color:var(--ink)}
+.chip.on{background:var(--blue);color:#fff}
+.lang{display:inline-flex;border:2px solid var(--ink);border-radius:99px;overflow:hidden;background:#fff}
+.lang button{border:0;background:transparent;font:700 .9rem "Poppins",sans-serif;padding:7px 16px;cursor:pointer;color:var(--ink)}
+.lang button.on{background:var(--pink);color:#fff}
+
+section.cat{padding:46px 16px}
+.inner{max-width:1100px;margin:0 auto}
+.cat h2{font-weight:800;font-size:clamp(1.5rem,3.6vw,2.2rem);letter-spacing:-.02em;margin:0}
+.cat .sub{margin:4px 0 24px;font-weight:500}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.card{background:#fff;border:2px solid var(--ink);border-radius:18px;padding:18px;box-shadow:5px 5px 0 var(--ink);display:flex;flex-direction:column;gap:10px;transition:transform .15s}
+.card:hover{transform:translate(-2px,-2px)}
+.card.flash{animation:flash 1.5s}
+@keyframes flash{0%,60%{background:#fff3a0}100%{background:#fff}}
+.meter{font-size:.8rem;letter-spacing:1px}
+.orig{font-family:"Poppins",sans-serif;font-weight:700;font-size:1.08rem;line-height:1.3;margin:0}
+.tr{font-size:.86rem;opacity:.7;margin:-4px 0 0;font-style:italic}
+.rebut{border-left:6px solid var(--red);background:#fff4f2;border-radius:0 12px 12px 0;padding:10px 12px;font-size:.95rem;flex:1}
+.rebut h4{margin:0 0 4px;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--red)}
+.copy{align-self:flex-end;border:2px solid var(--ink);background:var(--green);color:var(--ink);border-radius:10px;padding:5px 14px;font:700 .82rem "Poppins",sans-serif;cursor:pointer}
+.copy:hover{filter:brightness(.95)}
+
+.cta{background:var(--blue);color:#fff;text-align:center;padding:64px 18px}
+.cta h2{font-weight:900;font-size:clamp(1.8rem,4.5vw,3rem);letter-spacing:-.03em;margin:0 0 10px;line-height:1.08}
+.cta p{max-width:560px;margin:0 auto 22px}
+.cta .btn{background:var(--yellow);color:var(--ink);border-color:var(--ink);box-shadow:4px 4px 0 var(--ink)}
+footer{background:var(--yellow);text-align:center;padding:22px 16px;font-size:.9rem;font-weight:500;border-top:3px solid var(--ink)}
+.empty{text-align:center;padding:60px;background:#fff0a0;font-weight:600}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1 data-t="h1"></h1>
+    <p data-t="heroP"></p>
+    <div class="row">
+      <button class="btn blue" onclick="surprise()" data-t="surprise"></button>
+      <a class="btn red" href="https://easylandx.github.io" target="_blank" rel="noopener" data-t="visit"></a>
+    </div>
+  </div>
+</header>
+
+<div class="controls">
+  <input id="search" type="search" data-ph="search">
+  <div id="catChips"></div>
+  <div class="lang" role="group" aria-label="Language">
+    <button id="lEn" onclick="setLang('en')">EN</button>
+    <button id="lEs" onclick="setLang('es')">ES</button>
+  </div>
+</div>
+
+<main id="cats"></main>
+
+<section class="cta">
+  <h2 data-t="ctaH"></h2>
+  <p data-t="ctaP"></p>
+  <a class="btn" href="https://easylandx.github.io" target="_blank" rel="noopener" data-t="ctaB"></a>
+</section>
+
+<footer data-t="foot"></footer>
+
+<script>
+const T={
+ en:{
+  h1:"Every “no” is a “not yet” in a fancy hat.",
+  heroP:"Polite ways to say “no, gracias” to an EasyLandX landing page proposal, each with a comeback that's professional, friendly and slightly cheeky.",
+  surprise:"🎲 Surprise me with a “no”",visit:"Visit EasyLandX",
+  search:"Search a “no” or a comeback…",all:"All categories",
+  reply:"The comeback",copy:"Copy reply",copied:"Copied ✓",
+  empty:"Nothing found. For once, nobody said no. 🎉",
+  ctaH:"Ready to turn a “no” into a “tell me more”?",
+  ctaP:"EasyLandX builds custom, conversion-focused landing pages for small businesses, at prices that won't make your accountant faint.",
+  ctaB:"Visit easylandx.github.io",
+  foot:"© 2026 EasyLandX · No prospects were harmed in the making of this page."
+ },
+ es:{
+  h1:"Todo «no» es un «todavía no» con sombrero elegante.",
+  heroP:"Formas educadas de decir «no, gracias» a una propuesta de landing page de EasyLandX, cada una con una réplica profesional, amable y un pelín descarada.",
+  surprise:"🎲 Sorpréndeme con un «no»",visit:"Visita EasyLandX",
+  search:"Busca un «no» o una réplica…",all:"Todas las categorías",
+  reply:"La réplica",copy:"Copiar respuesta",copied:"Copiado ✓",
+  empty:"No hay nada. Por una vez, nadie dijo que no. 🎉",
+  ctaH:"¿Listo para convertir un «no» en un «cuéntame más»?",
+  ctaP:"EasyLandX crea landing pages a medida, enfocadas en convertir, para pequeños negocios y a precios que no harán desmayarse a tu gestor.",
+  ctaB:"Visita easylandx.github.io",
+  foot:"© 2026 EasyLandX · Ningún cliente potencial fue herido en la creación de esta página."
+ }
+};
+const cats=[
+ {e:"🙂",bg:"#D6E8FF",en:["The Classic Polite No","Short, sweet, and seasoned with a pinch of “gracias”."],es:["El «No» Educado de Siempre","Corto, dulce y con una pizca de «gracias»."]},
+ {e:"⏳",bg:"#FFD9EB",en:["The “Maybe Later” Club","Where “next quarter” goes to retire."],es:["El Club del «Más Adelante»","Donde «el trimestre que viene» se jubila."]},
+ {e:"🌐",bg:"#D3F6DF",en:["“I Already Have a Website”","Having a site and having a site that sells are different hobbies."],es:["«Ya Tengo Web»","Tener web y tener una web que vende son aficiones distintas."]},
+ {e:"🕵️",bg:"#FFF0A0",en:["“Someone Else Handles It”","The mysterious Digital Person. Nobody has ever seen them."],es:["«Se Encarga Otra Persona»","La misteriosa Persona Digital. Nadie la ha visto jamás."]},
+ {e:"🔥",bg:"#FFD9D3",en:["The Busy-Busy Brigade","Priorities: always one more than the calendar can hold."],es:["La Brigada del Estoy-a-Tope","Prioridades: siempre una más de las que caben en la agenda."]},
+ {e:"🤷",bg:"#FFE7B3",en:["The “We Don't Need It” Department","Where Instagram, word of mouth and ROI walk into a bar."],es:["El Departamento de «No Nos Hace Falta»","Donde Instagram, el boca a boca y el ROI entran en un bar."]}
+];
+// [cat, nope level, ES original, EN translation, reply ES, reply EN]
+const D=[
+[0,2,"Gracias, pero no me interesa.","Thanks, but I'm not interested.",
+"Respeto tu 'no', pero mi landing no muerde. ¿Dos minutos para verla y, si no te gusta, me voy sin hacer ruido?",
+"I respect your 'no', but my landing page doesn't bite. Two minutes to look, and if you hate it, I leave quietly?"],
+[0,1,"No gracias.","No, thanks.",
+"Más corto que un tuit y igual de educado. Solo digo: una landing es un vendedor que nunca pide vacaciones. ¿Te enseño una?",
+"Shorter than a tweet and just as polite. I'll only say: a landing page is a salesperson who never asks for holidays. Want to see one?"],
+[0,2,"No nos interesa, gracias.","We're not interested, thanks.",
+"Decisión de comité, lo capto. ¿Les mando un ejemplo de un minuto? Se lee antes de que se enfríe el café.",
+"Committee decision, I get it. May I send a one-minute example? You'll read it before the coffee gets cold."],
+[0,2,"Gracias, pero paso.","Thanks, but I'll pass.",
+"Pasar sin mirar es rechazar una tarta sin probarla. Un trocito de ejemplo y luego decides, ¿vale?",
+"Passing without looking is refusing cake without a bite. One sample slice, then you decide, deal?"],
+[0,1,"Paso, gracias.","I'll pass, thanks.",
+"Dos palabras y me las tomo con cariño. Si algún día quieres más clientes con menos esfuerzo, ya sabes dónde estoy.",
+"Two words, and I'm taking them with love. If you ever want more clients for less effort, you know where I am."],
+[0,2,"Muchas gracias, pero no lo necesitamos.","Thanks so much, but we don't need it.",
+"Nadie 'necesita' un paraguas hasta que llueve. Una landing es el paraguas de las ventas. ¿Se la enseño por si acaso?",
+"Nobody 'needs' an umbrella until it rains. A landing page is the umbrella of sales. Shall I show you, just in case?"],
+[0,3,"Gracias por la información, pero no se ajusta a nuestras necesidades actuales.","Thanks for the information, but it doesn't fit our current needs.",
+"Perfecto: las nuestras se hacen a medida, como los buenos trajes. Dígame su necesidad estrella y le confieso si encajamos.",
+"Perfect: ours are tailor-made, like good suits. Tell me your number one need and I'll confess whether we fit."],
+[0,3,"Agradecemos su propuesta, sin embargo no estamos interesados en este momento.","We appreciate your proposal, however we're not interested at this time.",
+"Qué educación, hasta el 'no' lleva corbata. Le dejo una propuesta de una página para cuando llegue el momento. ¿Se la envío?",
+"Such manners, even the 'no' wears a tie. I'll leave a one-page proposal for when the time comes. May I send it?"],
+[0,2,"Apreciamos el contacto, pero no es algo que precisemos ahora.","We appreciate the contact, but it's not something we need now.",
+"Si no hay prisa, es el momento perfecto: las webs buenas no se hacen en pijama a las 3 a. m. antes del lanzamiento. ¿Diez minutos?",
+"No rush means perfect timing: good pages aren't built in pyjamas at 3 a.m. before launch. Ten minutes to chat?"],
+[0,2,"Aprecio el interés, pero no es algo que estemos buscando actualmente.","I appreciate the interest, but it's not something we're currently looking for.",
+"Nadie busca una landing, buscan más clientes. La landing es solo el taxi. ¿Quieres saber adónde te lleva?",
+"Nobody looks for a landing page, they look for more clients. The page is just the taxi. Want to know where it takes you?"],
+[0,1,"Ahora mismo no nos encaja, pero gracias por contactar.","It doesn't fit us right now, but thanks for getting in touch.",
+"Tranquilo, también pasa con los zapatos. Dime tu talla y te lo hago a medida.",
+"No worries, it happens with shoes too. Tell me your size and I'll make it to measure."],
+
+[1,1,"De momento no, gracias.","Not for now, thanks.",
+"'De momento' es mi frase favorita del idioma. Te guardo la propuesta calentita para cuando llegue el momento.",
+"'For now' is my favourite phrase ever. I'll keep the proposal warm for when the moment arrives."],
+[1,2,"De momento nada, gracias.","Nothing for now, thanks.",
+"Nada, como mi bandeja de entrada los lunes. Me paso en un mes por si el 'nada' se ha hecho 'algo'.",
+"Nothing, like my inbox on Mondays. I'll check back in a month in case 'nothing' became 'something'."],
+[1,2,"No lo necesito ahora mismo.","I don't need it right now.",
+"Nadie necesita un chaleco salvavidas hasta que el barco hace cosas raras. Cuanto antes publiques, antes trabaja por ti.",
+"Nobody needs a life jacket until the boat does weird things. Publish sooner and the page works for you sooner."],
+[1,2,"No estamos interesados en este momento.","We're not interested at this time.",
+"Anotado: 'no en este momento'. ¿Qué tendría que pasar para que sí? ¿Un presupuesto, luna llena, un café?",
+"Noted: 'not at this time'. What would have to happen for a yes? A budget, a full moon, a coffee?"],
+[1,1,"Por ahora estamos bien así, gracias.","We're fine as we are for now, thanks.",
+"¡Genial! Mejor reforzar la web cuando todo va bien, como arreglar el tejado con sol. ¿Te enseño cómo sumar clientes?",
+"Great! Best to boost your site when things are good, like fixing the roof while the sun shines. Shall I show you how to add clients?"],
+[1,1,"De momento no estamos interesados, más adelante puede ser.","Not interested for now, maybe later.",
+"Un 'puede ser' es casi un sí con miedo escénico. Fijemos fecha para que 'más adelante' no acabe siendo 'nunca'.",
+"A 'maybe' is almost a yes with stage fright. Let's set a date so 'later' doesn't end up as 'never'."],
+[1,1,"Lo tendremos en cuenta para más adelante, gracias.","We'll keep it in mind for later, thanks.",
+"¡Eso suena a promesa! Os dejo una propuesta cortita; cuando queráis, responded 'adelante' y ya está.",
+"That sounds like a promise! I'll leave a short proposal; whenever you're ready, just reply 'go ahead' and we're off."],
+[1,1,"Gracias, pero por ahora no necesito una web; cuando la necesite contaré contigo.","Thanks, but I don't need a website for now; when I do, I'll count on you.",
+"Trato hecho, ¡me apunto en tu agenda! Eso sí: las webs siempre se necesitan 'para ayer'. Mejor tener la propuesta lista.",
+"Deal, I'm in your diary! Though websites are always needed 'by yesterday'. Better to have the proposal ready."],
+[1,1,"Gracias, me lo guardo para más adelante cuando tengamos presupuesto.","Thanks, I'll save it for later when we have a budget.",
+"El presupuesto, ese animal mitológico. Mis precios están pensados para negocios pequeños: ¿te paso una cifra para soñar con los pies en el suelo?",
+"Budget, that mythical creature. My prices are made for small businesses: want a ballpark figure to dream with your feet on the ground?"],
+[1,2,"Por ahora no nos encaja, escríbenos el trimestre que viene.","Doesn't fit for now, write to us next quarter.",
+"Anotado en rojo y con purpurina: te escribo el próximo trimestre. Mientras, te mando una propuesta preliminar para no empezar de cero.",
+"Noted in red with glitter: I'll write next quarter. Meanwhile, a preliminary proposal so we don't start from zero."],
+[1,1,"Guardamos tu contacto para cuando decidamos renovar.","We'll keep your contact for when we decide to renew.",
+"¡Ya estoy en tu agenda, entre el fontanero y la pizzería! Cuando renueves, pide una web rápida, clara y que venda.",
+"I'm in your contacts, between the plumber and the pizzeria! When you renew, ask for a page that's fast, clear and sells."],
+
+[2,2,"Ya tengo web.","I already have a website.",
+"¡Genial! Pero ¿trae clientes o solo hace de cuadro bonito? Una landing la complementa con un único objetivo. ¿Le echamos un ojo?",
+"Great! But does it bring clients or just hang there like a pretty painting? A landing page complements it with one clear goal. Take a look?"],
+[2,2,"Agradezco la oferta, pero ya contamos con web.","I appreciate the offer, but we already have a website.",
+"Su web es la tienda; la landing es el cartel que grita 'pase, hay ofertas'. Funcionan mejor juntas. ¿Le cuento cómo?",
+"Your site is the shop; the landing page is the sign shouting 'come in, we have deals'. They work best together. May I explain how?"],
+[2,3,"Ya tenemos presencia en web y no planeamos tocarla.","We already have a web presence and don't plan to touch it.",
+"¡Ni se toca! La landing vive al lado, sin rozar nada. Tu web sigue intacta, como pieza de museo.",
+"Don't touch it! The landing page lives next door and brushes against nothing. Your site stays intact, like a museum piece."],
+[2,2,"Acabamos de rediseñar la web hace poco.","We just redesigned our website recently.",
+"¡Enhorabuena, y ojo con la pintura fresca! Ahora que luce, le falta una página que convierta visitas en consultas.",
+"Congrats, and mind the wet paint! Now that it looks great, it just needs a page that turns visits into enquiries."],
+[2,2,"De momento no tenemos pensado hacer nada con la web.","For now we're not planning to do anything with the website.",
+"Perfecto: no hace falta hacerle nada. Una landing independiente va aparte y tu web sigue con su siesta.",
+"Perfect: no need to do anything to it. A standalone landing page goes alongside while your site keeps its nap."],
+[2,3,"Gracias, pero no estamos abiertos a cambios de web de momento.","Thanks, but we're not open to website changes at the moment.",
+"Cero cambios, cartel de 'no molestar' respetado. Es una página aparte; tu web ni se entera. ¿Te cuento cómo?",
+"Zero changes, 'do not disturb' sign respected. It's a separate page; your site won't even notice. Shall I explain?"],
+[2,3,"De momento no contemplamos realizar cambios en nuestra web.","For now we're not considering any changes to our website.",
+"Su web puede seguir en modo estatua: la landing se publica aparte y se enlaza desde redes, anuncios o un QR. ¿Le envío un ejemplo?",
+"Your site can stay in statue mode: the landing page goes up separately, linked from social, ads or a QR code. May I send an example?"],
+
+[3,2,"Ya tenemos agencia / proveedor para la web.","We already have an agency / provider for the website.",
+"¡Qué fidelidad, más que muchos matrimonios! No vengo a sustituirlos: solo a hacer una landing concreta, sin celos.",
+"Such loyalty, stronger than many marriages! I'm not here to replace them: just one specific landing page, no jealousy."],
+[3,2,"Ya tenemos un desarrollador en el equipo.","We already have a developer on the team.",
+"¡Tu desarrollador merece un abrazo! Y una cola de tickets más corta. Yo me ocupo de la landing y él sigue con lo gordo.",
+"Your developer deserves a hug! And a shorter ticket queue. I'll take the landing page; they keep the big stuff."],
+[3,2,"De la parte digital se encarga otra persona y de momento estamos cubiertos.","Someone else handles the digital side and we're covered for now.",
+"¡Ah, la misteriosa Persona Digital! ¿Me la presentas? Prometo que mi landing le quita trabajo, no se lo añade.",
+"Ah, the mysterious Digital Person! Care to introduce us? I promise my landing page takes work off them, not adds."],
+[3,2,"Gracias por pensarnos, pero ya tenemos cubierto ese aspecto.","Thanks for thinking of us, but we already have that aspect covered.",
+"Cubierto, como el sofá con plástico. ¿Y si doy una segunda opinión, sin compromiso, a vuestra página actual?",
+"Covered, like a sofa under plastic. How about a no-strings second opinion on your current page?"],
+[3,2,"Nuestro sector creativo ya está en proceso, gracias.","Our creative sector is already in progress, thanks.",
+"¡Creatividad en marcha! Vuestro trabajo merece un escaparate a su altura. Nos adaptamos a vuestro proceso sin frenarlo.",
+"Creativity in motion! Your work deserves a showcase to match. We adapt to your process without slowing it down."],
+
+[4,2,"Ahora mismo estamos enfocados en otras prioridades.","Right now we're focused on other priorities.",
+"La lista de prioridades siempre tiene una más. Yo me ocupo de casi todo: solo necesito diez minutos de tu vida, no tu alma.",
+"The priority list always has one more item. I handle nearly everything: I need ten minutes of your time, not your soul."],
+[4,2,"No es una prioridad para nosotros en este momento.","It's not a priority for us at the moment.",
+"Tranquilo, no pretendo ganarle a 'ordenar el archivador'. Dos minutos para enseñarte lo que sí podría sumar. ¿Trato?",
+"Relax, I'm not trying to beat 'tidy the filing cabinet'. Two minutes to show what it could add. Deal?"],
+[4,2,"Gracias, pero no es mi foco en este momento.","Thanks, but it's not my focus at the moment.",
+"¡Perfecto, no tiene que ser tu foco! Tú sigues a lo tuyo y yo hago la página. Menos trabajo, no más.",
+"Perfect, it doesn't have to be your focus! You do your thing, I build the page. Less work, not more."],
+[4,2,"Nos viene mal este momento, estamos a tope con otros proyectos.","This is a bad time for us, we're swamped with other projects.",
+"¡Ánimo con esos proyectos, valientes! No voy a sumar caos: dime una fecha cómoda y yo adelanto lo que pueda.",
+"Hang in there with those projects! I won't add chaos: name a comfortable date and I'll prep what I can."],
+
+[5,2,"Gracias, pero no le veo realmente utilidad ahora.","Thanks, but I don't really see the usefulness right now.",
+"Utilidad no encontrada: error 404, culpa mía por explicarme mal. Una landing hace que quien te busca entienda qué ofreces y te contacte. ¿Reintento?",
+"Usefulness not found: a 404, my fault for explaining badly. A landing page helps people who look for you grasp what you offer and get in touch. Retry?"],
+[5,3,"No encaja con nuestro modelo de negocio actual.","It doesn't fit our current business model.",
+"Cada negocio es un planeta, por eso no uso plantillas de talla única. Cuéntame cómo captáis clientes y te digo con sinceridad si encajo.",
+"Every business is its own planet, which is why I skip one-size-fits-all templates. Tell me how you win clients and I'll honestly say if I fit."],
+[5,3,"En nuestro sector captamos todo por recomendación / boca a boca, no nos hace falta web.","In our sector we win everything through referrals / word of mouth, we don't need a website.",
+"¡El boca a boca es oro puro! Pero tras la recomendación, el cliente te googlea antes de llamar. Que encuentre una landing y no un vacío.",
+"Word of mouth is pure gold! But after the recommendation, the client googles you before calling. Let them find a landing page, not a void."],
+[5,3,"Trabajamos 100% por Instagram / LinkedIn y no necesitamos página.","We work 100% through Instagram / LinkedIn and don't need a page.",
+"Vivir de alquiler y que el casero sea el algoritmo... Una página propia es tu casa en propiedad: llevas ahí el tráfico y captas contactos.",
+"Living in a rental where the algorithm is the landlord... Your own page is a home you own: send the traffic there and capture contacts."],
+[5,3,"Para el tipo de cliente que buscamos no le vemos el retorno.","For the type of client we're after, we don't see the return.",
+"Me encanta que hables de retorno. Hagamos la cuenta juntos con tus números: calculadora en mano, cero poesía.",
+"Love that you talk about returns. Let's do the maths together with your numbers: calculator in hand, zero poetry."],
+[5,3,"Ya estamos probando otras vías y la web no es nuestro canal.","We're already trying other routes and the website isn't our channel.",
+"Zapeando de canal en canal, ya veo. Todos acaban en el mismo sitio: alguien buscando una página. La landing es donde se juntan y se mide cuál rinde más.",
+"Channel surfing, I see. They all end up in the same place: someone looking for a page. The landing page is where they meet and you measure which works best."]
+];
+
+let lang='en',q='',catf='all';
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+function applyStatic(){
+ document.documentElement.lang=lang;
+ document.querySelectorAll('[data-t]').forEach(el=>el.textContent=T[lang][el.dataset.t]);
+ document.querySelectorAll('[data-ph]').forEach(el=>el.placeholder=T[lang][el.dataset.ph]);
+ $('lEn').classList.toggle('on',lang==='en');
+ $('lEs').classList.toggle('on',lang==='es');
+ document.title=lang==='en'?'The Polite No Hall of Fame | EasyLandX':'El Salón de la Fama del No Educado | EasyLandX';
+}
+function chips(){
+ $('catChips').innerHTML=[['all','✨',T[lang].all]].concat(cats.map((c,i)=>[String(i),c.e,c[lang][0]])).map(c=>
+  `<button class="chip ${catf===c[0]?'on':''}" title="${esc(c[2])}" onclick="catf='${c[0]}';render()">${c[1]}</button>`).join('');
+}
+function render(){
+ applyStatic();chips();
+ const wrap=$('cats');wrap.innerHTML='';let total=0;
+ cats.forEach((c,ci)=>{
+  if(catf!=='all'&&catf!==String(ci))return;
+  const items=D.map((d,i)=>({d,i})).filter(({d})=>d[0]===ci&&(!q||(d[2]+d[3]+d[4]+d[5]).toLowerCase().includes(q)));
+  if(!items.length)return;
+  total+=items.length;
+  const sec=document.createElement('section');sec.className='cat';sec.style.background=c.bg;
+  sec.innerHTML=`<div class="inner"><h2>${c.e} ${esc(c[lang][0])}</h2><p class="sub">${esc(c[lang][1])}</p><div class="grid">`+
+  items.map(({d,i})=>`<article class="card" id="c${i}">
+   <div class="meter" title="Nope-o-meter">${'🙅'.repeat(d[1])}</div>
+   <p class="orig">“${esc(d[2])}”</p>
+   ${lang==='en'?`<p class="tr">${esc(d[3])}</p>`:''}
+   <div class="rebut"><h4>${T[lang].reply}</h4>${esc(lang==='en'?d[5]:d[4])}</div>
+   <button class="copy" onclick="copyReply(${i},this)">${T[lang].copy}</button>
+  </article>`).join('')+`</div></div>`;
+  wrap.appendChild(sec);
+ });
+ if(!total)wrap.innerHTML=`<div class="empty">${T[lang].empty}</div>`;
+}
+function setLang(l){lang=l;render()}
+function copyReply(i,btn){
+ const t=lang==='en'?D[i][5]:D[i][4];
+ const done=()=>{btn.textContent=T[lang].copied;setTimeout(()=>btn.textContent=T[lang].copy,1200)};
+ try{navigator.clipboard.writeText(t).then(done,done)}catch(e){done()}
+}
+function surprise(){
+ q='';catf='all';$('search').value='';render();
+ const el=$('c'+Math.floor(Math.random()*D.length));
+ el.scrollIntoView({behavior:'smooth',block:'center'});
+ el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1600);
+}
+$('search').addEventListener('input',e=>{q=e.target.value.trim().toLowerCase();render()});
+render();
+</script>
+</body>
+</html>
