@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#1c0a5c">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#ffd23f">
 <title>EasyLandX · Mobile Showcase</title>
 <style>
 :root{--gold:#ffd23f;--cyan:#27f0ff;--deep:#1c0a5c;--w:min(100vw,560px,max(390px,50dvh))}
 *{box-sizing:border-box;margin:0}
 html,body{height:100%;overflow:hidden}
-body{background:radial-gradient(circle at 50% 25%,#5b14ff,#1c0a5c 75%);color:#fff;font:15px/1.3 -apple-system,system-ui,"Segoe UI",sans-serif;-webkit-user-select:none;user-select:none}
+html{background:#ffd23f;transition:background-color .25s}
+body{background:transparent;color:#fff;font:15px/1.3 -apple-system,system-ui,"Segoe UI",sans-serif;-webkit-user-select:none;user-select:none}
 .bg{position:fixed;inset:0;touch-action:none;cursor:grab}
 .desk{--w:100vw}
 .desk .screen{box-shadow:none}
@@ -23,7 +24,7 @@ body{background:radial-gradient(circle at 50% 25%,#5b14ff,#1c0a5c 75%);color:#ff
 .slide iframe{position:absolute;top:0;left:0;border:0;background:#fff;transform-origin:0 0}
 .zone{position:absolute;top:0;bottom:0;width:26px;z-index:5;touch-action:none;cursor:grab}
 .zl{left:0}.zr{right:0}
-.glass{position:fixed;left:50%;transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:8px;padding:8px;border-radius:18px;background:rgba(24,8,72,.62);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);border:1px solid rgba(255,255,255,.22);box-shadow:0 8px 30px rgba(0,0,0,.45);width:min(96vw,500px)}
+.glass{touch-action:none;position:fixed;left:50%;transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:8px;padding:8px;border-radius:18px;background:rgba(24,8,72,.62);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);border:1px solid rgba(255,255,255,.22);box-shadow:0 8px 30px rgba(0,0,0,.45);width:min(96vw,500px)}
 .top{top:max(10px,env(safe-area-inset-top));font-size:13px;padding:6px 8px}
 .top span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
 .top a{color:var(--cyan);text-decoration:none;font-weight:800;padding:4px 6px}
@@ -111,7 +112,7 @@ function go(i){
   track.style.transition=far?'none':'transform .35s cubic-bezier(.2,.8,.2,1)';
   track.style.transform='translateX('+(-cur*100)+'%)';
   if(far){const sl=track.children[cur];sl.classList.remove('pop');void sl.offsetWidth;sl.classList.add('pop')}
-  ui();
+  ui();topColor();
 }
 function rnd(){if(S.length<2)return;let i;do{i=Math.floor(Math.random()*S.length)}while(i===cur);go(i)}
 
@@ -138,9 +139,34 @@ function endH(dx,dt){
   else if(dx>th||(v>.5&&dx>30))go(cur-1);
   else go(cur);
 }
+function setTop(c){ // colour of the area above/around the notch or dynamic island: the site's colour, else yellow
+  c=c||'#ffd23f';
+  document.documentElement.style.backgroundColor=c;
+  document.querySelector('meta[name=theme-color]').content=c;
+}
+function siteColor(d,w){
+  try{
+    const pick=(x,y)=>{
+      for(let e=d.elementFromPoint(x,y);e;e=e.parentElement){
+        const cs=w.getComputedStyle(e),m=cs.backgroundColor.match(/[\d.]+/g);
+        if(m&&(m.length<4||+m[3]>.85))return cs.backgroundColor;
+        const g=cs.backgroundImage.match(/rgba?\([^)]*\)/);
+        if(g)return g[0];
+      }
+      return null;
+    };
+    return pick(w.innerWidth/2,3)||pick(3,3);
+  }catch(e){return null}
+}
+function topColor(){
+  const sl=track.children[cur],f=sl&&sl.querySelector('iframe');
+  let c=null;
+  if(f&&f.dataset.mode==='doc'&&f.contentDocument&&f.contentDocument.body)c=siteColor(f.contentDocument,f.contentWindow);
+  setTop(c);
+}
 function mkFrame(i){
   const fr=document.createElement('iframe');
-  fr.title=S[i].t;fr.allow='fullscreen';
+  fr.title=S[i].t;fr.allow='fullscreen';fr.dataset.i=i;
   track.children[i].appendChild(fr);sizeF(fr);
   fr.addEventListener('load',()=>{if(fr.dataset.mode==='doc')hook(fr)});
   loadDoc(fr,i);
@@ -171,6 +197,9 @@ function hook(fr){
   (d.head||d.documentElement).appendChild(st);
   d.addEventListener('selectstart',e=>{if(!/^(INPUT|TEXTAREA)$/.test(e.target.tagName))e.preventDefault()});
   d.addEventListener('dragstart',e=>e.preventDefault());
+  const idx=+fr.dataset.i;let tm;
+  if(idx===cur)topColor();
+  d.addEventListener('scroll',()=>{clearTimeout(tm);tm=setTimeout(()=>{if(idx===cur)topColor()},80)},{passive:true});
   const root=()=>d.scrollingElement||d.documentElement;
   let id=null,x0=0,y0=0,t0=0,top0=0,mode=null,moved=false,vy=0,ly=0,lt=0,dxs=0;
   d.addEventListener('pointerdown',e=>{
@@ -276,6 +305,7 @@ q.addEventListener('keydown',e=>{
 $('#prev').onclick=()=>go(cur-1);
 $('#next').onclick=()=>go(cur+1);
 $('#rnd').onclick=rnd;
+['pointerup','touchend'].forEach(ev=>$('#bar').addEventListener(ev,enterFS,{passive:true})); // touch or swipe the bar -> full screen
 $('#tg').onclick=()=>{const m=$('#bar').classList.toggle('min');$('#tg').textContent=m?'▴':'▾'};
 addEventListener('keydown',e=>{
   if(document.activeElement===q)return;
