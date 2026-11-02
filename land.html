@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El negocio que necesita una web.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#0A5FC8;
+    --blue-dark:#074A9E;
+    --yellow:#FFD400;
+    --red:#E8281E;
+    --green:#2BBF5F;
+    --pink:#EC4899;
+    --ink:#141414;
+    --white:#FFFFFF;
+    --soft:#FFF4B8;
+    --shadow:5px 5px 0 var(--ink);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Inter',sans-serif;color:var(--ink);background:var(--yellow);overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.5;}
+  h1,h2,h3,.display{font-family:'Poppins',sans-serif;font-weight:800;line-height:1.05;letter-spacing:-0.02em;}
+  .wrap{max-width:1040px;margin:0 auto;padding-left:24px;padding-right:24px;}
+  section{padding-top:84px;padding-bottom:84px;}
+  .hl{color:var(--red);}
+  .on-dark .hl{color:var(--yellow);}
+
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease;}
+  .reveal.in{opacity:1;transform:none;}
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:50;background:var(--white);border-bottom:3px solid var(--ink);}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:12px;padding-bottom:12px;}
+  .logo{display:flex;align-items:center;gap:10px;font-family:'Poppins',sans-serif;font-weight:800;font-size:22px;text-decoration:none;}
+  .logo svg{width:38px;height:38px;}
+  .nav-right{display:flex;align-items:center;gap:10px;}
+  .lang{display:inline-flex;border:2.5px solid var(--ink);border-radius:10px;overflow:hidden;box-shadow:3px 3px 0 var(--ink);background:var(--white);}
+  .lang button{display:flex;align-items:center;gap:6px;border:0;background:transparent;padding:7px 10px;font-family:'Inter',sans-serif;font-weight:700;font-size:13px;cursor:pointer;color:var(--ink);}
+  .lang button svg{width:22px;height:15px;border-radius:2px;border:1px solid rgba(0,0,0,.25);}
+  .lang button.active{background:var(--blue);color:var(--white);}
+  .lang button:focus-visible{outline:3px solid var(--red);outline-offset:-3px;}
+  .nav-cta{display:none;}
+
+  /* BUTTONS */
+  .btn{display:inline-block;font-family:'Inter',sans-serif;font-weight:700;font-size:16px;padding:14px 24px;border:2.5px solid var(--ink);border-radius:12px;text-decoration:none;cursor:pointer;box-shadow:var(--shadow);transition:transform .15s ease,box-shadow .15s ease;color:var(--ink);background:var(--white);}
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink);}
+  .btn:active{transform:none;box-shadow:2px 2px 0 var(--ink);}
+  .btn-blue{background:var(--blue);color:var(--white);}
+  .btn-red{background:var(--red);color:var(--white);}
+  .btn-pink{background:var(--pink);color:var(--white);}
+  .btn-green{background:var(--green);}
+  .btn-yellow{background:var(--yellow);}
+  .cta-row{display:flex;flex-wrap:wrap;gap:14px;}
+
+  /* HERO */
+  .hero{background:var(--yellow);text-align:center;padding-top:56px;padding-bottom:84px;}
+  .hero-logo{width:104px;height:104px;margin:0 auto 26px;filter:drop-shadow(5px 5px 0 var(--ink));}
+  .hero h1{font-size:clamp(38px,8vw,78px);margin-bottom:20px;}
+  .hero p.lead{max-width:640px;margin:0 auto 30px;font-size:18px;}
+  .hero .cta-row{justify-content:center;}
+  .ticks{list-style:none;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:820px;margin:0 auto 34px;}
+  .ticks li{background:var(--white);border:2px solid var(--ink);border-radius:30px;padding:7px 16px;font-weight:600;font-size:14.5px;}
+  .ticks li::before{content:"✓ ";color:var(--green);font-weight:800;}
+
+  /* SECTION HEAD */
+  .head{max-width:680px;margin-bottom:44px;}
+  .head.center{margin-left:auto;margin-right:auto;text-align:center;}
+  .tag{display:inline-block;font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:var(--yellow);padding:5px 12px;border-radius:6px;margin-bottom:14px;}
+  .head h2{font-size:clamp(28px,5vw,46px);}
+
+  /* BLOCK COLORS */
+  .bg-blue{background:var(--blue);color:var(--white);}
+  .bg-red{background:var(--red);color:var(--white);}
+  .bg-pink{background:var(--pink);color:var(--white);}
+  .bg-white{background:var(--white);}
+  .bg-green{background:var(--green);}
+  .bg-ink{background:var(--ink);color:var(--white);}
+  .bg-yellow{background:var(--yellow);}
+  .bg-blue .tag,.bg-red .tag,.bg-pink .tag{background:var(--yellow);color:var(--ink);}
+  .bd{border-top:3px solid var(--ink);}
+
+  /* CARDS */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;}
+  .card{background:var(--white);color:var(--ink);border:2.5px solid var(--ink);border-radius:14px;padding:22px;box-shadow:var(--shadow);}
+  .card .role{font-weight:700;font-size:13px;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+
+  /* QUIZ */
+  .rx-pad{background:var(--white);color:var(--ink);border:3px solid var(--ink);border-radius:18px;box-shadow:8px 8px 0 var(--ink);padding:34px;max-width:660px;margin:0 auto;}
+  .rx-head{display:flex;align-items:center;gap:12px;border-bottom:2.5px dashed var(--ink);padding-bottom:14px;margin-bottom:10px;}
+  .rx-head svg{width:40px;height:40px;}
+  .rx-head .sub{font-size:13px;color:#555;}
+  .rx-q{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 0;font-size:15px;border-bottom:1px solid #eee;}
+  .rx-toggle{display:flex;gap:8px;flex-shrink:0;}
+  .rx-toggle button{font-family:'Inter',sans-serif;font-weight:700;font-size:13px;border:2px solid var(--ink);background:var(--white);border-radius:8px;padding:7px 14px;cursor:pointer;}
+  .rx-toggle button.yes{background:var(--green);}
+  .rx-toggle button.no{background:var(--pink);color:var(--white);}
+  .rx-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:24px;}
+  .stamp{font-family:'Poppins',sans-serif;font-weight:800;font-size:14px;color:var(--red);border:3px solid var(--red);border-radius:8px;padding:8px 14px;text-transform:uppercase;transform:rotate(-6deg) scale(0);opacity:0;transition:transform .35s cubic-bezier(.2,1.4,.4,1),opacity .2s;}
+  .stamp.show{transform:rotate(-6deg) scale(1);opacity:1;}
+
+  /* NEEDS */
+  .needs{display:grid;grid-template-columns:1fr 1fr;gap:0;border:3px solid var(--ink);border-radius:18px;overflow:hidden;box-shadow:8px 8px 0 var(--ink);}
+  .needs > div{padding:32px 28px;}
+  .needs h3{font-size:24px;margin-bottom:16px;}
+  .needs ul{list-style:none;}
+  .needs li{padding:9px 0;border-top:1px solid rgba(255,255,255,.3);font-weight:500;}
+  .needs li:first-child{border-top:0;}
+  .needs .a{background:var(--blue);color:var(--white);}
+  .needs .b{background:var(--pink);color:var(--white);}
+  .big-line{text-align:center;margin-top:36px;font-size:clamp(28px,5.5vw,52px);color:var(--red);}
+
+  /* CHATS */
+  .chats{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  .chat{background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.4);border-radius:16px;padding:24px;}
+  .chat h4{font-size:12px;letter-spacing:.12em;margin-bottom:14px;opacity:.85;}
+  .bubble{max-width:85%;padding:10px 15px;border-radius:16px;margin-bottom:10px;font-size:15px;background:rgba(255,255,255,.2);border-bottom-left-radius:3px;}
+  .bubble.me{background:var(--yellow);color:var(--ink);margin-left:auto;border-radius:16px;border-bottom-right-radius:3px;font-weight:600;}
+  .bubble.me.win{background:var(--green);}
+  .emoji{font-size:26px;text-align:right;}
+
+  /* FORMULA */
+  .eq{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;margin:10px 0 24px;}
+  .eq-item{background:var(--white);border:2.5px solid var(--ink);border-radius:12px;padding:16px 22px;font-weight:700;box-shadow:4px 4px 0 var(--ink);}
+  .eq-sym{font-family:'Poppins',sans-serif;font-weight:800;font-size:30px;}
+  .eq-res{background:var(--blue);color:var(--white);border:3px solid var(--ink);border-radius:12px;padding:18px 26px;font-family:'Poppins',sans-serif;font-weight:800;font-size:clamp(18px,3vw,26px);box-shadow:var(--shadow);}
+
+  /* STEPS */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  .step .num{font-family:'Poppins',sans-serif;font-weight:800;font-size:46px;color:var(--red);line-height:1;}
+  .step h4{font-family:'Poppins',sans-serif;font-weight:700;font-size:19px;margin:8px 0 6px;}
+
+  /* SEARCH */
+  .search{max-width:520px;margin:0 auto 24px;background:var(--white);color:var(--ink);border:2.5px solid var(--ink);border-radius:40px;padding:15px 24px;text-align:left;font-size:16px;display:flex;gap:10px;align-items:center;box-shadow:var(--shadow);}
+  .chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:18px;}
+  .chip{padding:9px 16px;border-radius:30px;border:2px solid rgba(255,255,255,.55);font-weight:600;font-size:14px;}
+  .chip.win{background:var(--yellow);color:var(--ink);border-color:var(--ink);}
+
+  /* TESTIMONIALS */
+  .stars{color:var(--red);letter-spacing:2px;margin-bottom:8px;}
+  .who{font-weight:700;margin-top:12px;font-size:14px;}
+
+  /* SIGNS */
+  .signs{max-width:660px;margin:0 auto;}
+  .sign{display:flex;gap:14px;padding:18px 0;border-top:2px dashed rgba(255,212,0,.45);font-size:17px;}
+  .sign:last-child{border-bottom:2px dashed rgba(255,212,0,.45);}
+  .sign span{color:var(--yellow);font-weight:800;}
+
+  /* EMERGENCY */
+  .siren{width:84px;height:84px;margin:0 auto 22px;border-radius:50%;background:var(--yellow);border:4px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:36px;animation:pulse 1.4s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+  .center-block{text-align:center;}
+
+  /* FAQ */
+  .faq-item{border-bottom:2.5px solid var(--ink);padding:18px 0;}
+  .faq-item:first-child{border-top:2.5px solid var(--ink);}
+  .faq-q{display:flex;justify-content:space-between;align-items:center;gap:16px;font-weight:700;font-size:17px;cursor:pointer;list-style:none;}
+  .faq-q::-webkit-details-marker{display:none;}
+  .faq-q::marker{content:"";}
+  .faq-q:focus-visible{outline:3px solid var(--blue);outline-offset:5px;border-radius:3px;}
+  .plus{font-family:'Poppins',sans-serif;font-size:26px;color:var(--red);transition:transform .2s;}
+  .faq-item[open] .plus{transform:rotate(45deg);}
+  .faq-a{padding-top:10px;color:#333;}
+
+  /* FINAL */
+  .final{text-align:center;padding-top:100px;padding-bottom:84px;}
+  .final h2{font-size:clamp(36px,7vw,72px);margin-bottom:14px;}
+  .final p{font-size:18px;margin-bottom:26px;}
+  .final .cta-row{justify-content:center;}
+
+  footer{background:var(--ink);color:rgba(255,255,255,.7);padding-top:32px;padding-bottom:32px;text-align:center;font-size:13.5px;}
+  footer a{color:var(--yellow);text-decoration:none;font-weight:600;}
+
+  @media (min-width:640px){.nav-cta{display:inline-block;padding:10px 18px;font-size:14px;box-shadow:3px 3px 0 var(--ink);}}
+  @media (max-width:760px){
+    section{padding-top:60px;padding-bottom:60px;}
+    .needs,.chats,.steps{grid-template-columns:1fr;}
+    .rx-pad{padding:24px 20px;}
+    .logo span{font-size:19px;}
+    .lang button{padding:6px 8px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .reveal{transition:none;}.siren{animation:none;}.plus{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- SVG sprites -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="logo" viewBox="0 0 100 100">
+      <rect width="100" height="100" rx="22" fill="#0A5FC8"/>
+      <circle cx="62" cy="42" r="31" fill="#FFD400"/>
+      <polygon points="19.5,47.5 80,22.5 41,58" fill="#FFFFFF"/>
+      <polygon points="80,22.5 48,80.5 41,58" fill="#E8281E"/>
+      <polygon points="41,58 48,80.5 40,64" fill="#2BBF5F"/>
+      <circle cx="22" cy="78" r="2.6" fill="#FFFFFF"/>
+      <circle cx="32" cy="73" r="2.2" fill="#FFFFFF"/>
+      <circle cx="39.5" cy="68.5" r="1.7" fill="#FFFFFF"/>
+    </symbol>
+    <symbol id="flag-es" viewBox="0 0 24 16">
+      <rect width="24" height="16" fill="#C60B1E"/>
+      <rect y="4" width="24" height="8" fill="#FFC400"/>
+    </symbol>
+    <symbol id="flag-en" viewBox="0 0 60 40">
+      <rect width="60" height="40" fill="#012169"/>
+      <path d="M0 0L60 40M60 0L0 40" stroke="#FFFFFF" stroke-width="8"/>
+      <path d="M0 0L60 40M60 0L0 40" stroke="#C8102E" stroke-width="3"/>
+      <path d="M30 0V40M0 20H60" stroke="#FFFFFF" stroke-width="12"/>
+      <path d="M30 0V40M0 20H60" stroke="#C8102E" stroke-width="7"/>
+    </symbol>
+  </defs>
+</svg>
+
+<nav>
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="EasyLandX"><svg><use href="#logo"/></svg><span>EasyLandX</span></a>
+    <div class="nav-right">
+      <div class="lang" role="group" aria-label="Language / Idioma">
+        <button type="button" data-lang="es" aria-label="Español"><svg viewBox="0 0 24 16"><use href="#flag-es"/></svg>ES</button>
+        <button type="button" data-lang="en" aria-label="English"><svg viewBox="0 0 60 40" preserveAspectRatio="none"><use href="#flag-en"/></svg>EN</button>
+      </div>
+      <a href="https://easylandx.github.io/" class="btn btn-red nav-cta" data-i18n="nav_cta"></a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="wrap">
+    <svg class="hero-logo reveal in" role="img" aria-label="EasyLandX"><use href="#logo"/></svg>
+    <h1 class="reveal in"><span data-i18n="h1_a"></span> <span class="hl" data-i18n="h1_b"></span></h1>
+    <ul class="ticks reveal in">
+      <li data-i18n="t1"></li><li data-i18n="t2"></li><li data-i18n="t3"></li><li data-i18n="t4"></li><li data-i18n="t5"></li><li data-i18n="t6"></li>
+    </ul>
+    <p class="lead reveal in" data-i18n="lead"></p>
+    <div class="cta-row reveal in">
+      <a href="#test" class="btn btn-blue" data-i18n="cta_yes"></a>
+      <a href="#sample" class="btn" data-i18n="cta_see"></a>
+    </div>
+  </div>
+</header>
+
+<!-- SYMPTOMS -->
+<section class="bg-blue on-dark bd">
+  <div class="wrap">
+    <div class="head reveal"><span class="tag" data-i18n="sym_tag"></span><h2><span data-i18n="sym_h_a"></span> <span class="hl" data-i18n="sym_h_b"></span></h2></div>
+    <div class="grid">
+      <div class="card reveal" data-i18n="s1"></div><div class="card reveal" data-i18n="s2"></div>
+      <div class="card reveal" data-i18n="s3"></div><div class="card reveal" data-i18n="s4"></div>
+      <div class="card reveal" data-i18n="s5"></div><div class="card reveal" data-i18n="s6"></div>
+      <div class="card reveal" data-i18n="s7"></div><div class="card reveal" data-i18n="s8"></div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section class="bg-yellow bd" id="test">
+  <div class="wrap">
+    <div class="head center reveal"><span class="tag" data-i18n="q_tag"></span><h2 data-i18n="q_h"></h2></div>
+    <div class="rx-pad reveal">
+      <div class="rx-head">
+        <svg><use href="#logo"/></svg>
+        <div><strong style="font-family:'Poppins',sans-serif;font-size:20px;">EasyLandX</strong><div class="sub" data-i18n="q_sub"></div></div>
+      </div>
+      <div class="rx-q"><span data-i18n="q1"></span><div class="rx-toggle" data-q="1"><button data-val="yes" data-i18n="yes"></button><button data-val="no" data-i18n="no"></button></div></div>
+      <div class="rx-q"><span data-i18n="q2"></span><div class="rx-toggle" data-q="2"><button data-val="yes" data-i18n="yes"></button><button data-val="no" data-i18n="no"></button></div></div>
+      <div class="rx-q"><span data-i18n="q3"></span><div class="rx-toggle" data-q="3"><button data-val="yes" data-i18n="yes"></button><button data-val="no" data-i18n="no"></button></div></div>
+      <div class="rx-q"><span data-i18n="q4"></span><div class="rx-toggle" data-q="4"><button data-val="yes" data-i18n="yes"></button><button data-val="no" data-i18n="no"></button></div></div>
+      <div class="rx-foot">
+        <button class="btn btn-blue" id="diagnoseBtn" data-i18n="q_btn"></button>
+        <div class="stamp" id="stamp" role="status"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEEDS -->
+<section class="bg-white bd">
+  <div class="wrap">
+    <div class="head reveal"><span class="tag" data-i18n="n_tag"></span><h2 data-i18n="n_h"></h2></div>
+    <div class="needs reveal">
+      <div class="a">
+        <h3 data-i18n="n_a_h"></h3>
+        <ul><li data-i18n="n_a1"></li><li data-i18n="n_a2"></li><li data-i18n="n_a3"></li><li data-i18n="n_a4"></li><li data-i18n="n_a5"></li></ul>
+      </div>
+      <div class="b">
+        <h3 data-i18n="n_b_h"></h3>
+        <ul><li data-i18n="n_b1"></li><li data-i18n="n_b2"></li><li data-i18n="n_b3"></li><li data-i18n="n_b4"></li><li data-i18n="n_b5"></li><li data-i18n="n_b6"></li><li data-i18n="n_b7"></li></ul>
+      </div>
+    </div>
+    <p class="display big-line reveal" data-i18n="n_big"></p>
+  </div>
+</section>
+
+<!-- BEFORE / AFTER -->
+<section class="bg-red on-dark bd" id="sample">
+  <div class="wrap">
+    <div class="head reveal"><span class="tag" data-i18n="ba_tag"></span><h2 data-i18n="ba_h"></h2></div>
+    <div class="chats">
+      <div class="chat reveal"><h4 data-i18n="ba_before"></h4>
+        <div class="bubble" data-i18n="c1"></div><div class="bubble me" data-i18n="c2"></div><div class="bubble" data-i18n="c3"></div><div class="emoji">😬</div></div>
+      <div class="chat reveal"><h4 data-i18n="ba_after"></h4>
+        <div class="bubble" data-i18n="c1"></div><div class="bubble me win" data-i18n="c4"></div><div class="bubble" data-i18n="c5"></div><div class="emoji">😎</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FORMULA -->
+<section class="bg-yellow bd">
+  <div class="wrap">
+    <div class="head center reveal"><span class="tag" data-i18n="f_tag"></span><h2 data-i18n="f_h"></h2></div>
+    <div class="eq reveal">
+      <div class="eq-item" data-i18n="f1"></div><span class="eq-sym">+</span>
+      <div class="eq-item" data-i18n="f2"></div><span class="eq-sym">+</span>
+      <div class="eq-item" data-i18n="f3"></div><span class="eq-sym">+</span>
+      <div class="eq-item" data-i18n="f4"></div><span class="eq-sym">=</span>
+      <div class="eq-res" data-i18n="f_res"></div>
+    </div>
+    <p class="reveal" style="text-align:center;font-weight:500;" data-i18n="f_note"></p>
+  </div>
+</section>
+
+<!-- PROFILES -->
+<section class="bg-ink on-dark bd">
+  <div class="wrap">
+    <div class="head reveal"><span class="tag" data-i18n="p_tag"></span><h2 data-i18n="p_h"></h2></div>
+    <div class="grid">
+      <div class="card reveal"><div class="role" data-i18n="pr1"></div><div data-i18n="pq1"></div></div>
+      <div class="card reveal"><div class="role" data-i18n="pr2"></div><div data-i18n="pq2"></div></div>
+      <div class="card reveal"><div class="role" data-i18n="pr3"></div><div data-i18n="pq3"></div></div>
+      <div class="card reveal"><div class="role" data-i18n="pr4"></div><div data-i18n="pq4"></div></div>
+      <div class="card reveal"><div class="role" data-i18n="pr5"></div><div data-i18n="pq5"></div></div>
+      <div class="card reveal"><div class="role" data-i18n="pr6"></div><div data-i18n="pq6"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="bg-white bd">
+  <div class="wrap">
+    <div class="head reveal"><span class="tag" data-i18n="pc_tag"></span><h2 data-i18n="pc_h"></h2></div>
+    <div class="steps">
+      <div class="card step reveal"><div class="num">1</div><h4 data-i18n="st1"></h4><p data-i18n="st_p"></p></div>
+      <div class="card step reveal"><div class="num">2</div><h4 data-i18n="st2"></h4><p data-i18n="st_p"></p></div>
+      <div class="card step reveal"><div class="num">3</div><h4 data-i18n="st3"></h4><p data-i18n="st_p"></p></div>
+    </div>
+    <p class="reveal" style="margin-top:24px;text-align:center;font-weight:600;" data-i18n="pc_note"></p>
+  </div>
+</section>
+
+<!-- SEARCH MOMENT -->
+<section class="bg-blue on-dark bd center-block">
+  <div class="wrap">
+    <div class="head center reveal"><span class="tag" data-i18n="g_tag"></span><h2 data-i18n="g_h"></h2></div>
+    <div class="search reveal"><span>🔍</span><span data-i18n="g_q"></span></div>
+    <p class="reveal" style="font-weight:500;" data-i18n="g_p"></p>
+    <div class="chips reveal">
+      <span class="chip">Instagram</span><span class="chip">Facebook</span><span class="chip">Google Maps</span><span class="chip" data-i18n="g_wa"></span>
+      <span class="chip win" data-i18n="g_web"></span>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="bg-pink on-dark bd">
+  <div class="wrap">
+    <div class="head reveal"><span class="tag" data-i18n="t_tag"></span><h2 data-i18n="t_h"></h2></div>
+    <div class="grid">
+      <div class="card reveal"><div class="stars">★★★★★</div><p data-i18n="tt1"></p><div class="who" data-i18n="tw1"></div></div>
+      <div class="card reveal"><div class="stars">★★★★★</div><p data-i18n="tt2"></p><div class="who" data-i18n="tw2"></div></div>
+      <div class="card reveal"><div class="stars">★★★★★</div><p data-i18n="tt3"></p><div class="who" data-i18n="tw3"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SIGNS -->
+<section class="bg-ink on-dark bd">
+  <div class="wrap">
+    <div class="head center reveal"><span class="tag" data-i18n="w_tag"></span><h2 data-i18n="w_h"></h2></div>
+    <div class="signs">
+      <div class="sign reveal"><span>▲</span><div data-i18n="w1"></div></div>
+      <div class="sign reveal"><span>▲</span><div data-i18n="w2"></div></div>
+      <div class="sign reveal"><span>▲</span><div data-i18n="w3"></div></div>
+      <div class="sign reveal"><span>▲</span><div data-i18n="w4"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- EMERGENCY -->
+<section class="bg-red on-dark bd center-block">
+  <div class="wrap">
+    <div class="siren reveal">🚨</div>
+    <h2 class="reveal" style="font-size:clamp(28px,5vw,44px);margin-bottom:8px;" data-i18n="e_h"></h2>
+    <p class="reveal" style="margin-bottom:22px;" data-i18n="e_p"></p>
+    <a href="https://easylandx.github.io/" class="btn btn-yellow reveal" style="font-size:20px;padding:18px 34px;" data-i18n="e_btn"></a>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="bg-white bd">
+  <div class="wrap" style="max-width:760px;">
+    <div class="head reveal"><span class="tag" data-i18n="fq_tag"></span><h2 data-i18n="fq_h"></h2></div>
+    <details class="faq-item"><summary class="faq-q"><span data-i18n="fq1"></span><span class="plus" aria-hidden="true">+</span></summary><div class="faq-a" data-i18n="fa1"></div></details>
+    <details class="faq-item"><summary class="faq-q"><span data-i18n="fq2"></span><span class="plus" aria-hidden="true">+</span></summary><div class="faq-a" data-i18n="fa2"></div></details>
+    <details class="faq-item"><summary class="faq-q"><span data-i18n="fq3"></span><span class="plus" aria-hidden="true">+</span></summary><div class="faq-a" data-i18n="fa3"></div></details>
+    <details class="faq-item"><summary class="faq-q"><span data-i18n="fq4"></span><span class="plus" aria-hidden="true">+</span></summary><div class="faq-a" data-i18n="fa4"></div></details>
+    <details class="faq-item"><summary class="faq-q"><span data-i18n="fq5"></span><span class="plus" aria-hidden="true">+</span></summary><div class="faq-a" data-i18n="fa5"></div></details>
+    <details class="faq-item"><summary class="faq-q"><span data-i18n="fq6"></span><span class="plus" aria-hidden="true">+</span></summary><div class="faq-a" data-i18n="fa6"></div></details>
+  </div>
+</section>
+
+<!-- FINAL -->
+<section class="final bg-blue on-dark bd">
+  <div class="wrap">
+    <h2 class="reveal"><span data-i18n="fin_a"></span><br><span class="hl" data-i18n="fin_b"></span></h2>
+    <p class="reveal" data-i18n="fin_p"></p>
+    <div class="cta-row reveal">
+      <a href="https://easylandx.github.io/" class="btn btn-yellow" data-i18n="fin_btn"></a>
+      <a href="https://wa.me/34609204298" id="waBtn" target="_blank" rel="noopener" class="btn btn-green" data-i18n="fin_wa"></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p data-i18n="foot1"></p>
+    <p style="margin-top:12px;"><a href="https://easylandx.github.io" target="_blank" rel="noopener">EasyLandX</a></p>
+  </div>
+</footer>
+
+<script>
+const T = {
+  es:{
+    page_title:"El negocio que necesita una web.",
+    nav_cta:"Quiero mi web →",
+    h1_a:"Tienes un negocio.", h1_b:"Dale una web a su altura.",
+    t1:"Un servicio que ofreces", t2:"Clientes que confían en ti", t3:"Tu número de WhatsApp", t4:"Tu cuenta de Instagram", t5:"Tu logo", t6:"Fotos de tu trabajo",
+    lead:"EasyLandX crea páginas de aterrizaje claras y profesionales para que tus visitantes entiendan qué haces y den el siguiente paso con confianza.",
+    cta_yes:"Sí, quiero la mía →", cta_see:"Ver el antes y el después →",
+    sym_tag:"Diagnóstico", sym_h_a:"¿Te suena alguna de estas frases?", sym_h_b:"Es el momento de la web.",
+    s1:"“Ya la haré cuando tenga tiempo.”", s2:"“Con Instagram me llega.”", s3:"“Aquí todo el mundo me conoce.”", s4:"“Ya compré el dominio.”",
+    s5:"“Mi primo me la iba a hacer.”", s6:"“Está al caer.”", s7:"“Tengo que pensar bien qué poner.”", s8:"“Tampoco sé si la necesito.”",
+    q_tag:"Autotest", q_h:"Responde con sinceridad", q_sub:"Consulta de diagnóstico digital",
+    q1:"¿Tienes un negocio?", q2:"¿Tus clientes te buscan online?", q3:"¿Tienes un enlace profesional que compartir?", q4:"Cuando preguntan “¿cuál es tu web?”, ¿respondes “sobre todo estamos en Instagram”?",
+    yes:"SÍ", no:"NO", q_btn:"Ver mi resultado →", q_stamp:"¡Listo para tu web!", q_first:"Responde primero",
+    n_tag:"Lo esencial", n_h:"Una web sencilla que lo cuenta todo",
+    n_a_h:"Tu web sencilla, a tu medida", n_a1:"Una sola página, clara y directa", n_a2:"Lista en pocos días", n_a3:"Un proceso fácil de principio a fin", n_a4:"Un mensaje claro para tus visitantes", n_a5:"Un diseño pensado para el móvil",
+    n_b_h:"Todo lo que tu web cuenta", n_b1:"Quién eres", n_b2:"A qué te dedicas", n_b3:"Qué ofreces", n_b4:"Por qué confiar en ti", n_b5:"Cómo eres (fotos)", n_b6:"Dónde estás", n_b7:"Cómo contactarte",
+    n_big:"Una página. Muy bien hecha.",
+    ba_tag:"El antes y el después", ba_h:"Misma pregunta, mejor respuesta", ba_before:"ANTES", ba_after:"DESPUÉS",
+    c1:"¿Tienes página web?", c2:"Pues todavía no mucho…", c3:"Ah.", c4:"¡Sí! Te la mando ahora.", c5:"Qué bien, mándamela.",
+    f_tag:"El efecto EasyLandX", f_h:"La fórmula", f1:"Tu negocio", f2:"Tu información", f3:"Tus fotos", f4:"Tu oferta", f_res:"Una presencia web de verdad",
+    f_note:"Tú cuentas tu historia; nosotros la convertimos en una página profesional.",
+    p_tag:"Perfecto para", p_h:"Gente que hace las cosas",
+    pr1:"Freelance", pq1:"“Quiero un sitio donde enviar a mis clientes.”", pr2:"Consultoría", pq2:"“Quiero explicar a qué me dedico, con claridad.”",
+    pr3:"Fotografía", pq3:"“Quiero mostrar mi trabajo a lo grande.”", pr4:"Entrenamiento personal", pq4:"“Quiero que me reserven online.”",
+    pr5:"Oficios y servicios", pq5:"“Quiero que mis clientes confíen desde el primer vistazo.”", pr6:"Negocio local", pq6:"“Quiero verme tan profesional como soy.”",
+    pc_tag:"El proceso", pc_h:"Tres preguntas y empezamos", st1:"¿Qué vendes?", st2:"¿Para quién es?", st3:"¿Cómo te contactan?", st_p:"Cuéntanoslo con tus palabras.", pc_note:"Con eso ya podemos empezar.",
+    g_tag:"El momento de la búsqueda", g_h:"Tu cliente te busca", g_q:"entrenador personal cerca de mí", g_p:"Encuentran tu negocio. Hacen clic. ¿Qué ven?", g_wa:"Un número de WhatsApp", g_web:"Una página web profesional",
+    t_tag:"Casos de éxito", t_h:"Negocios con web propia",
+    tt1:"“Llevaba dos años diciendo que necesitaba una web. Ahora la tengo y la comparto con orgullo.”", tw1:"Ana, fotógrafa",
+    tt2:"“Antes mandaba mi Instagram. Ahora digo: aquí tienes mi web.”", tw2:"Carlos, entrenador personal",
+    tt3:"“Pasé de un simple PDF a una página que presenta mi trabajo como se merece.”", tw3:"Laura, consultora",
+    w_tag:"Señales", w_h:"Es tu momento si…", w1:"Te han preguntado “¿tienes web?” y quieres decir “sí”.", w2:"Quieres compartir algo más completo que un perfil de Instagram.", w3:"Llevas meses con la idea y ya toca verla hecha.", w4:"Quieres que tus clientes te vean tan profesional como eres.",
+    e_h:"BOTÓN DE EMERGENCIA WEB", e_p:"Si algo de esto te suena…", e_btn:"QUIERO MI WEB",
+    fq_tag:"Preguntas frecuentes", fq_h:"Antes de que preguntes",
+    fq1:"¿Necesito saber de webs?", fa1:"Para nada. Tú cuentas lo que haces y nosotros nos ocupamos del resto.",
+    fq2:"¿Qué pasa con el hosting?", fa2:"Te acompañamos en todo el proceso.",
+    fq3:"¿Y con el dominio?", fa3:"También te ayudamos con eso.",
+    fq4:"¿Hacen falta fotos profesionales?", fa4:"Las fotos de tu móvil son un gran punto de partida.",
+    fq5:"¿Y si no tengo logo?", fa5:"Podemos empezar con tu nombre y tus colores favoritos.",
+    fq6:"¿Tengo que tenerlo todo pensado?", fa6:"Con tus tres respuestas ya podemos empezar.",
+    fin_a:"Ya hiciste lo difícil.", fin_b:"Ahora, tu web.", fin_p:"Construiste el negocio. Ahora dale un sitio donde brillar.", fin_btn:"Sí, quiero mi web →", fin_wa:"Escríbenos por WhatsApp",
+    foot1:"Si ya tienes web, creamos una landing que la complemente."
+  },
+  en:{
+    page_title:"The business that needs a website.",
+    nav_cta:"Get my website →",
+    h1_a:"You have a business.", h1_b:"Give it a website to match.",
+    t1:"A service you offer", t2:"Clients who trust you", t3:"Your WhatsApp number", t4:"Your Instagram account", t5:"Your logo", t6:"Photos of your work",
+    lead:"EasyLandX builds clear, professional landing pages so your visitors understand what you do and take the next step with confidence.",
+    cta_yes:"Yes, I want mine →", cta_see:"See the before and after →",
+    sym_tag:"Diagnosis", sym_h_a:"Does any of this sound familiar?", sym_h_b:"Time for your website.",
+    s1:"“I'll do it when I have time.”", s2:"“Instagram is enough for me.”", s3:"“Everyone around here knows me.”", s4:"“I already bought the domain.”",
+    s5:"“My cousin was going to build it.”", s6:"“It's almost ready.”", s7:"“I need to think about what to put.”", s8:"“I'm not even sure I need one.”",
+    q_tag:"Self-test", q_h:"Answer honestly", q_sub:"Digital diagnosis check-up",
+    q1:"Do you have a business?", q2:"Do your clients look for you online?", q3:"Do you have a professional link to share?", q4:"When someone asks “what's your website?”, do you say “we're mostly on Instagram”?",
+    yes:"YES", no:"NO", q_btn:"See my result →", q_stamp:"Ready for your website!", q_first:"Answer first",
+    n_tag:"The essentials", n_h:"One simple page that tells it all",
+    n_a_h:"Your simple page, made for you", n_a1:"A single page, clear and direct", n_a2:"Ready in just a few days", n_a3:"An easy process from start to finish", n_a4:"A clear message for your visitors", n_a5:"A design built for mobile",
+    n_b_h:"Everything your page says", n_b1:"Who you are", n_b2:"What you do", n_b3:"What you offer", n_b4:"Why people can trust you", n_b5:"What you look like (photos)", n_b6:"Where you are", n_b7:"How to reach you",
+    n_big:"One page. Done really well.",
+    ba_tag:"Before and after", ba_h:"Same question, better answer", ba_before:"BEFORE", ba_after:"AFTER",
+    c1:"Do you have a website?", c2:"Not really, not yet…", c3:"Oh.", c4:"Yes! I'll send it right now.", c5:"Great, send it over.",
+    f_tag:"The EasyLandX effect", f_h:"The formula", f1:"Your business", f2:"Your info", f3:"Your photos", f4:"Your offer", f_res:"A real web presence",
+    f_note:"You tell your story; we turn it into a professional page.",
+    p_tag:"Perfect for", p_h:"People who get things done",
+    pr1:"Freelancers", pq1:"“I want a place to send my clients.”", pr2:"Consultants", pq2:"“I want to explain what I do, clearly.”",
+    pr3:"Photographers", pq3:"“I want to show my work in a big way.”", pr4:"Personal trainers", pq4:"“I want people to book me online.”",
+    pr5:"Trades & services", pq5:"“I want clients to trust me at first glance.”", pr6:"Local businesses", pq6:"“I want to look as professional as I am.”",
+    pc_tag:"The process", pc_h:"Three questions and we start", st1:"What do you sell?", st2:"Who is it for?", st3:"How do people contact you?", st_p:"Tell us in your own words.", pc_note:"That's all we need to get started.",
+    g_tag:"The search moment", g_h:"Your customer is looking for you", g_q:"personal trainer near me", g_p:"They find your business. They click. What do they see?", g_wa:"A WhatsApp number", g_web:"A professional website",
+    t_tag:"Success stories", t_h:"Businesses with their own website",
+    tt1:"“I'd been saying I needed a website for two years. Now I have one and I share it proudly.”", tw1:"Ana, photographer",
+    tt2:"“I used to send my Instagram. Now I say: here's my website.”", tw2:"Carlos, personal trainer",
+    tt3:"“I went from a simple PDF to a page that presents my work the way it deserves.”", tw3:"Laura, consultant",
+    w_tag:"Signs", w_h:"It's your moment if…", w1:"Someone asked “do you have a website?” and you'd love to say “yes”.", w2:"You want to share something more complete than an Instagram profile.", w3:"You've had the idea for months and it's time to see it live.", w4:"You want clients to see you as professional as you are.",
+    e_h:"WEBSITE EMERGENCY BUTTON", e_p:"If any of this sounds like you…", e_btn:"I WANT MY WEBSITE",
+    fq_tag:"FAQ", fq_h:"Before you ask",
+    fq1:"Do I need to know about websites?", fa1:"Not at all. You tell us what you do and we take care of the rest.",
+    fq2:"What about hosting?", fa2:"We guide you through the whole process.",
+    fq3:"And the domain?", fa3:"We help with that too.",
+    fq4:"Do I need professional photos?", fa4:"Photos from your phone are a great starting point.",
+    fq5:"What if I don't have a logo?", fa5:"We can start with your name and your favorite colors.",
+    fq6:"Do I need everything figured out?", fa6:"Your three answers are enough to get started.",
+    fin_a:"You've done the hard part.", fin_b:"Now, your website.", fin_p:"You built the business. Now give it a place to shine.", fin_btn:"Yes, I want my website →", fin_wa:"Message us on WhatsApp",
+    foot1:"Already have a website? We'll build a landing page to complement it."
+  }
+};
+
+// WhatsApp: mensaje precargado; en escritorio abre WhatsApp Web directamente
+const WA_PHONE = '34609204298';
+const WA_MSG = {
+  es:'Hola, me gustaría solicitar una maqueta de cortesía para mi página web. ¡Gracias!',
+  en:'Hi, I would like to request a courtesy mockup for my website. Thank you!'
+};
+const isMobile = /Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+function setWaLink(){
+  const btn = document.getElementById('waBtn'); if(!btn) return;
+  const text = encodeURIComponent(WA_MSG[lang]);
+  btn.href = isMobile
+    ? 'https://wa.me/'+WA_PHONE+'?text='+text
+    : 'https://web.whatsapp.com/send?phone='+WA_PHONE+'&text='+text;
+}
+
+let lang = 'es';
+try{ const s = localStorage.getItem('elx-lang'); if(s==='es'||s==='en') lang = s; else if((navigator.language||'').toLowerCase().indexOf('es')!==0) lang='en'; }catch(e){}
+
+function applyLang(l){
+  lang = l;
+  document.documentElement.lang = l;
+  document.title = T[l].page_title;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ const v = T[l][el.dataset.i18n]; if(v!==undefined) el.textContent = v; });
+  document.querySelectorAll('.lang button').forEach(b=>{
+    const on = b.dataset.lang===l; b.classList.toggle('active',on); b.setAttribute('aria-pressed', on);
+  });
+  const st = document.getElementById('stamp');
+  if(st.dataset.state) st.textContent = T[l][st.dataset.state];
+  setWaLink();
+  try{ localStorage.setItem('elx-lang', l); }catch(e){}
+}
+document.querySelectorAll('.lang button').forEach(b=>b.addEventListener('click',()=>applyLang(b.dataset.lang)));
+
+// Scroll reveal
+const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} }),{threshold:0.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+// Quiz
+const answers = {};
+document.querySelectorAll('.rx-toggle').forEach(g=>{
+  g.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',()=>{
+    g.querySelectorAll('button').forEach(b=>b.classList.remove('yes','no'));
+    btn.classList.add(btn.dataset.val); answers[g.dataset.q]=btn.dataset.val;
+  }));
+});
+document.getElementById('diagnoseBtn').addEventListener('click',()=>{
+  const st = document.getElementById('stamp');
+  st.dataset.state = Object.keys(answers).length ? 'q_stamp' : 'q_first';
+  st.textContent = T[lang][st.dataset.state];
+  st.classList.remove('show'); void st.offsetWidth; st.classList.add('show');
+});
+
+applyLang(lang);
+</script>
+</body>
+</html>
