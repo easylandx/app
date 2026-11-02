@@ -568,153 +568,35 @@
 </script>
 
 <style>
-.xtv-wrap{display:flex;justify-content:center;margin:0 auto 36px;padding:12px 0}
-.xtv{width:min(440px,100%);background:linear-gradient(160deg,#2a2a32,#1a1a20);border-radius:20px;padding:16px 16px 10px;box-shadow:0 0 0 4px #111,0 16px 36px rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.08);position:relative;color:#fff;text-align:left}
-.xtv-bezel{background:#000;border-radius:10px;padding:8px;box-shadow:inset 0 0 20px rgba(0,0,0,.9)}
-.xtv-screen{position:relative;width:100%;aspect-ratio:16/10;background:#111;border-radius:6px;overflow:hidden;cursor:pointer}
-.xtv-ch{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:1rem;color:#fff;opacity:0;pointer-events:none;transition:opacity .1s linear}
+.xtv-wrap{display:flex;justify-content:center;margin:0 auto 36px;padding:18px 0 12px;box-sizing:border-box;width:100%;max-width:100%}
+.xtv{position:relative;box-sizing:border-box;width:min(440px,100%);max-width:100%;border-radius:22px;padding:2px;background:linear-gradient(145deg,#f4f4f6,#b9bcc4 55%,#e6e7ea);box-shadow:0 14px 34px rgba(0,0,0,.28),0 2px 6px rgba(0,0,0,.2);text-align:left;color:#fff}
+.xtv-bezel{position:relative;background:#050506;border-radius:20px;padding:7px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+.xtv-screen{position:relative;width:100%;aspect-ratio:4/3;background:#111;border-radius:14px;overflow:hidden;cursor:grab;user-select:none;-webkit-user-select:none;touch-action:pan-y;isolation:isolate;transform:translateZ(0);-webkit-mask-image:-webkit-radial-gradient(white,black)}
+.xtv-screen.dragging{cursor:grabbing}
+.xtv-ch{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:1rem;color:#fff;opacity:0;pointer-events:none;transition:opacity .15s linear}
 .xtv-ch.active{opacity:1;pointer-events:auto}
 .xtv-emoji{font-size:clamp(2.2rem,9vw,3.4rem);margin-bottom:.4rem;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4))}
 .xtv-title{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:clamp(1rem,4.6vw,1.35rem);font-weight:700;letter-spacing:-.02em;margin-bottom:.35rem;max-width:92%;line-height:1.15}
 .xtv-desc{font-size:clamp(.72rem,3vw,.85rem);opacity:.92;max-width:34ch;line-height:1.4}
-.xtv-hint{position:absolute;bottom:.6rem;font-size:.68rem;opacity:.7;letter-spacing:.04em}
+.xtv-hint{position:absolute;left:.8rem;bottom:.7rem;font-size:.68rem;opacity:.7;letter-spacing:.04em}
 .xtv-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1a1a2e;color:#ccc;z-index:30;font-size:.9rem;gap:.5rem;text-align:center;padding:1rem}
 .xtv-loading.hidden{display:none}
-.xtv-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:0 4px;color:#aaa;font-size:.72rem;gap:8px}
-.xtv-brand{font-weight:600;color:#ccc;letter-spacing:.06em;min-width:80px}
-.xtv-controls{display:flex;align-items:center;gap:10px}
-.xtv-btn{width:32px;height:32px;border-radius:50%;border:none;background:linear-gradient(145deg,#3a3a44,#222228);color:#eee;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 #111,inset 0 1px 0 rgba(255,255,255,.12);transition:transform .1s,box-shadow .1s;user-select:none;padding:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.xtv-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #111}
+.xtv-controls{position:absolute;right:16px;bottom:16px;z-index:5;display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:999px;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.xtv-btn{width:28px;height:28px;border-radius:50%;border:none;background:rgba(255,255,255,.18);color:#fff;font-size:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,transform .1s;user-select:none;padding:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.xtv-btn:hover{background:rgba(255,255,255,.3)}
+.xtv-btn:active{transform:scale(.92)}
 .xtv-btn:disabled{opacity:.4;cursor:not-allowed}
-.xtv-num{font-variant-numeric:tabular-nums;font-weight:600;color:#ddd;min-width:84px;text-align:center;letter-spacing:.04em}
-.xtv-power{width:9px;height:9px;min-width:0;background:#2ecc71;border-radius:1px;box-shadow:0 0 6px #2ecc71,inset 0 0 2px rgba(255,255,255,.5);flex:0 0 9px}
-.xtv-pw{min-width:80px;display:flex;justify-content:flex-end}
-/* mobile border/overflow fix */
-.xtv-wrap{box-sizing:border-box;width:100%;max-width:100%}
-.xtv{box-sizing:border-box;max-width:100%}
-.xtv-screen{isolation:isolate;transform:translateZ(0);-webkit-mask-image:-webkit-radial-gradient(white,black)}
+.xtv-num{font-variant-numeric:tabular-nums;font-weight:600;color:#fff;min-width:64px;text-align:center;letter-spacing:.04em;font-size:.72rem}
+.xtv-open{position:absolute;top:-13px;right:22px;z-index:6;display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border:2px solid #171412;border-radius:999px;background:#FFD400;color:#171412;font:800 11px/1 'Poppins',system-ui,sans-serif;text-decoration:none;box-shadow:2px 2px 0 #171412;-webkit-tap-highlight-color:transparent}
+.xtv-open:active{transform:translate(1px,1px);box-shadow:1px 1px 0 #171412}
 @media (max-width:480px){
   .xtv-wrap{padding-left:6px;padding-right:6px}
-  .xtv{padding:12px 12px 8px;border-radius:16px;box-shadow:0 0 0 3px #111,0 12px 28px rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.08)}
-  .xtv-bezel{padding:6px;border-radius:8px}
-  .xtv-screen{aspect-ratio:4/3}
-  .xtv-ch{padding:.75rem .75rem 1.6rem}
-  .xtv-hint{bottom:.4rem}
-  .xtv-foot{padding:0 2px;gap:6px;justify-content:space-between}
-  .xtv-brand,.xtv-pw,.xtv-num{min-width:0}
-  .xtv-brand,.xtv-pw,.xtv-controls,.xtv-num{flex:0 0 auto}
-  .xtv-brand{font-size:.6rem;letter-spacing:.03em;white-space:nowrap}
-  .xtv-controls{gap:6px}
-  .xtv-num{min-width:56px;font-size:.7rem}
+  .xtv{border-radius:18px}
+  .xtv-bezel{border-radius:16px;padding:6px}
+  .xtv-screen{border-radius:11px}
+  .xtv-ch{padding:.75rem .75rem 2.4rem}
+  .xtv-controls{right:12px;bottom:12px}
 }
-@media (max-width:340px){
-  .xtv-brand{display:none}
-  .xtv-foot{justify-content:center;gap:12px}
-}
-
-/* ---------- amber phosphor mode toggle (top bar button) ---------- */
-.offerbar{position:relative;}
-.modebtn{position:absolute; right:12px; top:50%; transform:translateY(-50%); display:inline-flex; align-items:center; gap:6px; font:700 .78rem/1 'Inter',system-ui,sans-serif; letter-spacing:.02em; color:#fff; background:rgba(255,255,255,.12); border:1.5px solid rgba(255,255,255,.75); border-radius:9999px; padding:6px 12px; cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent;}
-.modebtn:hover{background:#fff; color:#0066CC;}
-.modebtn svg{width:15px; height:15px; display:block; flex:none;}
-@media (max-width:640px){
-  .offerbar{padding-right:58px;}
-  .modebtn{right:10px; padding:7px 9px;}
-  .modebtn .ml{display:none;}
-}
-
-html.amber{
-  color-scheme:dark;
-  --red:#FFB000; --red-dark:#FFB000; --yellow:#FFB000; --yellow-dark:#FFB000;
-  --green:#FFB000; --green-dark:#FFB000; --paper:#000; --ink:#FFB000; --ink-soft:#D99300;
-  --line:rgba(255,176,0,.38); --whatsapp:#FFB000;
-}
-html.amber body{text-shadow:0 0 6px rgba(255,176,0,.38); font-variant-emoji:text;}
-html.amber *, html.amber *::before, html.amber *::after{
-  background:#000 !important; background-image:none !important;
-  color:#FFB000 !important; border-color:#FFB000 !important;
-  outline-color:#FFB000 !important; fill-opacity:1;
-}
-html.amber img, html.amber svg, html.amber video, html.amber canvas, html.amber iframe{
-  filter:grayscale(1) contrast(1.25) brightness(.78) sepia(1) saturate(4) !important;
-}
-html.amber section{border-top:1px solid rgba(255,176,0,.38);}
-/* inline text must never paint a black box over neighbouring lines (it clipped descenders in the title) */
-html.amber em, html.amber strong, html.amber b, html.amber i, html.amber span, html.amber mark, html.amber small,
-html.amber a:not(.btn):not(.chatlogo):not(.mbar-btn):not(.navtoggle):not(.hero-promo):not(.heroimg){background:transparent !important;}
-html.amber .cl-cur{background:#FFB000 !important;}
-html.amber footer{border-top:3px solid #FFB000;}
-html.amber header.nav{background:#000 !important;}
-html.amber .btn:hover, html.amber .tag:hover, html.amber .mbar-btn:hover, html.amber .navtoggle:hover,
-html.amber #pwa-install:hover, html.amber .sample-menu .btn:hover{background:#FFB000 !important; color:#000 !important;}
-html.amber .navlinks a:hover, html.amber .footgrid a:hover{text-decoration:underline;}
-html.amber a{text-decoration-color:#FFB000;}
-html.amber .xtv-power{background:#FFB000 !important; box-shadow:0 0 8px #FFB000 !important;}
-/* inverted blocks keep the page's hierarchy: bright amber slab with black type */
-html.amber .offerbar, html.amber .offerbar *:not(.modebtn):not(.modebtn *),
-html.amber .offer-box, html.amber .offer-box > *:not(.btn):not(.sample):not(.sample *){
-  background:#FFB000 !important; color:#000 !important; border-color:#000 !important; text-shadow:none;
-}
-html.amber .offer-box *{background:transparent !important; color:#000 !important; border-color:#000 !important; text-shadow:none;}
-html.amber .xtv-emoji{filter:grayscale(1) sepia(1) saturate(4) brightness(.9);}
-html.amber .offer-box .btn, html.amber .offer-box .btn-sample{background:#000 !important; color:#FFB000 !important; border-color:#000 !important;}
-html.amber .offerbar .modebtn{background:#000 !important; color:#FFB000 !important; border-color:#000 !important; text-shadow:none;}
-html.amber .offerbar .modebtn:hover{background:#FFB000 !important; color:#000 !important;}
-html.amber .offerbar .modebtn svg{filter:none !important;}
-html.amber .offerbar .modebtn *{background:transparent !important; color:inherit !important; text-shadow:none;}
-html.green{
-  color-scheme:dark;
-  --red:#33FF66; --red-dark:#33FF66; --yellow:#33FF66; --yellow-dark:#33FF66;
-  --green:#33FF66; --green-dark:#33FF66; --paper:#000; --ink:#33FF66; --ink-soft:#25CC51;
-  --line:rgba(51,255,102,.38); --whatsapp:#33FF66;
-}
-html.green body{text-shadow:0 0 6px rgba(51,255,102,.38); font-variant-emoji:text;}
-html.green *, html.green *::before, html.green *::after{
-  background:#000 !important; background-image:none !important;
-  color:#33FF66 !important; border-color:#33FF66 !important;
-  outline-color:#33FF66 !important; fill-opacity:1;
-}
-html.green img, html.green svg, html.green video, html.green canvas, html.green iframe{
-  filter:grayscale(1) contrast(1.25) brightness(.78) sepia(1) saturate(4) hue-rotate(78deg) !important;
-}
-html.green section{border-top:1px solid rgba(51,255,102,.38);}
-/* inline text must never paint a black box over neighbouring lines (it clipped descenders in the title) */
-html.green em, html.green strong, html.green b, html.green i, html.green span, html.green mark, html.green small,
-html.green a:not(.btn):not(.chatlogo):not(.mbar-btn):not(.navtoggle):not(.hero-promo):not(.heroimg){background:transparent !important;}
-html.green .cl-cur{background:#33FF66 !important;}
-html.green footer{border-top:3px solid #33FF66;}
-html.green header.nav{background:#000 !important;}
-html.green .btn:hover, html.green .tag:hover, html.green .mbar-btn:hover, html.green .navtoggle:hover,
-html.green #pwa-install:hover, html.green .sample-menu .btn:hover{background:#33FF66 !important; color:#000 !important;}
-html.green .navlinks a:hover, html.green .footgrid a:hover{text-decoration:underline;}
-html.green a{text-decoration-color:#33FF66;}
-html.green .xtv-power{background:#33FF66 !important; box-shadow:0 0 8px #33FF66 !important;}
-/* inverted blocks keep the page's hierarchy: bright amber slab with black type */
-html.green .offerbar, html.green .offerbar *:not(.modebtn):not(.modebtn *),
-html.green .offer-box, html.green .offer-box > *:not(.btn):not(.sample):not(.sample *){
-  background:#33FF66 !important; color:#000 !important; border-color:#000 !important; text-shadow:none;
-}
-html.green .offer-box *{background:transparent !important; color:#000 !important; border-color:#000 !important; text-shadow:none;}
-html.green .xtv-emoji{filter:grayscale(1) sepia(1) saturate(4) hue-rotate(78deg) brightness(.9);}
-html.green .offer-box .btn, html.green .offer-box .btn-sample{background:#000 !important; color:#33FF66 !important; border-color:#000 !important;}
-html.green .offerbar .modebtn{background:#000 !important; color:#33FF66 !important; border-color:#000 !important; text-shadow:none;}
-html.green .offerbar .modebtn:hover{background:#33FF66 !important; color:#000 !important;}
-html.green .offerbar .modebtn svg{filter:none !important;}
-html.green .offerbar .modebtn *{background:transparent !important; color:inherit !important; text-shadow:none;}
-@media (prefers-reduced-motion:no-preference){ html.amber body{transition:none;} }
-
-/* ---------- brand logo icon ---------- */
-.hero-titlewrap{position:relative;}
-.elx-logo-hero{position:absolute; left:50%; bottom:100%; transform:translateX(-50%); width:96px; margin:0 0 16px; pointer-events:none;}
-@media (max-width:900px){ .elx-logo-hero{width:60px; margin-bottom:8px;} }
-.elx-logo{display:block; flex:none; height:auto; border-radius:22%;}
-.brand{display:inline-flex; align-items:center; gap:9px;}
-.elx-logo-nav{width:32px;}
-.footbrand{display:flex; align-items:center; gap:10px;}
-.elx-logo-foot{width:36px;}
-.elx-logo-cta{width:76px; margin:0 auto 16px;}
-.elx-logo-offer{width:60px; margin:0 0 14px;}
-@media (max-width:520px){ .elx-logo-nav{width:26px;} .brand{gap:7px;} }
 </style>
 </head>
 <body>
@@ -828,6 +710,7 @@ html.green .offerbar .modebtn *{background:transparent !important; color:inherit
 
       <div class="xtv-wrap">
         <div class="xtv" id="xtv">
+          <a class="xtv-open" href="https://easylandx.github.io/app/ipad.html" target="_blank" rel="noopener" title="Open iPad version">Open iPad ↗</a>
           <div class="xtv-bezel">
             <div class="xtv-screen" id="xtvScreen">
               <div class="xtv-loading" id="xtvLoading">
@@ -835,15 +718,11 @@ html.green .offerbar .modebtn *{background:transparent !important; color:inherit
                 <div style="font-size:.75rem;opacity:.7">Loading all channels</div>
               </div>
             </div>
-          </div>
-          <div class="xtv-foot">
-            <span class="xtv-brand">EASYLANDX TV</span>
             <div class="xtv-controls">
-              <button class="xtv-btn" id="xtvPrev" type="button" title="Previous channel" disabled>◀</button>
+              <button class="xtv-btn" id="xtvPrev" type="button" title="Previous page" disabled>◀</button>
               <span class="xtv-num" id="xtvNum">—</span>
-              <button class="xtv-btn" id="xtvNext" type="button" title="Next channel" disabled>▶</button>
+              <button class="xtv-btn" id="xtvNext" type="button" title="Next page" disabled>▶</button>
             </div>
-            <div class="xtv-pw"><div class="xtv-power"></div></div>
           </div>
         </div>
       </div>
@@ -1170,7 +1049,7 @@ html.green .offerbar .modebtn *{background:transparent !important; color:inherit
     prevBtn.disabled=false;nextBtn.disabled=false;
     updateDisplay();resetTimer();
   }
-  function updateDisplay(){chNum.textContent=`CH ${String(current+1).padStart(3,"0")} / ${channels.length}`;}
+  function updateDisplay(){chNum.textContent=`${String(current+1).padStart(3,"0")} / ${channels.length}`;}
   function changeChannel(dir=1){
     if(!channels.length)return;
     channelEls[current].classList.remove("active");
@@ -1182,6 +1061,32 @@ html.green .offerbar .modebtn *{background:transparent !important; color:inherit
   function resetTimer(){clearInterval(autoTimer);autoTimer=setInterval(()=>changeChannel(1),INTERVAL);}
   prevBtn.addEventListener("click",()=>changeChannel(-1));
   nextBtn.addEventListener("click",()=>changeChannel(1));
+  /* swipe left/right with finger or mouse */
+  (function(){
+    let sx=0,sy=0,active=false,moved=false,suppress=false;
+    screen.addEventListener("pointerdown",e=>{
+      if(e.pointerType==="mouse"&&e.button!==0)return;
+      active=true;moved=false;sx=e.clientX;sy=e.clientY;
+    });
+    window.addEventListener("pointermove",e=>{
+      if(!active)return;
+      const dx=e.clientX-sx,dy=e.clientY-sy;
+      if(Math.abs(dx)>8&&Math.abs(dx)>Math.abs(dy)){moved=true;screen.classList.add("dragging");}
+    });
+    function end(e){
+      if(!active)return;
+      active=false;screen.classList.remove("dragging");
+      const dx=e.clientX-sx,dy=e.clientY-sy;
+      if(moved&&Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)){
+        changeChannel(dx<0?1:-1);
+        suppress=true;setTimeout(()=>{suppress=false;},350);
+      }
+    }
+    window.addEventListener("pointerup",end);
+    window.addEventListener("pointercancel",()=>{active=false;screen.classList.remove("dragging");});
+    screen.addEventListener("click",e=>{if(suppress||moved){e.stopPropagation();e.preventDefault();moved=false;}},true);
+    screen.addEventListener("dragstart",e=>e.preventDefault());
+  })();
   loadAllChannels();
 })();
 </script>
