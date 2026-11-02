@@ -182,6 +182,22 @@
     .logo span{font-size:19px;}
     .lang button{padding:6px 8px;}
   }
+  .logo,.lang,.lang button{white-space:nowrap;flex-shrink:0;}
+  .logo span{line-height:1;}
+  @media (max-width:480px){
+    nav .wrap{padding-left:14px;padding-right:14px;gap:8px;}
+    .logo{gap:7px;}
+    .logo svg{width:32px;height:32px;}
+    .logo span{font-size:18px;}
+    .nav-right{gap:8px;}
+    .lang{border-width:2px;box-shadow:2px 2px 0 var(--ink);}
+    .lang button{padding:6px 7px;gap:4px;font-size:12px;}
+    .lang button svg{width:18px;height:12px;}
+  }
+  @media (max-width:340px){
+    .logo span{font-size:16px;}
+    .lang button svg{display:none;}
+  }
   @media (prefers-reduced-motion:reduce){
     .reveal{transition:none;}.siren{animation:none;}.plus{transition:none;}
   }
