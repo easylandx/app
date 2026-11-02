@@ -3,72 +3,65 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>EasyLandX · iPad Pro M5 Showcase</title>
+<title>EasyLandX · Mobile Showcase</title>
 <style>
-:root{--gold:#ffd23f;--cyan:#27f0ff;--deep:#1c0a5c}
+:root{--gold:#ffd23f;--cyan:#27f0ff;--deep:#1c0a5c;--w:min(100vw,560px,max(390px,50dvh))}
 *{box-sizing:border-box;margin:0}
 html,body{height:100%;overflow:hidden}
-body{background:radial-gradient(circle at 50% 25%,#5b14ff,#1c0a5c 75%);color:#fff;font:15px/1.3 -apple-system,system-ui,"Segoe UI",sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px;-webkit-user-select:none;user-select:none}
-.stage{position:relative;width:min(94vw,calc((100dvh - 128px)*.75));aspect-ratio:3/4;container-type:inline-size;flex:none}
-.ipad{position:absolute;inset:0;padding:2.4cqw;border-radius:5.4cqw;background:linear-gradient(145deg,#55555c,#1a1a1e 38%,#2e2e34 70%,#4a4a50);box-shadow:0 0 0 .25cqw #0b0b0d,0 3cqw 8cqw rgba(0,0,0,.55),inset 0 0 .6cqw rgba(255,255,255,.35);touch-action:none;cursor:grab}
-.ipad:before{content:"";position:absolute;inset:.9cqw;border-radius:4.6cqw;background:#050507;pointer-events:none}
-.hw{position:absolute;background:#3a3a41;border-radius:.4cqw}
-.pw{top:-.7cqw;right:13cqw;width:7cqw;height:.9cqw}
-.v1,.v2{right:-.7cqw;width:.9cqw;height:6cqw}.v1{top:15cqw}.v2{top:23cqw}
-.cam{position:absolute;top:.8cqw;left:50%;width:.9cqw;height:.9cqw;margin-left:-.45cqw;border-radius:50%;background:radial-gradient(circle at 35% 35%,#3c4f7a,#05070d 70%);z-index:3}
-.screen{position:relative;width:100%;height:100%;border-radius:3.1cqw;overflow:hidden;background:#12082e;z-index:2}
+body{background:radial-gradient(circle at 50% 25%,#5b14ff,#1c0a5c 75%);color:#fff;font:15px/1.3 -apple-system,system-ui,"Segoe UI",sans-serif;-webkit-user-select:none;user-select:none}
+.bg{position:fixed;inset:0;touch-action:none;cursor:grab}
+.screen{position:fixed;top:0;bottom:0;width:var(--w);left:calc(50% - var(--w)/2);overflow:hidden;background:#12082e;z-index:1;box-shadow:0 0 70px rgba(0,0,0,.55)}
 .track{position:absolute;inset:0;display:flex;will-change:transform}
 .slide{flex:0 0 100%;position:relative;overflow:hidden;background:#12082e}
 .slide.pop{animation:pop .35s ease}
 @keyframes pop{from{opacity:0;transform:scale(.96)}}
-.ph{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:12%;font-weight:800;font-size:4.2cqw;color:var(--gold)}
+.ph{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:12%;font-weight:800;font-size:20px;color:var(--gold)}
 .slide iframe{position:absolute;top:0;left:0;border:0;background:#fff;transform-origin:0 0}
-.zone{position:absolute;z-index:5;touch-action:none;cursor:grab}
-.zl,.zr{top:0;bottom:0;width:6cqw}.zl{left:0}.zr{right:0}
-.zl:after,.zr:after{content:"";position:absolute;top:50%;width:.8cqw;height:14cqw;margin-top:-7cqw;border-radius:1cqw;background:rgba(255,255,255,.55);box-shadow:0 0 1cqw rgba(0,0,0,.5);opacity:.8}
-.zl:after{left:1cqw}.zr:after{right:1cqw}
-.zh{left:20%;right:20%;bottom:0;height:4cqw}
-.zh:after{content:"";position:absolute;left:50%;bottom:1.1cqw;width:22cqw;height:.8cqw;margin-left:-11cqw;border-radius:1cqw;background:rgba(255,255,255,.75);box-shadow:0 0 1cqw rgba(0,0,0,.6)}
-.bar{position:relative;display:flex;gap:8px;width:min(94vw,620px)}
-.b{border:0;border-radius:12px;padding:10px 14px;font:700 15px inherit;font-family:inherit;background:var(--gold);color:var(--deep);cursor:pointer;white-space:nowrap}
-.b:active{transform:scale(.96)}
-.b.alt{background:rgba(255,255,255,.16);color:#fff}
-input{flex:1;min-width:0;border-radius:12px;border:2px solid rgba(255,255,255,.25);background:rgba(0,0,0,.3);color:#fff;padding:10px 12px;font:inherit;-webkit-user-select:text;user-select:text}
+.zone{position:absolute;top:0;bottom:0;width:26px;z-index:5;touch-action:none;cursor:grab}
+.zl{left:0}.zr{right:0}
+.glass{position:fixed;left:50%;transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:8px;padding:8px;border-radius:18px;background:rgba(24,8,72,.62);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);border:1px solid rgba(255,255,255,.22);box-shadow:0 8px 30px rgba(0,0,0,.45);width:min(94vw,460px)}
+.top{top:max(10px,env(safe-area-inset-top));font-size:13px;padding:6px 8px}
+.top span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.top a{color:var(--cyan);text-decoration:none;font-weight:800;padding:4px 6px}
+.bar{bottom:max(12px,env(safe-area-inset-bottom))}
+.bar.min{width:auto}.bar.min>*:not(#tg){display:none}
+.b{border:0;border-radius:12px;padding:9px 12px;font:700 15px inherit;font-family:inherit;background:var(--gold);color:var(--deep);cursor:pointer;white-space:nowrap;text-decoration:none}
+.b:active{transform:scale(.95)}
+.b.alt{background:rgba(255,255,255,.18);color:#fff}
+input{flex:1;min-width:0;border-radius:12px;border:2px solid rgba(255,255,255,.25);background:rgba(0,0,0,.35);color:#fff;padding:9px 11px;font:inherit;-webkit-user-select:text;user-select:text}
 input:focus{outline:0;border-color:var(--cyan)}
-.res{position:absolute;bottom:calc(100% + 6px);left:0;right:0;background:#14073d;border:1px solid rgba(255,255,255,.2);border-radius:12px;max-height:40vh;overflow:auto;display:none;z-index:9}
+.res{position:absolute;bottom:calc(100% + 8px);left:0;right:0;background:rgba(20,7,61,.95);border:1px solid rgba(255,255,255,.2);border-radius:14px;max-height:45vh;overflow:auto;display:none}
 .res div{padding:8px 12px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.08)}
 .res div:hover,.res .on{background:rgba(39,240,255,.2)}
 .res small{display:block;opacity:.65;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.info{font-size:13px;opacity:.85;text-align:center;max-width:94vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.info a{color:var(--cyan);text-decoration:none;font-weight:700}
-.brand{position:fixed;right:12px;bottom:12px;background:var(--gold);color:var(--deep);font-weight:800;font-size:13px;padding:8px 12px;border-radius:20px;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.hint{position:fixed;left:50%;top:calc(max(10px,env(safe-area-inset-top)) + 52px);transform:translateX(-50%);z-index:19;background:rgba(0,0,0,.6);padding:7px 12px;border-radius:14px;font-size:12px;white-space:nowrap;pointer-events:none;animation:fade 6s forwards}
+@keyframes fade{0%,70%{opacity:1}100%{opacity:0}}
+@media(max-width:480px){.t{display:none}.hint{white-space:normal;width:86vw;text-align:center}}
 </style>
 </head>
 <body>
-<div class="stage">
-  <div class="ipad" id="ipad">
-    <i class="hw pw"></i><i class="hw v1"></i><i class="hw v2"></i><i class="cam"></i>
-    <div class="screen" id="screen">
-      <div class="track" id="track"><div class="slide"><div class="ph">Loading sites…</div></div></div>
-      <div class="zone zl" id="zl"></div>
-      <div class="zone zr" id="zr"></div>
-      <div class="zone zh" id="zh"></div>
-    </div>
-  </div>
+<div class="bg" id="bg"></div>
+<div class="screen" id="screen">
+  <div class="track" id="track"><div class="slide"><div class="ph">Loading sites…</div></div></div>
 </div>
-<div class="info"><span id="lbl">Loading…</span> · <a id="open" href="#" target="_blank" rel="noopener">Open ↗</a></div>
-<div class="bar">
+<div class="glass top">
+  <a href="https://easylandx.github.io/all/" target="_blank" rel="noopener" title="EasyLandX">🧲</a>
+  <span id="lbl">Loading…</span>
+  <a id="open" href="#" target="_blank" rel="noopener" title="Open in new tab">↗</a>
+  <button class="b alt" id="fs" aria-label="Full screen">⛶</button>
+</div>
+<div class="glass bar" id="bar">
   <div class="res" id="res"></div>
   <button class="b alt" id="prev" aria-label="Previous site">◀</button>
-  <button class="b" id="rnd">🎲 Random</button>
+  <button class="b" id="rnd" aria-label="Random site">🎲<span class="t"> Random</span></button>
   <input id="q" type="search" placeholder="Search sites…" autocomplete="off">
   <button class="b alt" id="next" aria-label="Next site">▶</button>
+  <button class="b alt" id="tg" aria-label="Hide or show controls">▾</button>
 </div>
-<div class="info" style="opacity:.6">Scroll inside the screen · swipe the screen edges, bezel or home bar ⇄ · ← → keys · “/” to search</div>
-<a class="brand" href="https://easylandx.github.io/all/" target="_blank" rel="noopener">🧲 EasyLandX</a>
+<div class="hint">Swipe ⇄ to change site · drag to scroll · ← → keys · “/” to search</div>
 
 <script>
-const IDX='https://easylandx.github.io/all/', W=1032; // iPad Pro 13" CSS width
+const IDX='https://easylandx.github.io/all/', W=390; // mobile CSS width, even on desktop
 const $=s=>document.querySelector(s), track=$('#track'), scr=$('#screen'), q=$('#q'), res=$('#res');
 const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
 const FALL='work make give disc parad core swan scou how brai trig change influence social human choice'.split(' ');
@@ -104,7 +97,7 @@ function sizeF(f){const k=scr.clientWidth/W;f.style.width=W+'px';f.style.height=
 function sync(){
   [...track.children].forEach((sl,i)=>{
     const need=Math.abs(i-cur)<=1, f=sl.querySelector('iframe');
-    if(need&&!f){const fr=document.createElement('iframe');fr.src=S[i].u;fr.title=S[i].t;fr.allow='fullscreen';sl.appendChild(fr);sizeF(fr)}
+    if(need&&!f)mkFrame(i);
     else if(!need&&f)f.remove();
   });
 }
@@ -122,7 +115,106 @@ function go(i){
 }
 function rnd(){if(S.length<2)return;let i;do{i=Math.floor(Math.random()*S.length)}while(i===cur);go(i)}
 
-// swipe left/right on edges, home bar and bezel (cross-site iframes can't pass gestures to the parent)
+// Pages are fetched and injected via srcdoc so they are same-origin with this file:
+// that lets us add mouse-drag scrolling and left/right swipes anywhere on the screen.
+const cache=new Map();
+let wl=0;
+function wheelNav(e){
+  if(Math.abs(e.deltaX)>Math.abs(e.deltaY)&&Math.abs(e.deltaX)>15){
+    e.preventDefault();const n=Date.now();
+    if(n-wl>450){wl=n;go(cur+(e.deltaX>0?1:-1))}
+  }
+}
+function endH(dx,dt){
+  const v=dx/Math.max(1,dt),th=scr.clientWidth*.18;
+  if(dx<-th||(v<-.5&&dx<-30))go(cur+1);
+  else if(dx>th||(v>.5&&dx>30))go(cur-1);
+  else go(cur);
+}
+function mkFrame(i){
+  const fr=document.createElement('iframe');
+  fr.title=S[i].t;fr.allow='fullscreen';
+  track.children[i].appendChild(fr);sizeF(fr);
+  fr.addEventListener('load',()=>{if(fr.dataset.mode==='doc')hook(fr)});
+  loadDoc(fr,i);
+}
+async function loadDoc(fr,i){
+  try{
+    let h=cache.get(i);
+    if(!h){
+      const r=await fetch(S[i].u);if(!r.ok)throw 0;
+      h=await r.text();
+      const b='<base href="'+S[i].u+'">';
+      h=/<head(\s[^>]*)?>/i.test(h)?h.replace(/<head(\s[^>]*)?>/i,m=>m+b):b+h;
+      cache.set(i,h);
+    }
+    if(!fr.isConnected)return;
+    fr.dataset.mode='doc';fr.srcdoc=h;
+  }catch(e){ // fallback: normal cross-origin embed (edge/bezel swipes still work)
+    if(fr.isConnected){
+      fr.dataset.mode='src';fr.src=S[i].u;
+      ['zl','zr'].forEach(c=>{const z=document.createElement('div');z.className='zone '+c;fr.parentNode.appendChild(z);swipe(z)});
+    }
+  }
+}
+function hook(fr){
+  const d=fr.contentDocument;if(!d||!d.documentElement)return;
+  const st=d.createElement('style');
+  st.textContent='html,body{-webkit-user-select:none!important;user-select:none!important;touch-action:pan-y;cursor:grab}*{-webkit-user-drag:none}input,textarea{-webkit-user-select:text!important;user-select:text!important}';
+  (d.head||d.documentElement).appendChild(st);
+  d.addEventListener('selectstart',e=>{if(!/^(INPUT|TEXTAREA)$/.test(e.target.tagName))e.preventDefault()});
+  d.addEventListener('dragstart',e=>e.preventDefault());
+  const root=()=>d.scrollingElement||d.documentElement;
+  let id=null,x0=0,y0=0,t0=0,top0=0,mode=null,moved=false,vy=0,ly=0,lt=0,dxs=0;
+  d.addEventListener('pointerdown',e=>{
+    if(e.button!==0||(e.target.closest&&e.target.closest('input,textarea,select')))return;
+    cancelAnimationFrame(fr._raf);
+    id=e.pointerId;x0=e.clientX;y0=ly=e.clientY;lt=t0=performance.now();
+    top0=root().scrollTop;mode=null;moved=false;vy=0;dxs=0;
+  });
+  d.addEventListener('pointermove',e=>{
+    if(e.pointerId!==id)return;
+    const dx=e.clientX-x0,dy=e.clientY-y0,k=scr.clientWidth/W;
+    if(!mode){
+      if(Math.hypot(dx,dy)<8)return;
+      mode=Math.abs(dx)>Math.abs(dy)?'h':'v';moved=true;
+      try{d.documentElement.setPointerCapture(id)}catch(_){}
+      if(mode==='h')track.style.transition='none';
+    }
+    if(mode==='h'){
+      dxs=dx*k;
+      track.style.transform='translateX(calc('+(-cur*100)+'% + '+dxs+'px))';
+    }else if(e.pointerType==='mouse'){
+      root().scrollTop=top0-dy;
+      const n=performance.now();vy=(e.clientY-ly)/Math.max(1,n-lt);ly=e.clientY;lt=n;
+    }
+  });
+  const up=e=>{
+    if(e.pointerId!==id)return;id=null;
+    if(mode==='h')endH(dxs,performance.now()-t0);
+    else if(mode==='v'&&e.pointerType==='mouse'&&Math.abs(vy)>.1){
+      let v=vy;
+      const step=()=>{root().scrollTop-=v*16;v*=.95;if(Math.abs(v)>.02)fr._raf=requestAnimationFrame(step)};
+      step();
+    }
+  };
+  d.addEventListener('pointerup',up);d.addEventListener('pointercancel',up);
+  d.addEventListener('click',e=>{ // no accidental clicks after a drag; keep navigation inside the showcase
+    if(moved){moved=false;e.preventDefault();e.stopPropagation();return}
+    const a=e.target.closest&&e.target.closest('a[href]');if(!a)return;
+    const h=a.getAttribute('href');e.preventDefault();
+    if(h&&h[0]==='#'){const t=d.getElementById(decodeURIComponent(h.slice(1)));if(t)t.scrollIntoView({behavior:'smooth'});return}
+    const j=S.findIndex(s=>s.u===a.href);
+    if(j>=0)go(j);else window.open(a.href,'_blank','noopener');
+  },true);
+  d.addEventListener('wheel',wheelNav,{passive:false});
+  d.addEventListener('keydown',e=>{
+    if(/^(INPUT|TEXTAREA)$/.test(e.target.tagName))return;
+    if(e.key==='ArrowRight')go(cur+1);else if(e.key==='ArrowLeft')go(cur-1);
+  });
+}
+
+// swipe left/right on edges, home bar and bezel (also used for cross-origin fallback pages)
 function swipe(el,bezelOnly){
   let x0=0,t0=0,on=false;
   el.addEventListener('pointerdown',e=>{
@@ -135,16 +227,12 @@ function swipe(el,bezelOnly){
   });
   const end=e=>{
     if(!on)return;on=false;
-    const dx=e.clientX-x0,v=dx/Math.max(1,performance.now()-t0),th=scr.clientWidth*.18;
-    if(dx<-th||(v<-.5&&dx<-30))go(cur+1);
-    else if(dx>th||(v>.5&&dx>30))go(cur-1);
-    else go(cur);
+    endH(e.clientX-x0,performance.now()-t0);
   };
   el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
-  el.addEventListener('wheel',e=>{if(Math.abs(e.deltaX)>Math.abs(e.deltaY)&&Math.abs(e.deltaX)>20){e.preventDefault();go(cur+(e.deltaX>0?1:-1))}},{passive:false});
+  el.addEventListener('wheel',wheelNav,{passive:false});
 }
-['#zl','#zr','#zh'].forEach(s=>swipe($(s)));
-swipe($('#ipad'),true);
+swipe($('#bg'),true); // drag the backdrop beside the phone-width column
 
 // search
 let hits=[],sel=0;
@@ -179,6 +267,8 @@ q.addEventListener('keydown',e=>{
 $('#prev').onclick=()=>go(cur-1);
 $('#next').onclick=()=>go(cur+1);
 $('#rnd').onclick=rnd;
+$('#tg').onclick=()=>{const m=$('#bar').classList.toggle('min');$('#tg').textContent=m?'▴':'▾'};
+$('#fs').onclick=()=>{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.()};
 addEventListener('keydown',e=>{
   if(document.activeElement===q)return;
   if(e.key==='ArrowRight')go(cur+1);
