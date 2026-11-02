@@ -573,8 +573,8 @@
 .xtv-bezel{position:relative;background:#050506;border-radius:20px;padding:7px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
 .xtv-screen{position:relative;width:100%;aspect-ratio:4/3;background:#111;border-radius:14px;overflow:hidden;cursor:grab;user-select:none;-webkit-user-select:none;touch-action:pan-y;isolation:isolate;transform:translateZ(0);-webkit-mask-image:-webkit-radial-gradient(white,black)}
 .xtv-screen.dragging{cursor:grabbing}
-.xtv-ch{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:1rem;color:#fff;opacity:0;pointer-events:none;transition:opacity .15s linear}
-.xtv-ch.active{opacity:1;pointer-events:auto}
+.xtv-ch{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:1rem;color:#fff;visibility:hidden;transform:translateX(100%);pointer-events:none;will-change:transform}
+.xtv-ch.active{visibility:visible;transform:none;pointer-events:auto}
 .xtv-emoji{font-size:clamp(2.2rem,9vw,3.4rem);margin-bottom:.4rem;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4))}
 .xtv-title{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:clamp(1rem,4.6vw,1.35rem);font-weight:700;letter-spacing:-.02em;margin-bottom:.35rem;max-width:92%;line-height:1.15}
 .xtv-desc{font-size:clamp(.72rem,3vw,.85rem);opacity:.92;max-width:34ch;line-height:1.4}
@@ -719,6 +719,7 @@
               </div>
             </div>
             <div class="xtv-controls">
+              <button class="xtv-btn" id="xtvRand" type="button" title="Random page" aria-label="Random page" disabled><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.5" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.5" fill="currentColor"/></svg></button>
               <button class="xtv-btn" id="xtvPrev" type="button" title="Previous page" disabled>◀</button>
               <span class="xtv-num" id="xtvNum">—</span>
               <button class="xtv-btn" id="xtvNext" type="button" title="Next page" disabled>▶</button>
@@ -1004,7 +1005,7 @@
 (function(){
   const INTERVAL=8000;
   const screen=document.getElementById("xtvScreen"),loading=document.getElementById("xtvLoading"),
-        chNum=document.getElementById("xtvNum"),prevBtn=document.getElementById("xtvPrev"),nextBtn=document.getElementById("xtvNext");
+        chNum=document.getElementById("xtvNum"),prevBtn=document.getElementById("xtvPrev"),randBtn=document.getElementById("xtvRand"),nextBtn=document.getElementById("xtvNext");
   let channels=[],current=0,changing=false,autoTimer=null,channelEls=[];
   function colorFromString(str){
     let hash=0;
@@ -1046,44 +1047,79 @@
       screen.appendChild(div);channelEls.push(div);
     });
     loading.classList.add("hidden");
-    prevBtn.disabled=false;nextBtn.disabled=false;
+    prevBtn.disabled=false;nextBtn.disabled=false;randBtn.disabled=false;
     updateDisplay();resetTimer();
   }
   function updateDisplay(){chNum.textContent=`${String(current+1).padStart(3,"0")} / ${channels.length}`;}
-  function changeChannel(dir=1){
+  const SLIDE_MS=380,EASE="cubic-bezier(.22,.8,.3,1)";
+  let pending=null,dragging=false;
+  function place(el,x,anim){el.style.transition=anim?`transform ${SLIDE_MS}ms ${EASE}`:"none";el.style.transform=`translateX(${x}px)`;el.style.visibility="visible";}
+  function clearEl(el){el.style.transition="none";el.style.transform="";el.style.visibility="";}
+  function changeChannel(dir=1,fromDrag=false,target=null){
     if(!channels.length)return;
-    channelEls[current].classList.remove("active");
-    current=(current+dir+channels.length)%channels.length;
-    channelEls[current].classList.add("active");
+    if(pending){pending();}
+    const W=screen.offsetWidth,out=channelEls[current];
+    current=target!==null?target:(current+dir+channels.length)%channels.length;
+    const inn=channelEls[current];
+    if(!fromDrag){place(inn,dir*W,false);void inn.offsetWidth;}
+    place(inn,0,true);place(out,-dir*W,true);
+    out.classList.remove("active");inn.classList.add("active");
+    const t=setTimeout(done,SLIDE_MS+40);
+    function done(){clearTimeout(t);clearEl(out);clearEl(inn);pending=null;}
+    pending=done;
     updateDisplay();
     resetTimer();
   }
-  function resetTimer(){clearInterval(autoTimer);autoTimer=setInterval(()=>changeChannel(1),INTERVAL);}
+  function resetTimer(){clearInterval(autoTimer);autoTimer=setInterval(()=>{if(!dragging)changeChannel(1);},INTERVAL);}
   prevBtn.addEventListener("click",()=>changeChannel(-1));
   nextBtn.addEventListener("click",()=>changeChannel(1));
-  /* swipe left/right with finger or mouse */
+  randBtn.addEventListener("click",()=>{
+    const ok=[];
+    for(let n=1;n<=channels.length;n++){const t=String(n);if(n-1!==current&&!t.includes("4")&&!t.includes("13"))ok.push(n-1);}
+    if(!ok.length)return;
+    const idx=ok[Math.floor(Math.random()*ok.length)];
+    changeChannel(idx>current?1:-1,false,idx);
+  });
+  /* swipe left/right with finger or mouse: the page follows the finger */
   (function(){
-    let sx=0,sy=0,active=false,moved=false,suppress=false;
+    let sx=0,sy=0,active=false,moved=false,suppress=false,nb=null,nbDir=0;
+    function neighbour(dir){return channelEls[(current+dir+channels.length)%channels.length];}
     screen.addEventListener("pointerdown",e=>{
-      if(e.pointerType==="mouse"&&e.button!==0)return;
+      if(!channels.length||(e.pointerType==="mouse"&&e.button!==0))return;
+      if(pending)pending();
       active=true;moved=false;sx=e.clientX;sy=e.clientY;
     });
     window.addEventListener("pointermove",e=>{
       if(!active)return;
       const dx=e.clientX-sx,dy=e.clientY-sy;
-      if(Math.abs(dx)>8&&Math.abs(dx)>Math.abs(dy)){moved=true;screen.classList.add("dragging");}
+      if(!moved){
+        if(Math.abs(dx)>8&&Math.abs(dx)>Math.abs(dy)){moved=true;dragging=true;screen.classList.add("dragging");}
+        else return;
+      }
+      const W=screen.offsetWidth,dir=dx<0?1:-1;
+      if(nb&&nbDir!==dir){clearEl(nb);nb=null;}
+      if(!nb){nb=neighbour(dir);nbDir=dir;}
+      place(channelEls[current],dx,false);
+      place(nb,dir*W+dx,false);
     });
-    function end(e){
+    function finish(e,cancel){
       if(!active)return;
       active=false;screen.classList.remove("dragging");
-      const dx=e.clientX-sx,dy=e.clientY-sy;
-      if(moved&&Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)){
-        changeChannel(dx<0?1:-1);
-        suppress=true;setTimeout(()=>{suppress=false;},350);
+      if(!moved){dragging=false;return;}
+      const dx=e.clientX-sx,W=screen.offsetWidth,dir=dx<0?1:-1;
+      const go=!cancel&&Math.abs(dx)>Math.min(60,W*.2);
+      dragging=false;
+      suppress=true;setTimeout(()=>{suppress=false;},350);
+      if(go&&nb){nb=null;changeChannel(dir,true);}
+      else{
+        const cur=channelEls[current],other=nb;nb=null;
+        place(cur,0,true);
+        if(other){place(other,dir*W,true);setTimeout(()=>{clearEl(other);},SLIDE_MS+40);}
+        setTimeout(()=>{if(cur.classList.contains("active"))clearEl(cur);},SLIDE_MS+40);
       }
     }
-    window.addEventListener("pointerup",end);
-    window.addEventListener("pointercancel",()=>{active=false;screen.classList.remove("dragging");});
+    window.addEventListener("pointerup",e=>finish(e,false));
+    window.addEventListener("pointercancel",e=>finish(e,true));
     screen.addEventListener("click",e=>{if(suppress||moved){e.stopPropagation();e.preventDefault();moved=false;}},true);
     screen.addEventListener("dragstart",e=>e.preventDefault());
   })();
