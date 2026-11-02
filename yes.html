@@ -8,7 +8,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{--yellow:#FFD600;--blue:#0062CC;--red:#E8291C;--green:#25D366;--pink:#E8479A;--ink:#1A1208;--pad:clamp(22px,5vw,48px)}
+:root{--yellow:#FFD600;--blue:#0062CC;--red:#E8291C;--green:#25D366;--pink:#E8479A;--ink:#1A1208;--pad:clamp(22px,5vw,48px);
+ --rb-bd:var(--red);--rb-bg:#fff4f2;--rb-h:var(--red);--cta-bg:var(--blue);--cta-fg:#fff}
+body.yes{--rb-bd:var(--green);--rb-bg:#effcf3;--rb-h:#14803d;--cta-bg:var(--green);--cta-fg:var(--ink)}
 *{box-sizing:border-box}
 body{margin:0;font-family:"Inter",system-ui,sans-serif;color:var(--ink);background:var(--yellow);line-height:1.55}
 h1,h2,h3,h4,.btn,.chip{font-family:"Poppins","Inter",system-ui,sans-serif}
@@ -17,13 +19,19 @@ h1,h2,h3,h4,.btn,.chip{font-family:"Poppins","Inter",system-ui,sans-serif}
 .btn.blue{background:var(--blue)}.btn.red{background:var(--red)}
 header.hero{padding:28px var(--pad) 48px}
 .hero .wrap{max-width:900px;margin:0 auto}
-.hero-top{display:flex;justify-content:flex-end;margin-bottom:30px}
-.lang{display:inline-flex;border:2px solid var(--ink);border-radius:14px;overflow:hidden;background:#fff;box-shadow:4px 4px 0 var(--ink)}
+.hero-top{display:flex;flex-direction:column;align-items:center;gap:18px;margin-bottom:30px}
+.mode{display:inline-flex;border:3px solid var(--ink);border-radius:99px;overflow:hidden;background:#fff;box-shadow:5px 5px 0 var(--ink)}
+.mode button{border:0;background:#fff;font:900 1.2rem "Poppins",sans-serif;letter-spacing:.03em;padding:12px 34px;cursor:pointer;color:var(--ink);transition:background .15s,color .15s}
+.mode button+button{border-left:3px solid var(--ink)}
+.mode button[data-m=yes].on{background:var(--green);color:var(--ink)}
+.mode button[data-m=no].on{background:var(--red);color:#fff}
+.mode button:focus-visible,.lang button:focus-visible{outline:3px solid var(--pink);outline-offset:-5px}
+.lang{align-self:flex-end;display:inline-flex;border:2px solid var(--ink);border-radius:14px;overflow:hidden;background:#fff;box-shadow:4px 4px 0 var(--ink)}
 .lang button{display:flex;align-items:center;gap:9px;border:0;background:#fff;font:800 .95rem "Poppins",sans-serif;padding:11px 17px;cursor:pointer;color:var(--ink)}
 .lang button+button{border-left:2px solid var(--ink)}
 .lang button.on{background:var(--blue);color:#fff}
 .lang svg{width:25px;height:18px;border-radius:2px;box-shadow:0 0 0 1px #0002}
-@media(max-width:600px){header.hero{padding-top:20px;padding-bottom:38px}.hero-top{margin-bottom:24px}.lang button{padding:9px 13px}}
+@media(max-width:600px){header.hero{padding-top:20px;padding-bottom:38px}.hero-top{margin-bottom:24px}.lang button{padding:9px 13px}.mode button{padding:11px 28px}}
 .hero h1{font-weight:900;font-size:clamp(2.4rem,7vw,4.6rem);line-height:1.02;letter-spacing:-.035em;margin:0 0 20px}
 .hero p{font-size:1.12rem;max-width:640px;margin:0 0 26px}
 .hero .row{display:flex;flex-wrap:wrap;gap:12px}
@@ -43,24 +51,29 @@ section.cat{padding:46px var(--pad)}
 @keyframes flash{0%,60%{background:#fff3a0}100%{background:#fff}}
 .meter{font-size:.8rem;letter-spacing:1px}
 .orig{font-family:"Poppins",sans-serif;font-weight:700;font-size:1.08rem;line-height:1.3;margin:0}
-.tr{font-size:.86rem;opacity:.7;margin:-4px 0 0;font-style:italic}
-.rebut{border-left:6px solid var(--green);background:#effcf3;border-radius:0 12px 12px 0;padding:10px 12px;font-size:.95rem;flex:1}
-.rebut h4{margin:0 0 4px;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:#14803d}
+.rebut{border-left:6px solid var(--rb-bd);background:var(--rb-bg);border-radius:0 12px 12px 0;padding:10px 12px;font-size:.95rem;flex:1}
+.rebut h4{margin:0 0 4px;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--rb-h)}
 .copy{align-self:flex-end;border:2px solid var(--ink);background:var(--green);color:var(--ink);border-radius:10px;padding:5px 14px;font:700 .82rem "Poppins",sans-serif;cursor:pointer}
-.cta{background:var(--green);text-align:center;padding:64px var(--pad)}
+.cta{background:var(--cta-bg);color:var(--cta-fg);text-align:center;padding:64px var(--pad)}
 .cta h2{font-weight:900;font-size:clamp(1.8rem,4.5vw,3rem);letter-spacing:-.03em;margin:0 0 10px;line-height:1.08}
 .cta p{max-width:560px;margin:0 auto 22px}
-.cta .btn{background:var(--yellow);color:var(--ink)}
+.cta .btn{background:var(--yellow);color:var(--ink);box-shadow:4px 4px 0 var(--ink)}
 footer{text-align:center;padding:22px var(--pad);font-size:.9rem;font-weight:500;border-top:3px solid var(--ink)}
 .empty{text-align:center;padding:60px var(--pad);background:#fff0a0;font-weight:600}
 </style>
 </head>
-<body>
+<body class="yes">
 <header class="hero"><div class="wrap">
- <div class="hero-top"><div class="lang" role="group" aria-label="Language">
-  <button id="lEn" onclick="setLang('en')" aria-label="English"><svg viewBox="0 0 60 36" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="36" fill="#012169"/><path d="M0 0 60 36M60 0 0 36" stroke="#fff" stroke-width="8"/><path d="M0 0 60 36M60 0 0 36" stroke="#C8102E" stroke-width="3.5"/><path d="M30 0v36M0 18h60" stroke="#fff" stroke-width="12"/><path d="M30 0v36M0 18h60" stroke="#C8102E" stroke-width="6"/></svg>EN</button>
-  <button id="lEs" onclick="setLang('es')" aria-label="Español"><svg viewBox="0 0 60 36" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="36" fill="#AA151B"/><rect y="9" width="60" height="18" fill="#F1BF00"/></svg>ES</button>
- </div></div>
+ <div class="hero-top">
+  <div class="mode" role="group" aria-label="YES / NO">
+   <button data-m="yes" id="mYes" onclick="setMode('yes')">YES</button>
+   <button data-m="no" id="mNo" onclick="setMode('no')">NO</button>
+  </div>
+  <div class="lang" role="group" aria-label="Language">
+   <button id="lEn" onclick="setLang('en')" aria-label="English"><svg viewBox="0 0 60 36" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="36" fill="#012169"/><path d="M0 0 60 36M60 0 0 36" stroke="#fff" stroke-width="8"/><path d="M0 0 60 36M60 0 0 36" stroke="#C8102E" stroke-width="3.5"/><path d="M30 0v36M0 18h60" stroke="#fff" stroke-width="12"/><path d="M30 0v36M0 18h60" stroke="#C8102E" stroke-width="6"/></svg>EN</button>
+   <button id="lEs" onclick="setLang('es')" aria-label="Español"><svg viewBox="0 0 60 36" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="36" fill="#AA151B"/><rect y="9" width="60" height="18" fill="#F1BF00"/></svg>ES</button>
+  </div>
+ </div>
  <h1 data-t="h1"></h1>
  <p data-t="heroP"></p>
  <div class="row">
@@ -73,6 +86,64 @@ footer{text-align:center;padding:22px var(--pad);font-size:.9rem;font-weight:500
 <section class="cta"><h2 data-t="ctaH"></h2><p data-t="ctaP"></p><a class="btn" href="https://easylandx.github.io" target="_blank" rel="noopener" data-t="ctaB"></a></section>
 <footer data-t="foot"></footer>
 <script>
+const NO=(()=>{
+const T={
+ en:{
+  h1:"Every “no” is a “not yet” in a fancy hat.",
+  heroP:"Polite ways to respond to a “no, gracias” on an EasyLandX landing page proposal, each with a comeback that’s professional, friendly, and slightly cheeky.",
+  surprise:"🎲 Surprise me with a “no”",visit:"Visit EasyLandX",
+  search:"Search a “no” or a comeback…",all:"All categories",
+  reply:"The comeback",copy:"Copy reply",copied:"Copied ✓",
+  empty:"Nothing found. For once, nobody said no. 🎉",
+  ctaH:"Ready to turn a “no” into a “tell me more”?",
+  ctaP:"EasyLandX builds custom, conversion-focused landing pages for small businesses, at prices that won't make your accountant faint.",
+  ctaB:"Visit easylandx.github.io",
+  foot:"© EasyLandX · No prospects were harmed in the making of this page."
+ },
+ es:{
+  h1:"Todo «no» es un «todavía no» con sombrero elegante.",
+  heroP:"Formas educadas de responder a un «no, gracias» ante una propuesta de landing page de EasyLandX, cada una con una réplica profesional, amable y ligeramente descarada.",
+  surprise:"🎲 Sorpréndeme con un «no»",visit:"Visita EasyLandX",
+  search:"Busca un «no» o una réplica…",all:"Todas las categorías",
+  reply:"La réplica",copy:"Copiar respuesta",copied:"Copiado ✓",
+  empty:"No hay nada. Por una vez, nadie dijo que no. 🎉",
+  ctaH:"¿Listo para convertir un «no» en un «cuéntame más»?",
+  ctaP:"EasyLandX crea landing pages a medida, enfocadas en convertir, para pequeños negocios y a precios que no harán desmayarse a tu gestor.",
+  ctaB:"Visita easylandx.github.io",
+  foot:"© EasyLandX · Ningún cliente potencial fue herido en la creación de esta página."
+ }
+};
+const cats=[
+ {e:"🙂",bg:"#D6E8FF",en:["The Classic Polite No","Short, sweet, and seasoned with a pinch of “gracias”."],es:["El «No» Educado de Siempre","Corto, dulce y con una pizca de «gracias»."]},
+ {e:"⏳",bg:"#FFD9EB",en:["The “Maybe Later” Club","Where “next quarter” goes to retire."],es:["El Club del «Más Adelante»","Donde «el trimestre que viene» se jubila."]},
+ {e:"🌐",bg:"#D3F6DF",en:["“I Already Have a Website”","Having a site and having a site that sells are different hobbies."],es:["«Ya Tengo Web»","Tener web y tener una web que vende son aficiones distintas."]},
+ {e:"🕵️",bg:"#FFF0A0",en:["“Someone Else Handles It”","The mysterious Digital Person. Nobody has ever seen them."],es:["«Se Encarga Otra Persona»","La misteriosa Persona Digital. Nadie la ha visto jamás."]},
+ {e:"🔥",bg:"#FFD9D3",en:["The Busy-Busy Brigade","Priorities: always one more than the calendar can hold."],es:["La Brigada del Estoy-a-Tope","Prioridades: siempre una más de las que caben en la agenda."]},
+ {e:"🤷",bg:"#FFE7B3",en:["The “We Don't Need It” Department","Where Instagram, word of mouth and ROI walk into a bar."],es:["El Departamento de «No Nos Hace Falta»","Donde Instagram, el boca a boca y el ROI entran en un bar."]}
+];
+// [cat, nope level, ES original, EN translation, reply ES, reply EN]
+const D=[
+[0, 1, "No gracias.", "No, thanks.", "Más corto que un tuit y igual de educado. Solo digo: una landing es un vendedor que nunca pide vacaciones. ¿Te enseño una?", "Shorter than a tweet and just as polite. I'll only say: a landing page is a salesperson who never asks for holidays. Want to see one?"],
+[0, 2, "Muchas gracias, pero no lo necesitamos.", "Thanks so much, but we don't need it.", "Nadie 'necesita' un paraguas hasta que llueve. Una landing es el paraguas de las ventas. ¿Se la enseño por si acaso?", "Nobody 'needs' an umbrella until it rains. A landing page is the umbrella of sales. Shall I show you, just in case?"],
+[0, 3, "Agradecemos su propuesta, sin embargo no estamos interesados en este momento.", "We appreciate your proposal, however we're not interested at this time.", "Qué educación, hasta el 'no' lleva corbata. Le dejo una propuesta de una página para cuando llegue el momento. ¿Se la envío?", "Such manners, even the 'no' wears a tie. I'll leave a one-page proposal for when the time comes. May I send it?"],
+[1, 2, "No lo necesito ahora mismo.", "I don't need it right now.", "Nadie necesita un chaleco salvavidas hasta que el barco hace cosas raras. Cuanto antes publiques, antes trabaja por ti.", "Nobody needs a life jacket until the boat does weird things. Publish sooner and the page works for you sooner."],
+[1, 1, "De momento no estamos interesados, más adelante puede ser.", "Not interested for now, maybe later.", "Un 'puede ser' es casi un sí con miedo escénico. Fijemos fecha para que 'más adelante' no acabe siendo 'nunca'.", "A 'maybe' is almost a yes with stage fright. Let's set a date so 'later' doesn't end up as 'never'."],
+[1, 1, "Gracias, me lo guardo para más adelante cuando tengamos presupuesto.", "Thanks, I'll save it for later when we have a budget.", "El presupuesto, ese animal mitológico. Mis precios están pensados para negocios pequeños: ¿te paso una cifra para soñar con los pies en el suelo?", "Budget, that mythical creature. My prices are made for small businesses: want a ballpark figure to dream with your feet on the ground?"],
+[2, 2, "Ya tengo web.", "I already have a website.", "¡Genial! Pero ¿trae clientes o solo hace de cuadro bonito? Una landing la complementa con un único objetivo. ¿Le echamos un ojo?", "Great! But does it bring clients or just hang there like a pretty painting? A landing page complements it with one clear goal. Take a look?"],
+[2, 3, "Ya tenemos presencia en web y no planeamos tocarla.", "We already have a web presence and don't plan to touch it.", "¡Ni se toca! La landing vive al lado, sin rozar nada. Tu web sigue intacta, como pieza de museo.", "Don't touch it! The landing page lives next door and brushes against nothing. Your site stays intact, like a museum piece."],
+[2, 2, "Acabamos de rediseñar la web hace poco.", "We just redesigned our website recently.", "¡Enhorabuena, y ojo con la pintura fresca! Ahora que luce, le falta una página que convierta visitas en consultas.", "Congrats, and mind the wet paint! Now that it looks great, it just needs a page that turns visits into enquiries."],
+[3, 2, "Ya tenemos agencia / proveedor para la web.", "We already have an agency / provider for the website.", "¡Qué fidelidad, más que muchos matrimonios! No vengo a sustituirlos: solo a hacer una landing concreta, sin celos.", "Such loyalty, stronger than many marriages! I'm not here to replace them: just one specific landing page, no jealousy."],
+[3, 2, "De la parte digital se encarga otra persona y de momento estamos cubiertos.", "Someone else handles the digital side and we're covered for now.", "¡Ah, la misteriosa Persona Digital! ¿Me la presentas? Prometo que mi landing le quita trabajo, no se lo añade.", "Ah, the mysterious Digital Person! Care to introduce us? I promise my landing page takes work off them, not adds."],
+[3, 2, "Gracias por pensarnos, pero ya tenemos cubierto ese aspecto.", "Thanks for thinking of us, but we already have that aspect covered.", "Cubierto, como el sofá con plástico. ¿Y si doy una segunda opinión, sin compromiso, a vuestra página actual?", "Covered, like a sofa under plastic. How about a no-strings second opinion on your current page?"],
+[4, 2, "Ahora mismo estamos enfocados en otras prioridades.", "Right now we're focused on other priorities.", "La lista de prioridades siempre tiene una más. Yo me ocupo de casi todo: solo necesito diez minutos de tu vida, no tu alma.", "The priority list always has one more item. I handle nearly everything: I need ten minutes of your time, not your soul."],
+[4, 2, "No es una prioridad para nosotros en este momento.", "It's not a priority for us at the moment.", "Tranquilo, no pretendo ganarle a 'ordenar el archivador'. Dos minutos para enseñarte lo que sí podría sumar. ¿Trato?", "Relax, I'm not trying to beat 'tidy the filing cabinet'. Two minutes to show what it could add. Deal?"],
+[4, 2, "Nos viene mal este momento, estamos a tope con otros proyectos.", "This is a bad time for us, we're swamped with other projects.", "¡Ánimo con esos proyectos, valientes! No voy a sumar caos: dime una fecha cómoda y yo adelanto lo que pueda.", "Hang in there with those projects! I won't add chaos: name a comfortable date and I'll prep what I can."],
+[5, 2, "Gracias, pero no le veo realmente utilidad ahora.", "Thanks, but I don't really see the usefulness right now.", "Utilidad no encontrada: error 404, culpa mía por explicarme mal. Una landing hace que quien te busca entienda qué ofreces y te contacte. ¿Reintento?", "Usefulness not found: a 404, my fault for explaining badly. A landing page helps people who look for you grasp what you offer and get in touch. Retry?"],
+[5, 3, "En nuestro sector captamos todo por recomendación / boca a boca, no nos hace falta web.", "In our sector we win everything through referrals / word of mouth, we don't need a website.", "¡El boca a boca es oro puro! Pero tras la recomendación, el cliente te googlea antes de llamar. Que encuentre una landing y no un vacío.", "Word of mouth is pure gold! But after the recommendation, the client googles you before calling. Let them find a landing page, not a void."],
+[5, 3, "Trabajamos 100% por Instagram / LinkedIn y no necesitamos página.", "We work 100% through Instagram / LinkedIn and don't need a page.", "Vivir de alquiler y que el casero sea el algoritmo... Una página propia es tu casa en propiedad: llevas ahí el tráfico y captas contactos.", "Living in a rental where the algorithm is the landlord... Your own page is a home you own: send the traffic there and capture contacts."]
+];
+return {T,cats,D};})();
+const YES=(()=>{
 const T={
  en:{h1:"Every “yes” is a “let’s get started” in a party hat.",
   heroP:"What happens if you accept an EasyLandX landing page proposal: the doubts, the next steps and the answers to every “and then what?”, friendly, clear and slightly cheeky.",
@@ -154,22 +225,32 @@ const D=[
 "Lo ajustamos hasta que te convenza. Una página hecha a mano se perfecciona con tu opinión.",
 "We adjust it until you’re happy. A handmade page gets better with your feedback."]
 ];
-let lang='en',q='',catf='all';
+return {T,cats,D};})();
+const M={no:NO,yes:YES};
+const METER={no:['🙅','Nope-o-meter'],yes:['🙌','Yes-o-meter']};
+const TITLE={no:{en:'The Polite No Hall of Fame',es:'El Salón de la Fama del No Educado'},yes:{en:'The Happy Yes Hall of Fame',es:'El Salón de la Fama del Sí'}};
+let mode='yes',lang='en',q='',catf='all';
 const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
 function applyStatic(){
- document.documentElement.lang=lang;
+ const T=M[mode].T;
+ document.documentElement.lang=lang;document.body.className=mode;
  document.querySelectorAll('[data-t]').forEach(el=>el.textContent=T[lang][el.dataset.t]);
  document.querySelectorAll('[data-ph]').forEach(el=>el.placeholder=T[lang][el.dataset.ph]);
  $('lEn').classList.toggle('on',lang==='en');$('lEs').classList.toggle('on',lang==='es');
- document.title=lang==='en'?'The Happy Yes Hall of Fame | EasyLandX':'El Salón de la Fama del Sí | EasyLandX';
+ $('mYes').textContent=lang==='en'?'YES':'SÍ';
+ $('mYes').classList.toggle('on',mode==='yes');$('mNo').classList.toggle('on',mode==='no');
+ $('mYes').setAttribute('aria-pressed',mode==='yes');$('mNo').setAttribute('aria-pressed',mode==='no');
+ document.title=TITLE[mode][lang]+' | EasyLandX';
 }
 function chips(){
+ const{T,cats}=M[mode];
  $('catChips').innerHTML=[['all','✨',T[lang].all]].concat(cats.map((c,i)=>[String(i),c.e,c[lang][0]])).map(c=>
   `<button class="chip ${catf===c[0]?'on':''}" title="${esc(c[2])}" onclick="catf='${c[0]}';render()">${c[1]}</button>`).join('');
 }
 function render(){
  applyStatic();chips();
+ const{T,cats,D}=M[mode],mt=METER[mode];
  const wrap=$('cats');wrap.innerHTML='';let total=0;
  cats.forEach((c,ci)=>{
   if(catf!=='all'&&catf!==String(ci))return;
@@ -179,9 +260,8 @@ function render(){
   const sec=document.createElement('section');sec.className='cat';sec.style.background=c.bg;
   sec.innerHTML=`<div class="inner"><h2>${c.e} ${esc(c[lang][0])}</h2><p class="sub">${esc(c[lang][1])}</p><div class="grid">`+
   items.map(({d,i})=>`<article class="card" id="c${i}">
-   <div class="meter" title="Yes-o-meter">${'🙌'.repeat(d[1])}</div>
-   <p class="orig">“${esc(d[2])}”</p>
-   ${lang==='en'?`<p class="tr">${esc(d[3])}</p>`:''}
+   <div class="meter" title="${mt[1]}">${mt[0].repeat(d[1])}</div>
+   <p class="orig">“${esc(lang==='en'?d[3]:d[2])}”</p>
    <div class="rebut"><h4>${T[lang].reply}</h4>${esc(lang==='en'?d[5]:d[4])}</div>
    <button class="copy" onclick="copyReply(${i},this)">${T[lang].copy}</button>
   </article>`).join('')+`</div></div>`;
@@ -190,14 +270,16 @@ function render(){
  if(!total)wrap.innerHTML=`<div class="empty">${T[lang].empty}</div>`;
 }
 function setLang(l){lang=l;render()}
+function setMode(m){if(m===mode)return;mode=m;q='';catf='all';$('search').value='';render();window.scrollTo({top:0,behavior:'smooth'})}
 function copyReply(i,btn){
+ const{T,D}=M[mode];
  const t=lang==='en'?D[i][5]:D[i][4];
  const done=()=>{btn.textContent=T[lang].copied;setTimeout(()=>btn.textContent=T[lang].copy,1200)};
  try{navigator.clipboard.writeText(t).then(done,done)}catch(e){done()}
 }
 function surprise(){
  q='';catf='all';$('search').value='';render();
- const el=$('c'+Math.floor(Math.random()*D.length));
+ const el=$('c'+Math.floor(Math.random()*M[mode].D.length));
  el.scrollIntoView({behavior:'smooth',block:'center'});
  el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1600);
 }
