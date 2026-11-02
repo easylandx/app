@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Happy Yes Hall of Fame | EasyLandX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--yellow:#FFD600;--blue:#0062CC;--red:#E8291C;--green:#25D366;--pink:#E8479A;--ink:#1A1208;--pad:clamp(22px,5vw,48px)}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Inter",system-ui,sans-serif;color:var(--ink);background:var(--yellow);line-height:1.55}
+h1,h2,h3,h4,.btn,.chip{font-family:"Poppins","Inter",system-ui,sans-serif}
+.btn{display:inline-block;border:2px solid var(--ink);cursor:pointer;font-weight:700;font-size:.95rem;padding:12px 20px;border-radius:14px;text-decoration:none;color:#fff;box-shadow:4px 4px 0 var(--ink);transition:transform .1s}
+.btn:hover{transform:translateY(-2px)}
+.btn.blue{background:var(--blue)}.btn.red{background:var(--red)}
+header.hero{padding:28px var(--pad) 48px}
+.hero .wrap{max-width:900px;margin:0 auto}
+.hero-top{display:flex;justify-content:flex-end;margin-bottom:30px}
+.lang{display:inline-flex;border:2px solid var(--ink);border-radius:14px;overflow:hidden;background:#fff;box-shadow:4px 4px 0 var(--ink)}
+.lang button{display:flex;align-items:center;gap:9px;border:0;background:#fff;font:800 .95rem "Poppins",sans-serif;padding:11px 17px;cursor:pointer;color:var(--ink)}
+.lang button+button{border-left:2px solid var(--ink)}
+.lang button.on{background:var(--blue);color:#fff}
+.lang svg{width:25px;height:18px;border-radius:2px;box-shadow:0 0 0 1px #0002}
+@media(max-width:600px){header.hero{padding-top:20px;padding-bottom:38px}.hero-top{margin-bottom:24px}.lang button{padding:9px 13px}}
+.hero h1{font-weight:900;font-size:clamp(2.4rem,7vw,4.6rem);line-height:1.02;letter-spacing:-.035em;margin:0 0 20px}
+.hero p{font-size:1.12rem;max-width:640px;margin:0 0 26px}
+.hero .row{display:flex;flex-wrap:wrap;gap:12px}
+.controls{position:sticky;top:0;z-index:5;background:var(--yellow);border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);padding:12px var(--pad);display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center}
+.controls input{padding:10px 14px;border-radius:12px;border:2px solid var(--ink);font:inherit;min-width:230px;max-width:100%;background:#fff}
+#catChips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.chip{border:2px solid var(--ink);background:#fff;border-radius:99px;padding:6px 14px;font-size:.9rem;font-weight:600;cursor:pointer;color:var(--ink)}
+.chip.on{background:var(--blue);color:#fff}
+section.cat{padding:46px var(--pad)}
+.inner{max-width:1100px;margin:0 auto}
+.cat h2{font-weight:800;font-size:clamp(1.5rem,3.6vw,2.2rem);letter-spacing:-.02em;margin:0}
+.cat .sub{margin:4px 0 24px;font-weight:500}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:20px}
+.card{background:#fff;border:2px solid var(--ink);border-radius:18px;padding:18px;box-shadow:5px 5px 0 var(--ink);display:flex;flex-direction:column;gap:10px;transition:transform .15s}
+.card:hover{transform:translate(-2px,-2px)}
+.card.flash{animation:flash 1.5s}
+@keyframes flash{0%,60%{background:#fff3a0}100%{background:#fff}}
+.meter{font-size:.8rem;letter-spacing:1px}
+.orig{font-family:"Poppins",sans-serif;font-weight:700;font-size:1.08rem;line-height:1.3;margin:0}
+.tr{font-size:.86rem;opacity:.7;margin:-4px 0 0;font-style:italic}
+.rebut{border-left:6px solid var(--green);background:#effcf3;border-radius:0 12px 12px 0;padding:10px 12px;font-size:.95rem;flex:1}
+.rebut h4{margin:0 0 4px;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:#14803d}
+.copy{align-self:flex-end;border:2px solid var(--ink);background:var(--green);color:var(--ink);border-radius:10px;padding:5px 14px;font:700 .82rem "Poppins",sans-serif;cursor:pointer}
+.cta{background:var(--green);text-align:center;padding:64px var(--pad)}
+.cta h2{font-weight:900;font-size:clamp(1.8rem,4.5vw,3rem);letter-spacing:-.03em;margin:0 0 10px;line-height:1.08}
+.cta p{max-width:560px;margin:0 auto 22px}
+.cta .btn{background:var(--yellow);color:var(--ink)}
+footer{text-align:center;padding:22px var(--pad);font-size:.9rem;font-weight:500;border-top:3px solid var(--ink)}
+.empty{text-align:center;padding:60px var(--pad);background:#fff0a0;font-weight:600}
+</style>
+</head>
+<body>
+<header class="hero"><div class="wrap">
+ <div class="hero-top"><div class="lang" role="group" aria-label="Language">
+  <button id="lEn" onclick="setLang('en')" aria-label="English"><svg viewBox="0 0 60 36" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="36" fill="#012169"/><path d="M0 0 60 36M60 0 0 36" stroke="#fff" stroke-width="8"/><path d="M0 0 60 36M60 0 0 36" stroke="#C8102E" stroke-width="3.5"/><path d="M30 0v36M0 18h60" stroke="#fff" stroke-width="12"/><path d="M30 0v36M0 18h60" stroke="#C8102E" stroke-width="6"/></svg>EN</button>
+  <button id="lEs" onclick="setLang('es')" aria-label="Español"><svg viewBox="0 0 60 36" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="36" fill="#AA151B"/><rect y="9" width="60" height="18" fill="#F1BF00"/></svg>ES</button>
+ </div></div>
+ <h1 data-t="h1"></h1>
+ <p data-t="heroP"></p>
+ <div class="row">
+  <button class="btn blue" onclick="surprise()" data-t="surprise"></button>
+  <a class="btn red" href="https://easylandx.github.io" target="_blank" rel="noopener" data-t="visit"></a>
+ </div>
+</div></header>
+<div class="controls"><input id="search" type="search" data-ph="search"><div id="catChips"></div></div>
+<main id="cats"></main>
+<section class="cta"><h2 data-t="ctaH"></h2><p data-t="ctaP"></p><a class="btn" href="https://easylandx.github.io" target="_blank" rel="noopener" data-t="ctaB"></a></section>
+<footer data-t="foot"></footer>
+<script>
+const T={
+ en:{h1:"Every “yes” is a “let’s get started” in a party hat.",
+  heroP:"What happens if you accept an EasyLandX landing page proposal: the doubts, the next steps and the answers to every “and then what?”, friendly, clear and slightly cheeky.",
+  surprise:"🎲 Surprise me with a “yes”",visit:"Visit EasyLandX",search:"Search a “yes” or an answer…",all:"All categories",
+  reply:"What happens next",copy:"Copy reply",copied:"Copied ✓",empty:"Nothing found. Try another word! 🎉",
+  ctaH:"Ready to turn that “yes” into a live landing page?",
+  ctaP:"Tell me about your business and I’ll take it from there: custom, conversion-focused and priced for small businesses.",
+  ctaB:"Visit easylandx.github.io",foot:"© EasyLandX · No regrets were harmed in the making of this page."},
+ es:{h1:"Todo «sí» es un «manos a la obra» con gorro de fiesta.",
+  heroP:"Qué pasa si aceptas una propuesta de landing page de EasyLandX: las dudas, los siguientes pasos y la respuesta a cada «¿y después qué?», de forma amable, clara y ligeramente descarada.",
+  surprise:"🎲 Sorpréndeme con un «sí»",visit:"Visita EasyLandX",search:"Busca un «sí» o una respuesta…",all:"Todas las categorías",
+  reply:"Lo que pasa después",copy:"Copiar respuesta",copied:"Copiado ✓",empty:"No hay nada. ¡Prueba otra palabra! 🎉",
+  ctaH:"¿Listo para convertir ese «sí» en una landing publicada?",
+  ctaP:"Cuéntame de tu negocio y yo me encargo del resto: a medida, enfocada en convertir y con precios pensados para pequeños negocios.",
+  ctaB:"Visita easylandx.github.io",foot:"© EasyLandX · Ningún arrepentimiento fue dañado en la creación de esta página."}
+};
+const cats=[
+ {e:"🎉",bg:"#FFF0A0",en:["The Happy Yes","Short, sweet and ready for confetti."],es:["El Sí Feliz","Corto, dulce y listo para el confeti."]},
+ {e:"🗺️",bg:"#D6E8FF",en:["What Happens Next","No mystery, just a clear path from “yes” to “published”."],es:["Y Después, ¿Qué?","Sin misterio: un camino claro del «sí» a «publicado»."]},
+ {e:"🌐",bg:"#D3F6DF",en:["My Current Website Stays Safe","Your site keeps its nap. The landing page lives next door."],es:["Mi Web Actual Está a Salvo","Tu web sigue con su siesta. La landing vive al lado."]},
+ {e:"🧘",bg:"#FFD9EB",en:["I Don’t Have to Do Everything","You bring the business, I bring the page."],es:["No Tengo Que Hacerlo Todo","Tú pones el negocio, yo pongo la página."]},
+ {e:"💶",bg:"#FFE7B3",en:["The Money Question","Clear numbers, calculator in hand, zero poetry."],es:["La Pregunta del Dinero","Números claros, calculadora en mano y cero poesía."]},
+ {e:"📈",bg:"#FFD9D3",en:["And Then, the Results","Because a page is only pretty until it sells."],es:["Y Luego, los Resultados","Porque una página solo es bonita hasta que vende."]}
+];
+// [cat, yes level, ES original, EN translation, reply ES, reply EN]
+const D=[
+[0,3,"Vale, acepto la propuesta.","OK, I accept the proposal.",
+"¡Esto merece confeti! Te mando el siguiente paso en cuanto cierres esta pestaña. Prometo ir rápido y no usar plantillas.",
+"This deserves confetti! I’ll send the next step the moment you close this tab. I promise to be quick and template-free."],
+[0,2,"Me has convencido, adelante.","You’ve convinced me, go ahead.",
+"Me quedo esa frase como lema. Te escribo hoy mismo con lo que necesito para empezar: cortito y sin deberes imposibles.",
+"I’m keeping that sentence as my motto. I’ll write today with what I need to start: short, no impossible homework."],
+[0,1,"Sí, pero explícame bien cómo sigue.","Yes, but explain what comes next.",
+"Un sí con cautela, lo respeto. Te lo cuento claro y sin letra pequeña: me cuentas tu negocio, yo hago la página y tú das el visto bueno.",
+"A cautious yes, I respect that. Here it is, clear and print-free: you tell me about your business, I build the page, you give the thumbs-up."],
+[1,1,"Si acepto, ¿qué pasa después?","If I accept, what happens next?",
+"Primero charlamos para conocer tu negocio. Luego te preparo un borrador y lo afinamos juntos hasta que digas: «esto soy yo».",
+"First we chat so I get to know your business. Then I prepare a draft and we polish it together until you say: “that’s me”."],
+[1,2,"¿Qué necesitas de mí para empezar?","What do you need from me to start?",
+"Solo lo básico: tu logo, algunas fotos, qué ofreces y cómo quieres que te contacten. Lo que falte, lo resolvemos por el camino.",
+"Just the basics: your logo, a few photos, what you offer and how you want to be contacted. Whatever’s missing, we’ll sort out along the way."],
+[1,2,"¿Podré ver la página antes de publicarla?","Will I see the page before it goes live?",
+"Por supuesto: nada sale al mundo sin tu visto bueno. Revisas, pides cambios y publicamos cuando estés encantado.",
+"Of course: nothing goes out into the world without your approval. You review, ask for changes and we publish when you’re delighted."],
+[2,2,"Si acepto, ¿tengo que cambiar mi web actual?","If I accept, do I have to change my current website?",
+"Ni un tornillo. La landing vive aparte y tu web sigue como está; se enlazan desde donde tú quieras.",
+"Not a single screw. The landing page lives separately and your site stays as it is; they link up wherever you like."],
+[2,1,"¿Puedo usar mi logo y mis colores?","Can I use my logo and my colours?",
+"¡Claro! La página se hace a medida, con tu identidad. Nada de plantilla genérica con tu nombre pegado encima.",
+"Of course! The page is made to measure, with your identity. No generic template with your name stuck on top."],
+[2,3,"¿Puedo conectarla con mi WhatsApp y mis redes?","Can I connect it to my WhatsApp and socials?",
+"Sí: botones a WhatsApp, Instagram o teléfono, y hasta un QR para el mostrador. Que te encuentren y te escriban en un toque.",
+"Yes: buttons to WhatsApp, Instagram or phone, even a QR code for the counter. Let people find you and message you in one tap."],
+[3,2,"No tengo tiempo, ¿me dará mucho trabajo?","I have no time, will it be a lot of work?",
+"Tú pones diez minutos para contarme lo esencial y yo me encargo del resto. Menos trabajo, no más.",
+"You give me ten minutes to share the essentials and I handle the rest. Less work, not more."],
+[3,2,"No entiendo de tecnología, ¿hay problema?","I don’t understand tech, is that a problem?",
+"Ninguno. Hablamos en cristiano: sin jerga y sin pantallas raras. Tú cuentas, yo lo traduzco a página.",
+"None at all. Plain language: no jargon, no weird screens. You tell me, I translate it into a page."],
+[3,3,"¿Tengo que escribir los textos yo?","Do I have to write the text myself?",
+"Si quieres, sí; si no, te propongo yo los textos y tú los ajustas. Corregir es mucho más fácil que empezar de cero.",
+"If you like, yes; if not, I’ll propose the copy and you tweak it. Editing is far easier than starting from scratch."],
+[4,2,"¿Cuánto cuesta y cuándo se paga?","How much does it cost and when do I pay?",
+"Acordamos el precio por escrito antes de empezar, pensado para pequeños negocios. Sin sorpresas ni letra pequeña.",
+"We agree the price in writing before starting, designed for small businesses. No surprises, no small print."],
+[4,3,"¿Hay costes ocultos?","Are there any hidden costs?",
+"Lo que se acuerda es lo que se paga. Si se me ocurre algo extra, lo hablamos antes, nunca después.",
+"What we agree is what you pay. If something extra comes to mind, we talk about it before, never after."],
+[4,1,"¿Merece la pena la inversión?","Is the investment worth it?",
+"Hagamos la cuenta con tus números: si la página te trae unos pocos clientes más, se paga sola. Calculadora en mano.",
+"Let’s do the maths with your numbers: if the page brings in a few more clients, it pays for itself. Calculator in hand."],
+[5,2,"¿Cuándo empezaré a ver resultados?","When will I start seeing results?",
+"Cuando la compartas en redes, anuncios o con un QR, empieza a recibir visitas. Con los primeros datos vemos qué funciona y lo afinamos.",
+"As soon as you share it on socials, ads or with a QR code, it starts getting visits. With the first data we see what works and fine-tune it."],
+[5,3,"¿Cómo sabré si funciona?","How will I know it works?",
+"Miramos cuánta gente entra y cuánta te escribe o te llama. Números claros, sin jeroglíficos.",
+"We look at how many people visit and how many message or call you. Clear numbers, no hieroglyphics."],
+[5,1,"¿Y si no me convence el resultado?","What if I’m not convinced by the result?",
+"Lo ajustamos hasta que te convenza. Una página hecha a mano se perfecciona con tu opinión.",
+"We adjust it until you’re happy. A handmade page gets better with your feedback."]
+];
+let lang='en',q='',catf='all';
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+function applyStatic(){
+ document.documentElement.lang=lang;
+ document.querySelectorAll('[data-t]').forEach(el=>el.textContent=T[lang][el.dataset.t]);
+ document.querySelectorAll('[data-ph]').forEach(el=>el.placeholder=T[lang][el.dataset.ph]);
+ $('lEn').classList.toggle('on',lang==='en');$('lEs').classList.toggle('on',lang==='es');
+ document.title=lang==='en'?'The Happy Yes Hall of Fame | EasyLandX':'El Salón de la Fama del Sí | EasyLandX';
+}
+function chips(){
+ $('catChips').innerHTML=[['all','✨',T[lang].all]].concat(cats.map((c,i)=>[String(i),c.e,c[lang][0]])).map(c=>
+  `<button class="chip ${catf===c[0]?'on':''}" title="${esc(c[2])}" onclick="catf='${c[0]}';render()">${c[1]}</button>`).join('');
+}
+function render(){
+ applyStatic();chips();
+ const wrap=$('cats');wrap.innerHTML='';let total=0;
+ cats.forEach((c,ci)=>{
+  if(catf!=='all'&&catf!==String(ci))return;
+  const items=D.map((d,i)=>({d,i})).filter(({d})=>d[0]===ci&&(!q||(d[2]+d[3]+d[4]+d[5]).toLowerCase().includes(q)));
+  if(!items.length)return;
+  total+=items.length;
+  const sec=document.createElement('section');sec.className='cat';sec.style.background=c.bg;
+  sec.innerHTML=`<div class="inner"><h2>${c.e} ${esc(c[lang][0])}</h2><p class="sub">${esc(c[lang][1])}</p><div class="grid">`+
+  items.map(({d,i})=>`<article class="card" id="c${i}">
+   <div class="meter" title="Yes-o-meter">${'🙌'.repeat(d[1])}</div>
+   <p class="orig">“${esc(d[2])}”</p>
+   ${lang==='en'?`<p class="tr">${esc(d[3])}</p>`:''}
+   <div class="rebut"><h4>${T[lang].reply}</h4>${esc(lang==='en'?d[5]:d[4])}</div>
+   <button class="copy" onclick="copyReply(${i},this)">${T[lang].copy}</button>
+  </article>`).join('')+`</div></div>`;
+  wrap.appendChild(sec);
+ });
+ if(!total)wrap.innerHTML=`<div class="empty">${T[lang].empty}</div>`;
+}
+function setLang(l){lang=l;render()}
+function copyReply(i,btn){
+ const t=lang==='en'?D[i][5]:D[i][4];
+ const done=()=>{btn.textContent=T[lang].copied;setTimeout(()=>btn.textContent=T[lang].copy,1200)};
+ try{navigator.clipboard.writeText(t).then(done,done)}catch(e){done()}
+}
+function surprise(){
+ q='';catf='all';$('search').value='';render();
+ const el=$('c'+Math.floor(Math.random()*D.length));
+ el.scrollIntoView({behavior:'smooth',block:'center'});
+ el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1600);
+}
+$('search').addEventListener('input',e=>{q=e.target.value.trim().toLowerCase();render()});
+render();
+</script>
+</body>
+</html>
