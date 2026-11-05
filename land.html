@@ -44,6 +44,16 @@
   .lang button.active{background:var(--blue);color:var(--white);}
   .lang button:focus-visible{outline:3px solid var(--red);outline-offset:-3px;}
   .nav-cta{display:none;}
+  .nav-cta.nav-cta-dot{
+    width:38px;height:38px;padding:0;display:inline-flex;align-items:center;justify-content:center;
+    border:2.5px solid var(--ink);border-radius:50%;background:var(--green);
+    box-shadow:3px 3px 0 var(--ink);font-size:0;line-height:1;
+  }
+  .nav-cta.nav-cta-dot::before{
+    content:"✓";color:var(--white);font-size:22px;font-weight:900;line-height:1;
+  }
+  .nav-cta.nav-cta-dot:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink);}
+  .nav-cta.nav-cta-dot:focus-visible{outline:3px solid var(--blue);outline-offset:3px;}
 
   /* BUTTONS */
   .btn{display:inline-block;font-family:'Inter',sans-serif;font-weight:700;font-size:16px;padding:14px 24px;border:2.5px solid var(--ink);border-radius:12px;text-decoration:none;cursor:pointer;box-shadow:var(--shadow);transition:transform .15s ease,box-shadow .15s ease;color:var(--ink);background:var(--white);}
@@ -240,7 +250,7 @@
         <button type="button" data-lang="en" aria-label="English"><svg viewBox="0 0 60 40" preserveAspectRatio="none"><use href="#flag-en"/></svg>EN</button>
         <button type="button" data-lang="es" aria-label="Español"><svg viewBox="0 0 24 16"><use href="#flag-es"/></svg>ES</button>
       </div>
-      <a href="https://easylandx.github.io/" class="btn btn-red nav-cta" data-i18n="nav_cta"></a>
+      <a href="https://easylandx.github.io/" class="btn btn-red nav-cta nav-cta-dot" aria-label="Get my website / Quiero mi web" title="Get my website / Quiero mi web" data-i18n="nav_cta"></a>
     </div>
   </div>
 </nav>
