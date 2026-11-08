@@ -220,6 +220,59 @@
     font-size:.95rem;
   }
 
+  /* ---------- phone preview inside cards ---------- */
+  :root{ --phone-orange:#FF7A00; }
+  .card h3 a{ color:inherit; text-decoration:none; }
+  .card h3 a:hover{ color:var(--red); }
+  .phone{
+    --bezel:7px;
+    width:min(100%, 232px);
+    margin:0 auto;
+    background:var(--phone-orange);
+    border:var(--bezel) solid var(--phone-orange);
+    border-radius:34px;
+    box-shadow:0 10px 24px -10px rgba(255,122,0,.55);
+  }
+  .screen{
+    position:relative;
+    width:100%;
+    aspect-ratio:390 / 780;
+    border-radius:27px;
+    overflow:hidden;
+    background:#fff;
+    isolation:isolate;
+    -webkit-mask-image:-webkit-radial-gradient(white, black); /* keeps rounded clip in Safari */
+  }
+  .screen::before{ /* loading spinner */
+    content:""; position:absolute; top:50%; left:50%; width:26px; height:26px; margin:-13px 0 0 -13px;
+    border:3px solid #ffd9b3; border-top-color:var(--phone-orange); border-radius:50%;
+    animation:phspin .8s linear infinite; z-index:0;
+  }
+  .screen.loaded::before{ display:none; }
+  @keyframes phspin{ to{ transform:rotate(360deg); } }
+  .screen iframe{
+    position:absolute; top:0; left:0;
+    width:390px; height:780px;           /* real phone viewport, scaled down by JS */
+    border:0; background:#fff;
+    transform-origin:0 0;
+    opacity:0; transition:opacity .3s ease;
+    overscroll-behavior:contain;
+    touch-action:pan-y;
+    -webkit-overflow-scrolling:touch;
+    z-index:1;
+  }
+  .screen.loaded iframe{ opacity:1; }
+  .screen,.phone{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+  .notch{
+    position:absolute; z-index:3; top:7px; left:50%; width:30%; height:14px;
+    transform:translateX(-50%); background:#111; border-radius:99px; pointer-events:none;
+  }
+  .homebar{
+    position:absolute; z-index:3; bottom:5px; left:50%; width:34%; height:4px;
+    transform:translateX(-50%); background:rgba(17,17,17,.75); border-radius:99px; pointer-events:none;
+  }
+  .card:hover{ transform:none; box-shadow:6px 6px 0 var(--ink); }
+
   /* ---------- stats ---------- */
   .stats{
     display:grid;
@@ -354,371 +407,676 @@
 
       <div class="grid" id="cardsGrid">
 
-        <a href="https://easylandx.github.io/web/yogaes.html" class="card">
+        <div class="card">
           <div class="card-icon">🧘‍♀️</div>
-          <h3>Profesores y Estudios de Yoga</h3>
-          <span class="card-link">Ver ejemplo de yoga →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/web/yogaes.html">Profesores y Estudios de Yoga</a></h3>
+          <div class="phone" aria-label="Vista previa: Profesores y Estudios de Yoga">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/web/yogaes.html" title="Ejemplo: Profesores y Estudios de Yoga" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/pilateses.html" class="card">
+        <div class="card">
           <div class="card-icon">🧘🏻‍♀️</div>
-          <h3>Estudios de Pilates</h3>
-          <span class="card-link">Ver ejemplo de pilates →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/pilateses.html">Estudios de Pilates</a></h3>
+          <div class="phone" aria-label="Vista previa: Estudios de Pilates">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/pilateses.html" title="Ejemplo: Estudios de Pilates" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/web/traineres.html" class="card">
+        <div class="card">
           <div class="card-icon">🏋️‍♂️</div>
-          <h3>Entrenadores Personales y Centros</h3>
-          <span class="card-link">Ver ejemplo de entrenador →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/web/traineres.html">Entrenadores Personales y Centros</a></h3>
+          <div class="phone" aria-label="Vista previa: Entrenadores Personales y Centros">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/web/traineres.html" title="Ejemplo: Entrenadores Personales y Centros" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/web/terapeuta.html" class="card">
+        <div class="card">
           <div class="card-icon">🧠</div>
-          <h3>Psicólogos y Consultas</h3>
-          <span class="card-link">Ver ejemplo de psicología →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/web/terapeuta.html">Psicólogos y Consultas</a></h3>
+          <div class="phone" aria-label="Vista previa: Psicólogos y Consultas">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/web/terapeuta.html" title="Ejemplo: Psicólogos y Consultas" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/leaderses.html" class="card">
+        <div class="card">
           <div class="card-icon">💼</div>
-          <h3>Liderazgo Empresarial y Coaches Ejecutivos</h3>
-          <span class="card-link">Ver ejemplo de coaching ejecutivo →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/leaderses.html">Liderazgo Empresarial y Coaches Ejecutivos</a></h3>
+          <div class="phone" aria-label="Vista previa: Liderazgo Empresarial y Coaches Ejecutivos">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/leaderses.html" title="Ejemplo: Liderazgo Empresarial y Coaches Ejecutivos" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/linkedines.html" class="card">
+        <div class="card">
           <div class="card-icon">💼</div>
-          <h3>Consultor de LinkedIn</h3>
-          <span class="card-link">Ver ejemplo de consultor de LinkedIn →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/linkedines.html">Consultor de LinkedIn</a></h3>
+          <div class="phone" aria-label="Vista previa: Consultor de LinkedIn">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/linkedines.html" title="Ejemplo: Consultor de LinkedIn" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/lawyeres.html" class="card">
+        <div class="card">
           <div class="card-icon">⚖️</div>
-          <h3>Abogados y Servicios Jurídicos</h3>
-          <span class="card-link">Ver ejemplo de abogados →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/lawyeres.html">Abogados y Servicios Jurídicos</a></h3>
+          <div class="phone" aria-label="Vista previa: Abogados y Servicios Jurídicos">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/lawyeres.html" title="Ejemplo: Abogados y Servicios Jurídicos" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/financiales.html" class="card">
+        <div class="card">
           <div class="card-icon">💰</div>
-          <h3>Asesores Financieros y Planificadores Independientes</h3>
-          <span class="card-link">Ver ejemplo de asesor financiero →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/financiales.html">Asesores Financieros y Planificadores Independientes</a></h3>
+          <div class="phone" aria-label="Vista previa: Asesores Financieros y Planificadores Independientes">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/financiales.html" title="Ejemplo: Asesores Financieros y Planificadores Independientes" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/tarotes.html" class="card">
+        <div class="card">
           <div class="card-icon">🌌</div>
-          <h3>Astrología y Lectura de Tarot</h3>
-          <span class="card-link">Ver ejemplo de tarot →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/tarotes.html">Astrología y Lectura de Tarot</a></h3>
+          <div class="phone" aria-label="Vista previa: Astrología y Lectura de Tarot">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/tarotes.html" title="Ejemplo: Astrología y Lectura de Tarot" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/web/gastronomia.html" class="card">
+        <div class="card">
           <div class="card-icon">🍞</div>
-          <h3>Panaderías y Alimentación Especializada</h3>
-          <span class="card-link">Ver ejemplo de panadería →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/web/gastronomia.html">Panaderías y Alimentación Especializada</a></h3>
+          <div class="phone" aria-label="Vista previa: Panaderías y Alimentación Especializada">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/web/gastronomia.html" title="Ejemplo: Panaderías y Alimentación Especializada" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/cheesees.html" class="card">
+        <div class="card">
           <div class="card-icon">🧀</div>
-          <h3>Queseros Artesanales</h3>
-          <span class="card-link">Ver ejemplo de quesos artesanales →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/cheesees.html">Queseros Artesanales</a></h3>
+          <div class="phone" aria-label="Vista previa: Queseros Artesanales">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/cheesees.html" title="Ejemplo: Queseros Artesanales" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/cafeses.html" class="card">
+        <div class="card">
           <div class="card-icon">☕</div>
-          <h3>Cafeterías de Especialidad y Cafés Independientes</h3>
-          <span class="card-link">Ver ejemplo de cafetería →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/cafeses.html">Cafeterías de Especialidad y Cafés Independientes</a></h3>
+          <div class="phone" aria-label="Vista previa: Cafeterías de Especialidad y Cafés Independientes">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/cafeses.html" title="Ejemplo: Cafeterías de Especialidad y Cafés Independientes" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/cakeses.html" class="card">
+        <div class="card">
           <div class="card-icon">🎂</div>
-          <h3>Diseñadores de Tartas y Pastelerías Personalizadas</h3>
-          <span class="card-link">Ver ejemplo de pastelería personalizada →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/cakeses.html">Diseñadores de Tartas y Pastelerías Personalizadas</a></h3>
+          <div class="phone" aria-label="Vista previa: Diseñadores de Tartas y Pastelerías Personalizadas">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/cakeses.html" title="Ejemplo: Diseñadores de Tartas y Pastelerías Personalizadas" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/chocolates.html" class="card">
+        <div class="card">
           <div class="card-icon">🍫</div>
-          <h3>Chocolateros y Maestros Chocolateros</h3>
-          <span class="card-link">Ver ejemplo de chocolatería →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/chocolates.html">Chocolateros y Maestros Chocolateros</a></h3>
+          <div class="phone" aria-label="Vista previa: Chocolateros y Maestros Chocolateros">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/chocolates.html" title="Ejemplo: Chocolateros y Maestros Chocolateros" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/chefes.html" class="card">
+        <div class="card">
           <div class="card-icon">🍳</div>
-          <h3>Chefs Privados y Catering</h3>
-          <span class="card-link">Ver ejemplo de chef y catering →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/chefes.html">Chefs Privados y Catering</a></h3>
+          <div class="phone" aria-label="Vista previa: Chefs Privados y Catering">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/chefes.html" title="Ejemplo: Chefs Privados y Catering" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/nutritiones.html" class="card">
+        <div class="card">
           <div class="card-icon">🧬</div>
-          <h3>Nutricionistas y Dietistas</h3>
-          <span class="card-link">Ver ejemplo de nutrición →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/nutritiones.html">Nutricionistas y Dietistas</a></h3>
+          <div class="phone" aria-label="Vista previa: Nutricionistas y Dietistas">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/nutritiones.html" title="Ejemplo: Nutricionistas y Dietistas" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/web/arte.html" class="card">
+        <div class="card">
           <div class="card-icon">🎨</div>
-          <h3>Artistas y Talleres de Arte</h3>
-          <span class="card-link">Ver ejemplo de arte →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/web/arte.html">Artistas y Talleres de Arte</a></h3>
+          <div class="phone" aria-label="Vista previa: Artistas y Talleres de Arte">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/web/arte.html" title="Ejemplo: Artistas y Talleres de Arte" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/ceramicses.html" class="card">
+        <div class="card">
           <div class="card-icon">🏺</div>
-          <h3>Artistas Cerámicos y Talleres de Cerámica</h3>
-          <span class="card-link">Ver ejemplo de cerámica →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/ceramicses.html">Artistas Cerámicos y Talleres de Cerámica</a></h3>
+          <div class="phone" aria-label="Vista previa: Artistas Cerámicos y Talleres de Cerámica">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/ceramicses.html" title="Ejemplo: Artistas Cerámicos y Talleres de Cerámica" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/jewelryes.html" class="card">
+        <div class="card">
           <div class="card-icon">💎</div>
-          <h3>Diseñadores y Creadores de Joyas</h3>
-          <span class="card-link">Ver ejemplo de joyería →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/jewelryes.html">Diseñadores y Creadores de Joyas</a></h3>
+          <div class="phone" aria-label="Vista previa: Diseñadores y Creadores de Joyas">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/jewelryes.html" title="Ejemplo: Diseñadores y Creadores de Joyas" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/murales.html" class="card">
+        <div class="card">
           <div class="card-icon">🧱</div>
-          <h3>Muralistas y Artistas Urbanos</h3>
-          <span class="card-link">Ver ejemplo de murales →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/murales.html">Muralistas y Artistas Urbanos</a></h3>
+          <div class="phone" aria-label="Vista previa: Muralistas y Artistas Urbanos">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/murales.html" title="Ejemplo: Muralistas y Artistas Urbanos" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/web/mascotas.html" class="card">
+        <div class="card">
           <div class="card-icon">🐾</div>
-          <h3>Peluquerías y Salones Caninos</h3>
-          <span class="card-link">Ver ejemplo de mascotas →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/web/mascotas.html">Peluquerías y Salones Caninos</a></h3>
+          <div class="phone" aria-label="Vista previa: Peluquerías y Salones Caninos">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/web/mascotas.html" title="Ejemplo: Peluquerías y Salones Caninos" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/web/makeupes.html" class="card">
+        <div class="card">
           <div class="card-icon">💄</div>
-          <h3>Maquilladores Profesionales</h3>
-          <span class="card-link">Ver ejemplo de maquillaje →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/web/makeupes.html">Maquilladores Profesionales</a></h3>
+          <div class="phone" aria-label="Vista previa: Maquilladores Profesionales">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/web/makeupes.html" title="Ejemplo: Maquilladores Profesionales" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/hair.html" class="card">
+        <div class="card">
           <div class="card-icon">✂️</div>
-          <h3>Peluquerías y Estilistas</h3>
-          <span class="card-link">Ver ejemplo de peluquería →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/hair.html">Peluquerías y Estilistas</a></h3>
+          <div class="phone" aria-label="Vista previa: Peluquerías y Estilistas">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/hair.html" title="Ejemplo: Peluquerías y Estilistas" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/beautyes.html" class="card">
+        <div class="card">
           <div class="card-icon">🧴</div>
-          <h3>Esteticistas y Cuidado de la Piel</h3>
-          <span class="card-link">Ver ejemplo de estética →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/beautyes.html">Esteticistas y Cuidado de la Piel</a></h3>
+          <div class="phone" aria-label="Vista previa: Esteticistas y Cuidado de la Piel">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/beautyes.html" title="Ejemplo: Esteticistas y Cuidado de la Piel" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/tatooes.html" class="card">
+        <div class="card">
           <div class="card-icon">🎨</div>
-          <h3>Tatuadores y Estudios de Tatuaje</h3>
-          <span class="card-link">Ver ejemplo de tatuajes →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/tatooes.html">Tatuadores y Estudios de Tatuaje</a></h3>
+          <div class="phone" aria-label="Vista previa: Tatuadores y Estudios de Tatuaje">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/tatooes.html" title="Ejemplo: Tatuadores y Estudios de Tatuaje" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/rural.html" class="card">
+        <div class="card">
           <div class="card-icon">🏡</div>
-          <h3>Alojamientos Rurales</h3>
-          <span class="card-link">Ver ejemplo de alojamiento →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/rural.html">Alojamientos Rurales</a></h3>
+          <div class="phone" aria-label="Vista previa: Alojamientos Rurales">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/rural.html" title="Ejemplo: Alojamientos Rurales" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/ventas.html" class="card">
+        <div class="card">
           <div class="card-icon">🏠</div>
-          <h3>Vendedor profesional inmobiliario independiente</h3>
-          <span class="card-link">Ver ejemplo de ventas inmobiliarias →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/ventas.html">Vendedor profesional inmobiliario independiente</a></h3>
+          <div class="phone" aria-label="Vista previa: Vendedor profesional inmobiliario independiente">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/ventas.html" title="Ejemplo: Vendedor profesional inmobiliario independiente" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/bienestar.html" class="card">
+        <div class="card">
           <div class="card-icon">🧘‍♀️</div>
-          <h3>Entrenadores de Bienestar y Salud</h3>
-          <span class="card-link">Ver ejemplo de bienestar →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/bienestar.html">Entrenadores de Bienestar y Salud</a></h3>
+          <div class="phone" aria-label="Vista previa: Entrenadores de Bienestar y Salud">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/bienestar.html" title="Ejemplo: Entrenadores de Bienestar y Salud" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/soundes.html" class="card">
+        <div class="card">
           <div class="card-icon">🧘</div>
-          <h3>Sonoterapia y Baños de Sonido</h3>
-          <span class="card-link">Ver ejemplo de sonoterapia →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/soundes.html">Sonoterapia y Baños de Sonido</a></h3>
+          <div class="phone" aria-label="Vista previa: Sonoterapia y Baños de Sonido">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/soundes.html" title="Ejemplo: Sonoterapia y Baños de Sonido" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/reikies.html" class="card">
+        <div class="card">
           <div class="card-icon">🌿</div>
-          <h3>Practicantes de Reiki y Sanadores Energéticos</h3>
-          <span class="card-link">Ver ejemplo de reiki →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/reikies.html">Practicantes de Reiki y Sanadores Energéticos</a></h3>
+          <div class="phone" aria-label="Vista previa: Practicantes de Reiki y Sanadores Energéticos">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/reikies.html" title="Ejemplo: Practicantes de Reiki y Sanadores Energéticos" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/holistices.html" class="card">
+        <div class="card">
           <div class="card-icon">🌿</div>
-          <h3>Terapeutas Holísticos</h3>
-          <span class="card-link">Ver ejemplo de terapeuta holístico →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/holistices.html">Terapeutas Holísticos</a></h3>
+          <div class="phone" aria-label="Vista previa: Terapeutas Holísticos">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/holistices.html" title="Ejemplo: Terapeutas Holísticos" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/meditation.html" class="card">
+        <div class="card">
           <div class="card-icon">🧘‍♀️</div>
-          <h3>Profesores de Meditación e Instructores de Mindfulness</h3>
-          <span class="card-link">Ver ejemplo de meditación →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/meditation.html">Profesores de Meditación e Instructores de Mindfulness</a></h3>
+          <div class="phone" aria-label="Vista previa: Profesores de Meditación e Instructores de Mindfulness">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/meditation.html" title="Ejemplo: Profesores de Meditación e Instructores de Mindfulness" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/hypnosises.html" class="card">
+        <div class="card">
           <div class="card-icon">🧠</div>
-          <h3>Hipnoterapeutas</h3>
-          <span class="card-link">Ver ejemplo de hipnoterapia →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/hypnosises.html">Hipnoterapeutas</a></h3>
+          <div class="phone" aria-label="Vista previa: Hipnoterapeutas">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/hypnosises.html" title="Ejemplo: Hipnoterapeutas" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/horsees.html" class="card">
+        <div class="card">
           <div class="card-icon">🐎</div>
-          <h3>Terapia Equina y Cuidado del Caballo</h3>
-          <span class="card-link">Ver ejemplo de terapia equina →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/horsees.html">Terapia Equina y Cuidado del Caballo</a></h3>
+          <div class="phone" aria-label="Vista previa: Terapia Equina y Cuidado del Caballo">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/horsees.html" title="Ejemplo: Terapia Equina y Cuidado del Caballo" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/web/floristeria.html" class="card">
+        <div class="card">
           <div class="card-icon">🌸</div>
-          <h3>Floristerías y Diseñadores Florales</h3>
-          <span class="card-link">Ver ejemplo de floristería →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/web/floristeria.html">Floristerías y Diseñadores Florales</a></h3>
+          <div class="phone" aria-label="Vista previa: Floristerías y Diseñadores Florales">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/web/floristeria.html" title="Ejemplo: Floristerías y Diseñadores Florales" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/garden.html" class="card">
+        <div class="card">
           <div class="card-icon">🌱</div>
-          <h3>Jardineros y Diseñadores de Jardines</h3>
-          <span class="card-link">Ver ejemplo de jardinería →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/garden.html">Jardineros y Diseñadores de Jardines</a></h3>
+          <div class="phone" aria-label="Vista previa: Jardineros y Diseñadores de Jardines">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/garden.html" title="Ejemplo: Jardineros y Diseñadores de Jardines" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/beeses.html" class="card">
+        <div class="card">
           <div class="card-icon">🐝</div>
-          <h3>Cursos de Apicultura y Mentores</h3>
-          <span class="card-link">Ver ejemplo de apicultura →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/beeses.html">Cursos de Apicultura y Mentores</a></h3>
+          <div class="phone" aria-label="Vista previa: Cursos de Apicultura y Mentores">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/beeses.html" title="Ejemplo: Cursos de Apicultura y Mentores" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/danza.html" class="card">
+        <div class="card">
           <div class="card-icon">💃</div>
-          <h3>Profesores y Academias de Baile</h3>
-          <span class="card-link">Ver ejemplo de baile →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/danza.html">Profesores y Academias de Baile</a></h3>
+          <div class="phone" aria-label="Vista previa: Profesores y Academias de Baile">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/danza.html" title="Ejemplo: Profesores y Academias de Baile" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/pianoes.html" class="card">
+        <div class="card">
           <div class="card-icon">🎹</div>
-          <h3>Profesores de Piano y Academias de Música</h3>
-          <span class="card-link">Ver ejemplo de profesor de piano →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/pianoes.html">Profesores de Piano y Academias de Música</a></h3>
+          <div class="phone" aria-label="Vista previa: Profesores de Piano y Academias de Música">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/pianoes.html" title="Ejemplo: Profesores de Piano y Academias de Música" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/musices.html" class="card">
+        <div class="card">
           <div class="card-icon">🎸</div>
-          <h3>Músicos Independientes y Bandas</h3>
-          <span class="card-link">Ver ejemplo de música →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/musices.html">Músicos Independientes y Bandas</a></h3>
+          <div class="phone" aria-label="Vista previa: Músicos Independientes y Bandas">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/musices.html" title="Ejemplo: Músicos Independientes y Bandas" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/luthieres.html" class="card">
+        <div class="card">
           <div class="card-icon">🎸</div>
-          <h3>Luthiers</h3>
-          <span class="card-link">Ver ejemplo de luthier →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/luthieres.html">Luthiers</a></h3>
+          <div class="phone" aria-label="Vista previa: Luthiers">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/luthieres.html" title="Ejemplo: Luthiers" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/aventura.html" class="card">
+        <div class="card">
           <div class="card-icon">🏕️</div>
-          <h3>Turismo de Aventura y Experiencias</h3>
-          <span class="card-link">Ver ejemplo de aventura →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/aventura.html">Turismo de Aventura y Experiencias</a></h3>
+          <div class="phone" aria-label="Vista previa: Turismo de Aventura y Experiencias">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/aventura.html" title="Ejemplo: Turismo de Aventura y Experiencias" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/snowes.html" class="card">
+        <div class="card">
           <div class="card-icon">🏂</div>
-          <h3>Profesores de Esquí y Snowboard</h3>
-          <span class="card-link">Ver ejemplo de esquí y snowboard →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/snowes.html">Profesores de Esquí y Snowboard</a></h3>
+          <div class="phone" aria-label="Vista previa: Profesores de Esquí y Snowboard">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/snowes.html" title="Ejemplo: Profesores de Esquí y Snowboard" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/kides.html" class="card">
+        <div class="card">
           <div class="card-icon">🎈</div>
-          <h3>Fiestas Infantiles y Negocios de Entretenimiento</h3>
-          <span class="card-link">Ver ejemplo de entretenimiento infantil →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/kides.html">Fiestas Infantiles y Negocios de Entretenimiento</a></h3>
+          <div class="phone" aria-label="Vista previa: Fiestas Infantiles y Negocios de Entretenimiento">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/kides.html" title="Ejemplo: Fiestas Infantiles y Negocios de Entretenimiento" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/magices.html" class="card">
+        <div class="card">
           <div class="card-icon">🪄</div>
-          <h3>Magos e Ilusionistas</h3>
-          <span class="card-link">Ver ejemplo de magia →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/magices.html">Magos e Ilusionistas</a></h3>
+          <div class="phone" aria-label="Vista previa: Magos e Ilusionistas">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/magices.html" title="Ejemplo: Magos e Ilusionistas" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/photoses.html" class="card">
+        <div class="card">
           <div class="card-icon">📸</div>
-          <h3>Fotógrafos</h3>
-          <span class="card-link">Ver ejemplo de fotografía →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/photoses.html">Fotógrafos</a></h3>
+          <div class="phone" aria-label="Vista previa: Fotógrafos">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/photoses.html" title="Ejemplo: Fotógrafos" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/boothes.html" class="card">
+        <div class="card">
           <div class="card-icon">📷</div>
-          <h3>Servicios de Fotomatón y Fotografía de Eventos</h3>
-          <span class="card-link">Ver ejemplo de fotomatón →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/boothes.html">Servicios de Fotomatón y Fotografía de Eventos</a></h3>
+          <div class="phone" aria-label="Vista previa: Servicios de Fotomatón y Fotografía de Eventos">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/boothes.html" title="Ejemplo: Servicios de Fotomatón y Fotografía de Eventos" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/organizerses.html" class="card">
+        <div class="card">
           <div class="card-icon">🧺</div>
-          <h3>Organizadores Profesionales y Servicios de Orden</h3>
-          <span class="card-link">Ver ejemplo de organización →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/organizerses.html">Organizadores Profesionales y Servicios de Orden</a></h3>
+          <div class="phone" aria-label="Vista previa: Organizadores Profesionales y Servicios de Orden">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/organizerses.html" title="Ejemplo: Organizadores Profesionales y Servicios de Orden" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/zerowastees.html" class="card">
+        <div class="card">
           <div class="card-icon">🧼</div>
-          <h3>Creadores de Productos Ecológicos / Zero-Waste</h3>
-          <span class="card-link">Ver ejemplo de zero-waste →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/zerowastees.html">Creadores de Productos Ecológicos / Zero-Waste</a></h3>
+          <div class="phone" aria-label="Vista previa: Creadores de Productos Ecológicos / Zero-Waste">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/zerowastees.html" title="Ejemplo: Creadores de Productos Ecológicos / Zero-Waste" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/preppes.html" class="card">
+        <div class="card">
           <div class="card-icon">🛡️</div>
-          <h3>Preppers y Coaches de Preparación</h3>
-          <span class="card-link">Ver ejemplo de preparación →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/preppes.html">Preppers y Coaches de Preparación</a></h3>
+          <div class="phone" aria-label="Vista previa: Preppers y Coaches de Preparación">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/preppes.html" title="Ejemplo: Preppers y Coaches de Preparación" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/emergencyes.html" class="card">
+        <div class="card">
           <div class="card-icon">🧰</div>
-          <h3>Consultores de Preparación ante Emergencias</h3>
-          <span class="card-link">Ver ejemplo de consultoría de emergencias →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/emergencyes.html">Consultores de Preparación ante Emergencias</a></h3>
+          <div class="phone" aria-label="Vista previa: Consultores de Preparación ante Emergencias">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/emergencyes.html" title="Ejemplo: Consultores de Preparación ante Emergencias" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/permaculturees.html" class="card">
+        <div class="card">
           <div class="card-icon">🌾</div>
-          <h3>Instructores de Permacultura y Jardinería Resiliente</h3>
-          <span class="card-link">Ver ejemplo de permacultura →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/permaculturees.html">Instructores de Permacultura y Jardinería Resiliente</a></h3>
+          <div class="phone" aria-label="Vista previa: Instructores de Permacultura y Jardinería Resiliente">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/permaculturees.html" title="Ejemplo: Instructores de Permacultura y Jardinería Resiliente" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/homesteadinges.html" class="card">
+        <div class="card">
           <div class="card-icon">🏠</div>
-          <h3>Instructores y Coaches de Homesteading</h3>
-          <span class="card-link">Ver ejemplo de homesteading →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/homesteadinges.html">Instructores y Coaches de Homesteading</a></h3>
+          <div class="phone" aria-label="Vista previa: Instructores y Coaches de Homesteading">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/homesteadinges.html" title="Ejemplo: Instructores y Coaches de Homesteading" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/harvestes.html" class="card">
+        <div class="card">
           <div class="card-icon">🥫</div>
-          <h3>Expertos en Almacenamiento y Conservación de Alimentos</h3>
-          <span class="card-link">Ver ejemplo de conservación de alimentos →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/harvestes.html">Expertos en Almacenamiento y Conservación de Alimentos</a></h3>
+          <div class="phone" aria-label="Vista previa: Expertos en Almacenamiento y Conservación de Alimentos">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/harvestes.html" title="Ejemplo: Expertos en Almacenamiento y Conservación de Alimentos" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/firstaides.html" class="card">
+        <div class="card">
           <div class="card-icon">🩹</div>
-          <h3>Instructores de Primeros Auxilios en Naturaleza y Desastres</h3>
-          <span class="card-link">Ver ejemplo de primeros auxilios →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/firstaides.html">Instructores de Primeros Auxilios en Naturaleza y Desastres</a></h3>
+          <div class="phone" aria-label="Vista previa: Instructores de Primeros Auxilios en Naturaleza y Desastres">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/firstaides.html" title="Ejemplo: Instructores de Primeros Auxilios en Naturaleza y Desastres" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/sentrylinees.html" class="card">
+        <div class="card">
           <div class="card-icon">🔫</div>
-          <h3>Coaches de Autodefensa y Conciencia Situacional (orientado a preppers)</h3>
-          <span class="card-link">Ver ejemplo de autodefensa →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/sentrylinees.html">Coaches de Autodefensa y Conciencia Situacional (orientado a preppers)</a></h3>
+          <div class="phone" aria-label="Vista previa: Coaches de Autodefensa y Conciencia Situacional (orientado a preppers)">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/sentrylinees.html" title="Ejemplo: Coaches de Autodefensa y Conciencia Situacional (orientado a preppers)" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/offgrides.html" class="card">
+        <div class="card">
           <div class="card-icon">⚡</div>
-          <h3>Coaches de Vida Off-Grid y Autosuficiencia</h3>
-          <span class="card-link">Ver ejemplo de vida off-grid →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/offgrides.html">Coaches de Vida Off-Grid y Autosuficiencia</a></h3>
+          <div class="phone" aria-label="Vista previa: Coaches de Vida Off-Grid y Autosuficiencia">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/offgrides.html" title="Ejemplo: Coaches de Vida Off-Grid y Autosuficiencia" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/solares.html" class="card">
+        <div class="card">
           <div class="card-icon">🔋</div>
-          <h3>Energía Solar y Alternativa para Preppers</h3>
-          <span class="card-link">Ver ejemplo de energía solar →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/solares.html">Energía Solar y Alternativa para Preppers</a></h3>
+          <div class="phone" aria-label="Vista previa: Energía Solar y Alternativa para Preppers">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/solares.html" title="Ejemplo: Energía Solar y Alternativa para Preppers" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/wateres.html" class="card">
+        <div class="card">
           <div class="card-icon">💧</div>
-          <h3>Especialistas en Purificación de Agua y Sistemas de Agua Off-Grid</h3>
-          <span class="card-link">Ver ejemplo de sistemas de agua →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/wateres.html">Especialistas en Purificación de Agua y Sistemas de Agua Off-Grid</a></h3>
+          <div class="phone" aria-label="Vista previa: Especialistas en Purificación de Agua y Sistemas de Agua Off-Grid">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/wateres.html" title="Ejemplo: Especialistas en Purificación de Agua y Sistemas de Agua Off-Grid" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/why/bugoutes.html" class="card">
+        <div class="card">
           <div class="card-icon">🎒</div>
-          <h3>Especialistas en Mochilas de Emergencia y Bug-Out Bags</h3>
-          <span class="card-link">Ver ejemplo de mochilas de emergencia →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/why/bugoutes.html">Especialistas en Mochilas de Emergencia y Bug-Out Bags</a></h3>
+          <div class="phone" aria-label="Vista previa: Especialistas en Mochilas de Emergencia y Bug-Out Bags">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/why/bugoutes.html" title="Ejemplo: Especialistas en Mochilas de Emergencia y Bug-Out Bags" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
-        <a href="https://easylandx.github.io/app/ease.html" class="card">
+        <div class="card">
           <div class="card-icon">🔥</div>
-          <h3>La Idea Principal</h3>
-          <span class="card-link">Visitar la página principal →</span>
-        </a>
+          <h3><a href="https://easylandx.github.io/app/ease.html">La Idea Principal</a></h3>
+          <div class="phone" aria-label="Vista previa: La Idea Principal">
+            <div class="screen">
+              <iframe data-src="https://easylandx.github.io/app/ease.html" title="Ejemplo: La Idea Principal" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <span class="notch"></span><span class="homebar"></span>
+            </div>
+          </div>
+        </div>
 
       </div>
 
@@ -812,5 +1170,144 @@
   }
 </script>
 
+
+<script>
+(function(){
+  var BASE_W = 390;
+
+  // width of the classic scrollbar on this device (0 on phones / overlay scrollbars)
+  var sbw = (function(){
+    var d = document.createElement('div');
+    d.style.cssText = 'position:absolute;top:-999px;width:100px;height:100px;overflow:scroll';
+    document.body.appendChild(d);
+    var w = d.offsetWidth - d.clientWidth;
+    document.body.removeChild(d);
+    return w;
+  })();
+
+  function fit(screen){
+    var f = screen.querySelector('iframe');
+    var s = screen.clientWidth / BASE_W;
+    if (!s) return;
+    f.style.width  = (f.dataset.noBar ? BASE_W : BASE_W + sbw) + 'px'; // extra width pushes the scrollbar out of view
+    f.style.height = (screen.clientHeight / s) + 'px';
+    f.style.transform = 'scale(' + s + ')';
+  }
+
+  // Same-origin pages: hide scrollbar, block text selection, drag-to-scroll with the mouse (with inertia).
+  // Touch (iPhone/iPad) scrolls natively inside the frame.
+  function enhance(f){
+    var doc, win;
+    try{
+      doc = f.contentDocument; win = f.contentWindow;
+      if (!doc || !doc.documentElement) return;
+    }catch(err){ return; } // cross-origin: wheel and touch scrolling still work natively
+
+    var st = doc.createElement('style');
+    st.textContent =
+      'html,body{scroll-behavior:auto !important;scrollbar-width:none;-webkit-user-select:none !important;user-select:none !important;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}' +
+      'html{touch-action:pan-y;overscroll-behavior:contain}' +
+      '::-webkit-scrollbar{display:none}' +
+      '*{-webkit-user-select:none !important;user-select:none !important}' +
+      'html,body,body *{cursor:grab}html.__drag,html.__drag *{cursor:grabbing !important}' +
+      'img,a{-webkit-user-drag:none;user-drag:none}';
+    (doc.head || doc.documentElement).appendChild(st);
+    f.dataset.noBar = '1';
+    fit(f.parentNode);
+
+    var de = doc.documentElement;
+    function getTop(){ return win.pageYOffset || de.scrollTop || (doc.body && doc.body.scrollTop) || 0; }
+    function setTop(y){
+      win.scrollTo(0, y);
+      // fallback for pages whose body (not the window) is the scroller
+      if (doc.body && getTop() !== y && doc.body.scrollHeight > doc.body.clientHeight) doc.body.scrollTop = y;
+    }
+
+    var GAIN = 2.2; // scroll speed multiplier (higher = faster)
+    var down=false, moved=false, y0=0, top0=0, lastY=0, lastT=0, vel=0, raf=0;
+
+    function stopInertia(){ if(raf){ win.cancelAnimationFrame(raf); raf=0; } }
+    function inertia(){
+      if (Math.abs(vel) < 0.03) { raf=0; return; }
+      setTop(getTop() + vel*16);
+      vel *= 0.965;
+      raf = win.requestAnimationFrame(inertia);
+    }
+
+    doc.addEventListener('mousedown', function(e){
+      if (e.button !== 0) return;
+      stopInertia();
+      down=true; moved=false; vel=0;
+      y0=lastY=e.clientY; top0=getTop(); lastT=e.timeStamp;
+      e.preventDefault(); // no text selection / native image drag
+    }, true);
+
+    doc.addEventListener('mousemove', function(e){
+      if(!down) return;
+      if (e.buttons === 0){ end(e); return; }
+      var dy = e.clientY - y0;
+      if (!moved && Math.abs(dy) > 4){ moved=true; de.classList.add('__drag'); }
+      if (moved){
+        setTop(top0 - dy*GAIN);
+        var dt = e.timeStamp - lastT;
+        if (dt > 0){ vel = 0.8*vel + 0.2*(GAIN*(lastY - e.clientY)/dt); }
+        lastY = e.clientY; lastT = e.timeStamp;
+        e.preventDefault();
+      }
+    }, true);
+
+    function end(e){
+      if(!down) return;
+      down=false;
+      de.classList.remove('__drag');
+      if (moved && e && e.timeStamp - lastT < 80) { raf = win.requestAnimationFrame(inertia); }
+    }
+    doc.addEventListener('mouseup', end, true);
+    doc.addEventListener('mouseleave', end, true);
+    // mouse released outside the iframe (in the hub page)
+    window.addEventListener('mouseup', end, true);
+
+    // swallow the click that follows a drag so links don't open
+    doc.addEventListener('click', function(e){
+      if(moved){ e.preventDefault(); e.stopPropagation(); moved=false; }
+    }, true);
+    doc.addEventListener('selectstart', function(e){ e.preventDefault(); }, true);
+    doc.addEventListener('dragstart', function(e){ e.preventDefault(); }, true);
+    doc.addEventListener('wheel', stopInertia, {passive:true});
+  }
+
+  var screens = document.querySelectorAll('.screen');
+  var ro = ('ResizeObserver' in window) ? new ResizeObserver(function(es){ es.forEach(function(e){ fit(e.target); }); }) : null;
+
+  function load(screen){
+    var f = screen.querySelector('iframe');
+    if (!f || f.src) return;
+    f.addEventListener('load', function(){ screen.classList.add('loaded'); enhance(f); });
+    var url = f.dataset.src;
+    // Load the page through fetch + srcdoc so the frame is same-origin with the hub
+    // (browsers block drag-scroll code from touching cross-origin frames).
+    // If the fetch fails, fall back to a normal src.
+    fetch(url, {mode:'cors', credentials:'omit'})
+      .then(function(r){ if(!r.ok) throw new Error(r.status); return r.text(); })
+      .then(function(html){
+        var base = '<base href="' + url + '">';
+        if (/<head[^>]*>/i.test(html)) html = html.replace(/<head[^>]*>/i, function(m){ return m + base; });
+        else html = base + html;
+        f.srcdoc = html;
+      })
+      .catch(function(){ f.src = url; });
+  }
+
+  var io = ('IntersectionObserver' in window) ? new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ load(e.target); io.unobserve(e.target); } });
+  }, { rootMargin:'300px 0px' }) : null;
+
+  screens.forEach(function(s){
+    fit(s);
+    if (ro) ro.observe(s); else window.addEventListener('resize', function(){ fit(s); });
+    if (io) io.observe(s); else load(s);
+  });
+})();
+</script>
 </body>
 </html>
