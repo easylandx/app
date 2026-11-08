@@ -187,6 +187,36 @@
     box-shadow: 4px 4px 0 var(--ink);
   }
 
+  /* ---------- category chips ---------- */
+  .section-head.has-filters{margin-bottom:24px;}
+  .filterbar{margin-bottom:36px;}
+  .chips{
+    display:flex; flex-wrap:wrap; gap:10px;
+    margin-bottom:16px;
+  }
+  .chip{
+    font-family:inherit; font-size:.9rem; font-weight:700; line-height:1.2;
+    color:var(--ink); background:var(--paper);
+    border:3px solid var(--ink); border-radius:999px;
+    padding-top:9px; padding-right:16px; padding-bottom:9px; padding-left:16px;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .chip:hover{box-shadow:3px 3px 0 var(--ink); transform:translateY(-1px);}
+  .chip[aria-pressed="true"]{background:var(--yellow); box-shadow:3px 3px 0 var(--ink);}
+  .chip .n{font-weight:600; opacity:.55; margin-left:6px; font-size:.82rem;}
+  .empty-msg{
+    margin:8px 0 0; font-weight:700; font-size:1.05rem; color:var(--ink-soft);
+    border:3px dashed var(--line); border-radius:var(--radius);
+    padding-top:28px; padding-right:24px; padding-bottom:28px; padding-left:24px; text-align:center;
+  }
+  .empty-msg[hidden]{display:none;}
+  @media (max-width:560px){
+    .chips{gap:8px;}
+    .chip{font-size:.82rem; padding-top:8px; padding-right:12px; padding-bottom:8px; padding-left:12px;}
+  }
+
+
   /* ---------- cards grid ---------- */
   .grid{
     display:grid;
@@ -395,19 +425,35 @@
   <!-- Examples -->
   <section id="examples">
     <div class="wrap">
-      <div class="section-head">
+      <div class="section-head has-filters">
         <div>
           <div class="eyebrow">Con quién trabajamos</div>
           <h2>Diseñado para pequeños negocios</h2>
         </div>
+      </div>
+
+      <div class="filterbar">
+        <div class="chips" id="chips" role="group" aria-label="Filtrar por categoría">
+          <button type="button" class="chip" data-filter="all" aria-pressed="true">✨ Todos</button>
+          <button type="button" class="chip" data-filter="wellness" aria-pressed="false">🧘 Bienestar y Fitness</button>
+          <button type="button" class="chip" data-filter="mind" aria-pressed="false">🧠 Mente y Sanación</button>
+          <button type="button" class="chip" data-filter="pro" aria-pressed="false">💼 Profesionales</button>
+          <button type="button" class="chip" data-filter="food" aria-pressed="false">🍞 Comida y Bebida</button>
+          <button type="button" class="chip" data-filter="creative" aria-pressed="false">🎨 Creativos y Artesanos</button>
+          <button type="button" class="chip" data-filter="beauty" aria-pressed="false">💄 Belleza y Mascotas</button>
+          <button type="button" class="chip" data-filter="music" aria-pressed="false">🎵 Música y Eventos</button>
+          <button type="button" class="chip" data-filter="outdoors" aria-pressed="false">🌿 Naturaleza y Aire Libre</button>
+          <button type="button" class="chip" data-filter="prep" aria-pressed="false">🎒 Preparación</button>
+          <button type="button" class="chip" data-filter="app" aria-pressed="false">📱 Apps</button>
+        </div>
         <div class="search-box">
-          <input type="text" id="searchInput" onkeyup="filterCards()" placeholder="🔍 Buscar tipo de negocio...">
+          <input type="text" id="searchInput" oninput="filterCards()" aria-label="Buscar tipo de negocio" placeholder="🔍 Buscar tipo de negocio...">
         </div>
       </div>
 
       <div class="grid" id="cardsGrid">
 
-        <div class="card">
+        <div class="card" data-cat="wellness">
           <div class="card-icon">🧘‍♀️</div>
           <h3><a href="https://easylandx.github.io/web/yogaes.html">Profesores y Estudios de Yoga</a></h3>
           <div class="phone" aria-label="Vista previa: Profesores y Estudios de Yoga">
@@ -418,7 +464,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="wellness">
           <div class="card-icon">🧘🏻‍♀️</div>
           <h3><a href="https://easylandx.github.io/why/pilateses.html">Estudios de Pilates</a></h3>
           <div class="phone" aria-label="Vista previa: Estudios de Pilates">
@@ -429,7 +475,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="wellness">
           <div class="card-icon">🏋️‍♂️</div>
           <h3><a href="https://easylandx.github.io/web/traineres.html">Entrenadores Personales y Centros</a></h3>
           <div class="phone" aria-label="Vista previa: Entrenadores Personales y Centros">
@@ -440,7 +486,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="mind">
           <div class="card-icon">🧠</div>
           <h3><a href="https://easylandx.github.io/web/terapeuta.html">Psicólogos y Consultas</a></h3>
           <div class="phone" aria-label="Vista previa: Psicólogos y Consultas">
@@ -451,7 +497,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="pro">
           <div class="card-icon">💼</div>
           <h3><a href="https://easylandx.github.io/why/leaderses.html">Liderazgo Empresarial y Coaches Ejecutivos</a></h3>
           <div class="phone" aria-label="Vista previa: Liderazgo Empresarial y Coaches Ejecutivos">
@@ -462,7 +508,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="pro">
           <div class="card-icon">💼</div>
           <h3><a href="https://easylandx.github.io/why/linkedines.html">Consultor de LinkedIn</a></h3>
           <div class="phone" aria-label="Vista previa: Consultor de LinkedIn">
@@ -473,7 +519,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="pro">
           <div class="card-icon">⚖️</div>
           <h3><a href="https://easylandx.github.io/why/lawyeres.html">Abogados y Servicios Jurídicos</a></h3>
           <div class="phone" aria-label="Vista previa: Abogados y Servicios Jurídicos">
@@ -484,7 +530,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="pro">
           <div class="card-icon">💰</div>
           <h3><a href="https://easylandx.github.io/why/financiales.html">Asesores Financieros y Planificadores Independientes</a></h3>
           <div class="phone" aria-label="Vista previa: Asesores Financieros y Planificadores Independientes">
@@ -495,7 +541,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="mind">
           <div class="card-icon">🌌</div>
           <h3><a href="https://easylandx.github.io/why/tarotes.html">Astrología y Lectura de Tarot</a></h3>
           <div class="phone" aria-label="Vista previa: Astrología y Lectura de Tarot">
@@ -506,7 +552,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="food">
           <div class="card-icon">🍞</div>
           <h3><a href="https://easylandx.github.io/web/gastronomia.html">Panaderías y Alimentación Especializada</a></h3>
           <div class="phone" aria-label="Vista previa: Panaderías y Alimentación Especializada">
@@ -517,7 +563,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="food">
           <div class="card-icon">🧀</div>
           <h3><a href="https://easylandx.github.io/why/cheesees.html">Queseros Artesanales</a></h3>
           <div class="phone" aria-label="Vista previa: Queseros Artesanales">
@@ -528,7 +574,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="food">
           <div class="card-icon">☕</div>
           <h3><a href="https://easylandx.github.io/why/cafeses.html">Cafeterías de Especialidad y Cafés Independientes</a></h3>
           <div class="phone" aria-label="Vista previa: Cafeterías de Especialidad y Cafés Independientes">
@@ -539,7 +585,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="food">
           <div class="card-icon">🎂</div>
           <h3><a href="https://easylandx.github.io/why/cakeses.html">Diseñadores de Tartas y Pastelerías Personalizadas</a></h3>
           <div class="phone" aria-label="Vista previa: Diseñadores de Tartas y Pastelerías Personalizadas">
@@ -550,7 +596,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="food">
           <div class="card-icon">🍫</div>
           <h3><a href="https://easylandx.github.io/why/chocolates.html">Chocolateros y Maestros Chocolateros</a></h3>
           <div class="phone" aria-label="Vista previa: Chocolateros y Maestros Chocolateros">
@@ -561,7 +607,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="food">
           <div class="card-icon">🍳</div>
           <h3><a href="https://easylandx.github.io/why/chefes.html">Chefs Privados y Catering</a></h3>
           <div class="phone" aria-label="Vista previa: Chefs Privados y Catering">
@@ -572,7 +618,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="wellness">
           <div class="card-icon">🧬</div>
           <h3><a href="https://easylandx.github.io/why/nutritiones.html">Nutricionistas y Dietistas</a></h3>
           <div class="phone" aria-label="Vista previa: Nutricionistas y Dietistas">
@@ -583,7 +629,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="creative">
           <div class="card-icon">🎨</div>
           <h3><a href="https://easylandx.github.io/web/arte.html">Artistas y Talleres de Arte</a></h3>
           <div class="phone" aria-label="Vista previa: Artistas y Talleres de Arte">
@@ -594,7 +640,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="creative">
           <div class="card-icon">🏺</div>
           <h3><a href="https://easylandx.github.io/why/ceramicses.html">Artistas Cerámicos y Talleres de Cerámica</a></h3>
           <div class="phone" aria-label="Vista previa: Artistas Cerámicos y Talleres de Cerámica">
@@ -605,7 +651,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="creative">
           <div class="card-icon">💎</div>
           <h3><a href="https://easylandx.github.io/why/jewelryes.html">Diseñadores y Creadores de Joyas</a></h3>
           <div class="phone" aria-label="Vista previa: Diseñadores y Creadores de Joyas">
@@ -616,7 +662,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="creative">
           <div class="card-icon">🧱</div>
           <h3><a href="https://easylandx.github.io/why/murales.html">Muralistas y Artistas Urbanos</a></h3>
           <div class="phone" aria-label="Vista previa: Muralistas y Artistas Urbanos">
@@ -627,7 +673,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="beauty">
           <div class="card-icon">🐾</div>
           <h3><a href="https://easylandx.github.io/web/mascotas.html">Peluquerías y Salones Caninos</a></h3>
           <div class="phone" aria-label="Vista previa: Peluquerías y Salones Caninos">
@@ -638,7 +684,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="beauty">
           <div class="card-icon">💄</div>
           <h3><a href="https://easylandx.github.io/web/makeupes.html">Maquilladores Profesionales</a></h3>
           <div class="phone" aria-label="Vista previa: Maquilladores Profesionales">
@@ -649,7 +695,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="beauty">
           <div class="card-icon">✂️</div>
           <h3><a href="https://easylandx.github.io/why/hair.html">Peluquerías y Estilistas</a></h3>
           <div class="phone" aria-label="Vista previa: Peluquerías y Estilistas">
@@ -660,7 +706,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="beauty">
           <div class="card-icon">🧴</div>
           <h3><a href="https://easylandx.github.io/why/beautyes.html">Esteticistas y Cuidado de la Piel</a></h3>
           <div class="phone" aria-label="Vista previa: Esteticistas y Cuidado de la Piel">
@@ -671,7 +717,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="beauty">
           <div class="card-icon">🎨</div>
           <h3><a href="https://easylandx.github.io/why/tatooes.html">Tatuadores y Estudios de Tatuaje</a></h3>
           <div class="phone" aria-label="Vista previa: Tatuadores y Estudios de Tatuaje">
@@ -682,7 +728,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="outdoors">
           <div class="card-icon">🏡</div>
           <h3><a href="https://easylandx.github.io/why/rural.html">Alojamientos Rurales</a></h3>
           <div class="phone" aria-label="Vista previa: Alojamientos Rurales">
@@ -693,7 +739,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="pro">
           <div class="card-icon">🏠</div>
           <h3><a href="https://easylandx.github.io/why/ventas.html">Vendedor profesional inmobiliario independiente</a></h3>
           <div class="phone" aria-label="Vista previa: Vendedor profesional inmobiliario independiente">
@@ -704,7 +750,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="wellness">
           <div class="card-icon">🧘‍♀️</div>
           <h3><a href="https://easylandx.github.io/why/bienestar.html">Entrenadores de Bienestar y Salud</a></h3>
           <div class="phone" aria-label="Vista previa: Entrenadores de Bienestar y Salud">
@@ -715,7 +761,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="mind">
           <div class="card-icon">🧘</div>
           <h3><a href="https://easylandx.github.io/why/soundes.html">Sonoterapia y Baños de Sonido</a></h3>
           <div class="phone" aria-label="Vista previa: Sonoterapia y Baños de Sonido">
@@ -726,7 +772,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="mind">
           <div class="card-icon">🌿</div>
           <h3><a href="https://easylandx.github.io/why/reikies.html">Practicantes de Reiki y Sanadores Energéticos</a></h3>
           <div class="phone" aria-label="Vista previa: Practicantes de Reiki y Sanadores Energéticos">
@@ -737,7 +783,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="mind">
           <div class="card-icon">🌿</div>
           <h3><a href="https://easylandx.github.io/why/holistices.html">Terapeutas Holísticos</a></h3>
           <div class="phone" aria-label="Vista previa: Terapeutas Holísticos">
@@ -748,7 +794,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="mind">
           <div class="card-icon">🧘‍♀️</div>
           <h3><a href="https://easylandx.github.io/why/meditation.html">Profesores de Meditación e Instructores de Mindfulness</a></h3>
           <div class="phone" aria-label="Vista previa: Profesores de Meditación e Instructores de Mindfulness">
@@ -759,7 +805,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="mind">
           <div class="card-icon">🧠</div>
           <h3><a href="https://easylandx.github.io/why/hypnosises.html">Hipnoterapeutas</a></h3>
           <div class="phone" aria-label="Vista previa: Hipnoterapeutas">
@@ -770,7 +816,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="outdoors">
           <div class="card-icon">🐎</div>
           <h3><a href="https://easylandx.github.io/why/horsees.html">Terapia Equina y Cuidado del Caballo</a></h3>
           <div class="phone" aria-label="Vista previa: Terapia Equina y Cuidado del Caballo">
@@ -781,7 +827,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="outdoors">
           <div class="card-icon">🌸</div>
           <h3><a href="https://easylandx.github.io/web/floristeria.html">Floristerías y Diseñadores Florales</a></h3>
           <div class="phone" aria-label="Vista previa: Floristerías y Diseñadores Florales">
@@ -792,7 +838,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="outdoors">
           <div class="card-icon">🌱</div>
           <h3><a href="https://easylandx.github.io/why/garden.html">Jardineros y Diseñadores de Jardines</a></h3>
           <div class="phone" aria-label="Vista previa: Jardineros y Diseñadores de Jardines">
@@ -803,7 +849,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="outdoors">
           <div class="card-icon">🐝</div>
           <h3><a href="https://easylandx.github.io/why/beeses.html">Cursos de Apicultura y Mentores</a></h3>
           <div class="phone" aria-label="Vista previa: Cursos de Apicultura y Mentores">
@@ -814,7 +860,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="music">
           <div class="card-icon">💃</div>
           <h3><a href="https://easylandx.github.io/why/danza.html">Profesores y Academias de Baile</a></h3>
           <div class="phone" aria-label="Vista previa: Profesores y Academias de Baile">
@@ -825,7 +871,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="music">
           <div class="card-icon">🎹</div>
           <h3><a href="https://easylandx.github.io/why/pianoes.html">Profesores de Piano y Academias de Música</a></h3>
           <div class="phone" aria-label="Vista previa: Profesores de Piano y Academias de Música">
@@ -836,7 +882,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="music">
           <div class="card-icon">🎸</div>
           <h3><a href="https://easylandx.github.io/why/musices.html">Músicos Independientes y Bandas</a></h3>
           <div class="phone" aria-label="Vista previa: Músicos Independientes y Bandas">
@@ -847,7 +893,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="music">
           <div class="card-icon">🎸</div>
           <h3><a href="https://easylandx.github.io/why/luthieres.html">Luthiers</a></h3>
           <div class="phone" aria-label="Vista previa: Luthiers">
@@ -858,7 +904,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="outdoors">
           <div class="card-icon">🏕️</div>
           <h3><a href="https://easylandx.github.io/why/aventura.html">Turismo de Aventura y Experiencias</a></h3>
           <div class="phone" aria-label="Vista previa: Turismo de Aventura y Experiencias">
@@ -869,7 +915,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="outdoors">
           <div class="card-icon">🏂</div>
           <h3><a href="https://easylandx.github.io/why/snowes.html">Profesores de Esquí y Snowboard</a></h3>
           <div class="phone" aria-label="Vista previa: Profesores de Esquí y Snowboard">
@@ -880,7 +926,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="music">
           <div class="card-icon">🎈</div>
           <h3><a href="https://easylandx.github.io/why/kides.html">Fiestas Infantiles y Negocios de Entretenimiento</a></h3>
           <div class="phone" aria-label="Vista previa: Fiestas Infantiles y Negocios de Entretenimiento">
@@ -891,7 +937,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="music">
           <div class="card-icon">🪄</div>
           <h3><a href="https://easylandx.github.io/why/magices.html">Magos e Ilusionistas</a></h3>
           <div class="phone" aria-label="Vista previa: Magos e Ilusionistas">
@@ -902,7 +948,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="creative">
           <div class="card-icon">📸</div>
           <h3><a href="https://easylandx.github.io/why/photoses.html">Fotógrafos</a></h3>
           <div class="phone" aria-label="Vista previa: Fotógrafos">
@@ -913,7 +959,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="music">
           <div class="card-icon">📷</div>
           <h3><a href="https://easylandx.github.io/why/boothes.html">Servicios de Fotomatón y Fotografía de Eventos</a></h3>
           <div class="phone" aria-label="Vista previa: Servicios de Fotomatón y Fotografía de Eventos">
@@ -924,7 +970,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="pro">
           <div class="card-icon">🧺</div>
           <h3><a href="https://easylandx.github.io/why/organizerses.html">Organizadores Profesionales y Servicios de Orden</a></h3>
           <div class="phone" aria-label="Vista previa: Organizadores Profesionales y Servicios de Orden">
@@ -935,7 +981,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="creative">
           <div class="card-icon">🧼</div>
           <h3><a href="https://easylandx.github.io/why/zerowastees.html">Creadores de Productos Ecológicos / Zero-Waste</a></h3>
           <div class="phone" aria-label="Vista previa: Creadores de Productos Ecológicos / Zero-Waste">
@@ -946,7 +992,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="prep">
           <div class="card-icon">🛡️</div>
           <h3><a href="https://easylandx.github.io/why/preppes.html">Preppers y Coaches de Preparación</a></h3>
           <div class="phone" aria-label="Vista previa: Preppers y Coaches de Preparación">
@@ -957,7 +1003,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="prep">
           <div class="card-icon">🧰</div>
           <h3><a href="https://easylandx.github.io/why/emergencyes.html">Consultores de Preparación ante Emergencias</a></h3>
           <div class="phone" aria-label="Vista previa: Consultores de Preparación ante Emergencias">
@@ -968,7 +1014,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="prep">
           <div class="card-icon">🌾</div>
           <h3><a href="https://easylandx.github.io/why/permaculturees.html">Instructores de Permacultura y Jardinería Resiliente</a></h3>
           <div class="phone" aria-label="Vista previa: Instructores de Permacultura y Jardinería Resiliente">
@@ -979,7 +1025,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="prep">
           <div class="card-icon">🏠</div>
           <h3><a href="https://easylandx.github.io/why/homesteadinges.html">Instructores y Coaches de Homesteading</a></h3>
           <div class="phone" aria-label="Vista previa: Instructores y Coaches de Homesteading">
@@ -990,7 +1036,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="prep">
           <div class="card-icon">🥫</div>
           <h3><a href="https://easylandx.github.io/why/harvestes.html">Expertos en Almacenamiento y Conservación de Alimentos</a></h3>
           <div class="phone" aria-label="Vista previa: Expertos en Almacenamiento y Conservación de Alimentos">
@@ -1001,7 +1047,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="prep">
           <div class="card-icon">🩹</div>
           <h3><a href="https://easylandx.github.io/why/firstaides.html">Instructores de Primeros Auxilios en Naturaleza y Desastres</a></h3>
           <div class="phone" aria-label="Vista previa: Instructores de Primeros Auxilios en Naturaleza y Desastres">
@@ -1012,7 +1058,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="prep">
           <div class="card-icon">🔫</div>
           <h3><a href="https://easylandx.github.io/why/sentrylinees.html">Coaches de Autodefensa y Conciencia Situacional (orientado a preppers)</a></h3>
           <div class="phone" aria-label="Vista previa: Coaches de Autodefensa y Conciencia Situacional (orientado a preppers)">
@@ -1023,7 +1069,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="prep">
           <div class="card-icon">⚡</div>
           <h3><a href="https://easylandx.github.io/why/offgrides.html">Coaches de Vida Off-Grid y Autosuficiencia</a></h3>
           <div class="phone" aria-label="Vista previa: Coaches de Vida Off-Grid y Autosuficiencia">
@@ -1034,7 +1080,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="prep">
           <div class="card-icon">🔋</div>
           <h3><a href="https://easylandx.github.io/why/solares.html">Energía Solar y Alternativa para Preppers</a></h3>
           <div class="phone" aria-label="Vista previa: Energía Solar y Alternativa para Preppers">
@@ -1045,7 +1091,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="prep">
           <div class="card-icon">💧</div>
           <h3><a href="https://easylandx.github.io/why/wateres.html">Especialistas en Purificación de Agua y Sistemas de Agua Off-Grid</a></h3>
           <div class="phone" aria-label="Vista previa: Especialistas en Purificación de Agua y Sistemas de Agua Off-Grid">
@@ -1056,7 +1102,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="prep">
           <div class="card-icon">🎒</div>
           <h3><a href="https://easylandx.github.io/why/bugoutes.html">Especialistas en Mochilas de Emergencia y Bug-Out Bags</a></h3>
           <div class="phone" aria-label="Vista previa: Especialistas en Mochilas de Emergencia y Bug-Out Bags">
@@ -1067,7 +1113,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-cat="app">
           <div class="card-icon">🔥</div>
           <h3><a href="https://easylandx.github.io/app/ease.html">La Idea Principal</a></h3>
           <div class="phone" aria-label="Vista previa: La Idea Principal">
@@ -1079,6 +1125,7 @@
         </div>
 
       </div>
+      <p class="empty-msg" id="emptyMsg" hidden>No hay resultados. Prueba con otra palabra o elige «Todos».</p>
 
       <!-- Stats -->
       <div class="stats">
@@ -1152,22 +1199,53 @@
 </footer>
 
 <script>
-  function filterCards() {
-    const input = document.getElementById('searchInput');
-    const filter = input.value.toLowerCase();
-    const grid = document.getElementById('cardsGrid');
-    const cards = grid.getElementsByClassName('card');
+  (function(){
+    var activeCat = 'all';
+    var grid = document.getElementById('cardsGrid');
+    var input = document.getElementById('searchInput');
+    var chips = document.querySelectorAll('#chips .chip');
+    var emptyMsg = document.getElementById('emptyMsg');
+    var cards = grid.getElementsByClassName('card');
 
-    for (let i = 0; i < cards.length; i++) {
-      const h3 = cards[i].getElementsByTagName('h3')[0];
-      const txtValue = h3.textContent || h3.innerText;
-      if (txtValue.toLowerCase().indexOf(filter) > -1) {
-        cards[i].style.display = "";
-      } else {
-        cards[i].style.display = "none";
+    // show how many examples sit behind each chip
+    (function addCounts(){
+      var counts = {all: cards.length};
+      for (var i = 0; i < cards.length; i++) {
+        var c = cards[i].getAttribute('data-cat');
+        if (c) counts[c] = (counts[c] || 0) + 1;
       }
-    }
-  }
+      chips.forEach(function(chip){
+        var n = document.createElement('span');
+        n.className = 'n';
+        n.textContent = counts[chip.dataset.filter] || 0;
+        chip.appendChild(n);
+      });
+    })();
+
+    window.filterCards = function () {
+      var q = input.value.toLowerCase().trim();
+      var shown = 0;
+      for (var i = 0; i < cards.length; i++) {
+        var card = cards[i];
+        var h3 = card.getElementsByTagName('h3')[0];
+        var txt = (h3.textContent || h3.innerText).toLowerCase();
+        var okCat = activeCat === 'all' || card.getAttribute('data-cat') === activeCat;
+        var okText = txt.indexOf(q) > -1;
+        var show = okCat && okText;
+        card.style.display = show ? '' : 'none';
+        if (show) shown++;
+      }
+      emptyMsg.hidden = shown !== 0;
+    };
+
+    chips.forEach(function(chip){
+      chip.addEventListener('click', function(){
+        activeCat = chip.dataset.filter;
+        chips.forEach(function(c){ c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'); });
+        window.filterCards();
+      });
+    });
+  })();
 </script>
 
 
