@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#ff8a73">
+<title>EasyLandX · Business Examples Showcase</title>
+<style>
+:root{--coral:#ff8a73;--mint:#7fe3c1;--sky:#7cc6ff;--lilac:#c9a9ff;--sun:#ffe27a;--ink:#2b1d3a;--w:min(100vw,560px,max(390px,50dvh))}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+html.touch,html.touch body{height:auto;overflow:visible;overscroll-behavior:none}
+html.touch body{min-height:calc(100dvh + 400px)}
+html{background:#ff8a73} /* colour around the notch / island: change here and in the theme-color meta */
+body{background:transparent;color:var(--ink);font:15px/1.3 -apple-system,system-ui,"Segoe UI",sans-serif;-webkit-user-select:none;user-select:none}
+.bg{position:fixed;inset:0;touch-action:none;cursor:grab;background:linear-gradient(90deg,var(--coral) 0 20%,var(--sun) 20% 40%,var(--mint) 40% 60%,var(--sky) 60% 80%,var(--lilac) 80% 100%)}
+.desk{--w:100vw}
+.desk .screen{box-shadow:none}
+.desk .bg{display:none}
+.screen{position:fixed;top:0;bottom:0;width:var(--w);left:calc(50% - var(--w)/2);overflow:hidden;background:#fff7e8;z-index:1;box-shadow:0 0 50px rgba(80,40,0,.25)}
+.track{position:absolute;inset:0;display:flex;will-change:transform}
+.slide{flex:0 0 100%;position:relative;overflow:hidden;background:#fff7e8}
+.slide.pop{animation:pop .35s ease}
+@keyframes pop{from{opacity:0;transform:scale(.96)}}
+.ph{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:12%;font-weight:800;font-size:20px;color:var(--ink)}
+.slide iframe{position:absolute;top:0;left:0;border:0;background:#fff;transform-origin:0 0}
+.zone{position:absolute;top:0;bottom:0;width:26px;z-index:5;touch-action:none;cursor:grab}
+.zl{left:0}.zr{right:0}
+.glass{touch-action:pan-y;position:fixed;left:50%;transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:8px;padding:8px;border-radius:18px;background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);border:2px solid var(--ink);box-shadow:5px 5px 0 var(--ink);width:min(96vw,500px)}
+.bar{bottom:max(12px,env(safe-area-inset-bottom))}
+.bar.min{width:auto}.bar.min>*:not(#tg):not(.count){display:none}
+.count{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%) translateY(6px);padding:5px 12px;border-radius:14px;background:var(--sun);border:2px solid var(--ink);font:700 13px/1 inherit;font-family:inherit;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s,transform .2s}
+.count.show{opacity:1;transform:translateX(-50%)}
+.b{border:2px solid var(--ink);border-radius:12px;padding:8px 11px;font:700 15px inherit;font-family:inherit;background:var(--coral);color:var(--ink);cursor:pointer;white-space:nowrap;text-decoration:none}
+.b:active{transform:scale(.95)}
+#prev{background:var(--sky)}#rnd{background:var(--sun)}#open{background:var(--mint)}#next{background:var(--sky)}#tg{background:var(--lilac)}
+input{flex:1;min-width:0;border-radius:12px;border:2px solid var(--ink);background:#fff;color:var(--ink);padding:9px 11px;font:inherit;-webkit-user-select:text;user-select:text}
+input:focus{outline:0;box-shadow:0 0 0 3px var(--lilac)}
+.res{position:absolute;bottom:calc(100% + 10px);left:0;right:0;background:#fff;border:2px solid var(--ink);border-radius:14px;max-height:45vh;overflow:auto;display:none;box-shadow:5px 5px 0 var(--ink)}
+.res div{padding:8px 12px;cursor:pointer;border-bottom:1px solid rgba(43,29,58,.12)}
+.res div:hover,.res .on{background:var(--mint)}
+.res small{display:block;opacity:.6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hint{position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:19;background:var(--sun);border:2px solid var(--ink);color:var(--ink);padding:7px 12px;border-radius:14px;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;animation:fade 6s forwards}
+@keyframes fade{0%,70%{opacity:1}100%{opacity:0}}
+@media(max-width:480px){.b{padding:8px 9px;font-size:14px}.glass{gap:6px;padding:7px}.hint{white-space:normal;width:86vw;text-align:center}}
+</style>
+</head>
+<body>
+<div class="bg" id="bg"></div>
+<div class="screen" id="screen">
+  <div class="track" id="track"><div class="slide"><div class="ph">Loading examples…</div></div></div>
+</div>
+<div class="glass bar" id="bar">
+  <div class="res" id="res"></div>
+  <div class="count" id="count"></div>
+  <button class="b" id="prev" aria-label="Previous example">◀</button>
+  <button class="b" id="rnd" aria-label="Random example">🎲</button>
+  <input id="q" type="search" placeholder="Search business type…" autocomplete="off" aria-label="Current example and search">
+  <a class="b" id="open" href="#" target="_blank" rel="noopener" title="Open in new tab" aria-label="Open in new tab">↗</a>
+  <button class="b" id="next" aria-label="Next example">▶</button>
+  <button class="b" id="tg" aria-label="Hide or show controls">▾</button>
+</div>
+<div class="hint">Swipe ⇄ to change example · swipe ↕ to scroll · © 2026 EasyLandX</div>
+
+<script>
+if(matchMedia('(pointer:coarse)').matches)document.documentElement.classList.add('touch');
+const B='https://easylandx.github.io/';
+let W=390; // page width in CSS px: phone width, or the real window width on desktop
+const $=s=>document.querySelector(s), track=$('#track'), scr=$('#screen'), q=$('#q'), res=$('#res');
+
+// Examples taken from the links in hub.html: [icon, title, path]
+const DATA=[
+['🧘‍♀️','Yoga Teachers & Studios','web/yoga.html'],
+['🧘🏻‍♀️','Pilates Studios','why/pilates.html'],
+['🏋️‍♂️','Personal Trainers & Studios','web/trainer.html'],
+['🧠','Psychologists & Practices','web/psychologist.html'],
+['💼','Business Leadership and Executive Coaches','why/leaders.html'],
+['💼','LinkedIn Consultant','why/linkedin.html'],
+['⚖️','Lawyers & Legal Services','why/lawyer.html'],
+['💰','Financial Advisors & Independent Planners','why/financial.html'],
+['🌌','Astrology & Tarot Readers','why/tarot.html'],
+['🍞','Bakeries & Specialty Food','web/bakeries.html'],
+['🧀','Artisan Cheese Makers','why/cheese.html'],
+['☕','Independent Cafés & Coffee Shops','why/cafes.html'],
+['🎂','Cake Designers & Custom Bakeries','why/cakes.html'],
+['🍫','Chocolatier & Chocolate Makers','why/chocolat.html'],
+['🍳','Private Chefs & Catering','why/chef.html'],
+['🧬','Nutritionists & Dietitians','why/nutrition.html'],
+['🎨','Artists & Art Workshops','web/art.html'],
+['🏺','Ceramic Artists & Pottery Studios','why/ceramics.html'],
+['💎','Jewelry Designers & Makers','why/jewelry.html'],
+['🧱','Muralists & Street Artists','why/mural.html'],
+['🐾','Pet Groomers & Salons','web/pets.html'],
+['💄','Makeup Artists','web/makeup.html'],
+['✂️','Hair Stylists & Hair Salons','why/hair.html'],
+['🧴','Estheticians & Skincare Specialists','why/beauty.html'],
+['🎨','Tattoo Artists & Studios','why/tatoo.html'],
+['🏡','Rural Accommodation','why/rental.html'],
+['🏠','Independent Real Estate Sales Professional','why/sales.html'],
+['🧘‍♀️','Wellness & Health Coaches','why/wellness.html'],
+['🧘','Sound Healers & Sound Bath Facilitators','why/sound.html'],
+['🌿','Reiki Practitioners & Energy Healers','why/reiki.html'],
+['🌿','Holistic Therapists','why/holistic.html'],
+['🧘‍♀️','Meditation Teachers & Mindfulness Coaches','why/meditation.html'],
+['🧠','Hypnotherapists','why/hypnosis.html'],
+['🐎','Equine Therapists & Horse Care','why/horse.html'],
+['🌸','Florists & Floral Designers','why/florists.html'],
+['🌱','Gardeners & Garden Designers','why/garden.html'],
+['🐝','Beekeeping Courses & Mentors','why/bees.html'],
+['💃','Dance Teachers & Dance Studios','why/dance.html'],
+['🎹','Piano Teachers & Private Music Studios','why/piano.html'],
+['🎸','Independent Musicians & Bands','why/music.html'],
+['🎸','Luthiers','why/luthier.html'],
+['🏕️','Adventure & Outdoor Experiences','why/adventure.html'],
+['🏂','Ski & Snowboard Instructors','why/snow.html'],
+['🎈',"Children's Party & Entertainment Businesses",'why/kids.html'],
+['🪄','Magicians & Illusionists','why/magic.html'],
+['📸','Photographers','why/photos.html'],
+['📷','Photo Booth & Event Photography Services','why/booth.html'],
+['🧺','Professional Organizers & Decluttering Services','why/organizers.html'],
+['🧼','Eco-Friendly / Zero-Waste Product Makers','why/zerowaste.html'],
+['🛡️','Preppers & Preparedness Coaches','why/prepp.html'],
+['🧰','Emergency Preparedness Consultants','why/emergency.html'],
+['🌾','Permaculture & Resilient Gardening Instructors','why/permaculture.html'],
+['🏠','Homesteading Instructors & Coaches','why/homesteading.html'],
+['🥫','Food Storage & Long-Term Preservation Experts','why/harvest.html'],
+['🩹','Wilderness & Disaster First Aid Instructors','why/firstaid.html'],
+['🔫','Self-Defense & Situational Awareness Coaches','why/sentryline.html'],
+['⚡','Off-Grid Living & Self-Sufficiency Coaches','why/offgrid.html'],
+['🔋','Solar / Alternative Energy for Preppers','why/solar.html'],
+['💧','Water Purification & Off-Grid Water Systems Specialists','why/water.html'],
+['🎒','Bug-Out / Go-Bag Specialists','why/bugout.html'],
+['🔥','The Core Idea','app/']
+];
+const HUB=B+'app/hub.html';
+const FALLBACK=DATA.map(d=>({t:d[0]+' '+d[1],n:d[1],u:B+d[2]}));
+let S=[], cur=0;
+
+// Read the live hub page and take one entry per box (card): its link, icon and title
+let LIVE=false;
+async function loadList(){
+  const urls=[HUB,'https://corsproxy.io/?'+encodeURIComponent(HUB)]; // second one only if the direct request is blocked
+  for(const url of urls){
+    try{
+      const r=await fetch(url,{cache:'no-store'});if(!r.ok)continue;
+      const doc=new DOMParser().parseFromString(await r.text(),'text/html');
+      const seen=new Set(),list=[];
+      // every box on the hub: <a class="card" href="…"> with icon, title (h3) and caption ("View yoga example →")
+      doc.querySelectorAll('a.card').forEach(a=>{
+        let u;try{u=new URL(a.getAttribute('href'),HUB).href}catch(e){return}
+        if(!/^https?:/.test(u)||seen.has(u))return;seen.add(u);
+        const h=a.querySelector('h3'),c=a.querySelector('.card-link'),i=a.querySelector('.card-icon');
+        const n=((h||a).textContent||'').trim().replace(/\s+/g,' ');
+        const ic=i?i.textContent.trim():'';
+        list.push({t:(ic?ic+' ':'')+n,n,u,d:c?c.textContent.trim():''});
+      });
+      if(list.length>=5){LIVE=true;return list}
+    }catch(e){}
+  }
+  return FALLBACK;
+}
+
+function sizeF(f){const k=scr.clientWidth/W;f.style.width=W+'px';f.style.height=(scr.clientHeight/k)+'px';f.style.transform='scale('+k+')'}
+function sync(){
+  [...track.children].forEach((sl,i)=>{
+    const need=Math.abs(i-cur)<=1, f=sl.querySelector('iframe');
+    if(need&&!f)mkFrame(i);
+    else if(!need&&f)f.remove();
+  });
+}
+function ui(){
+  if(document.activeElement!==q)q.value=S[cur].t;
+  $('#open').href=S[cur].u;
+}
+function go(i){
+  i=(i+S.length)%S.length;
+  const far=Math.abs(i-cur)>1,chg=i!==cur; cur=i; sync();
+  track.style.transition=far?'none':'transform .35s cubic-bezier(.2,.8,.2,1)';
+  track.style.transform='translateX('+(-cur*100)+'%)';
+  if(far){const sl=track.children[cur];sl.classList.remove('pop');void sl.offsetWidth;sl.classList.add('pop')}
+  ui();
+  if(chg)showCount();
+}
+let ct;
+function showCount(){
+  const c=$('#count');c.textContent=(cur+1)+' / '+S.length;c.classList.add('show');
+  clearTimeout(ct);ct=setTimeout(()=>c.classList.remove('show'),1300);
+}
+function rnd(){if(S.length<2)return;let i;do{i=Math.floor(Math.random()*S.length)}while(i===cur);go(i)}
+
+// Pages are fetched and injected via srcdoc so they are same-origin with this file:
+// that lets us add mouse-drag scrolling and left/right swipes anywhere on the screen.
+const cache=new Map(), GAIN=2.8;
+let fsTried=false;
+function enterFS(){
+  if(fsTried||!matchMedia('(pointer:coarse)').matches)return;
+  const el=document.documentElement,f=el.requestFullscreen||el.webkitRequestFullscreen;
+  if(!f)return;fsTried=true;
+  try{const r=f.call(el);if(r&&r.catch)r.catch(()=>{fsTried=false})}catch(e){fsTried=false}
+}
+let wl=0;
+function wheelNav(e){
+  if(Math.abs(e.deltaX)>Math.abs(e.deltaY)&&Math.abs(e.deltaX)>15){
+    e.preventDefault();const n=Date.now();
+    if(n-wl>450){wl=n;go(cur+(e.deltaX>0?1:-1))}
+  }
+}
+function endH(dx,dt){
+  const v=dx/Math.max(1,dt),th=scr.clientWidth*.18;
+  if(dx<-th||(v<-.5&&dx<-30))go(cur+1);
+  else if(dx>th||(v>.5&&dx>30))go(cur-1);
+  else go(cur);
+}
+function mkFrame(i){
+  const fr=document.createElement('iframe');
+  fr.title=S[i].n;fr.allow='fullscreen';fr.dataset.i=i;
+  track.children[i].appendChild(fr);sizeF(fr);
+  fr.addEventListener('load',()=>{if(fr.dataset.mode==='doc')hook(fr)});
+  loadDoc(fr,i);
+  // safety net: if the injected copy never loads, show the real page directly
+  setTimeout(()=>{
+    if(!fr.isConnected||fr.dataset.ok)return;
+    fr.dataset.mode='src';fr.removeAttribute('srcdoc');fr.src=S[i].u;
+  },7000);
+}
+async function loadDoc(fr,i){
+  try{
+    let h=cache.get(i);
+    if(!h){
+      const r=await fetch(S[i].u);if(!r.ok)throw 0;
+      h=await r.text();
+      const b='<base href="'+S[i].u+'">';
+      h=/<head(\s[^>]*)?>/i.test(h)?h.replace(/<head(\s[^>]*)?>/i,m=>m+b):b+h;
+      cache.set(i,h);
+    }
+    if(!fr.isConnected)return;
+    fr.dataset.mode='doc';fr.dataset.ok='1';fr.srcdoc=h;
+  }catch(e){ // fallback: normal cross-origin embed (edge swipes still work)
+    if(fr.isConnected){
+      fr.dataset.mode='src';fr.src=S[i].u;
+      ['zl','zr'].forEach(c=>{const z=document.createElement('div');z.className='zone '+c;fr.parentNode.appendChild(z);swipe(z)});
+    }
+  }
+}
+function hook(fr){
+  const d=fr.contentDocument;if(!d||!d.documentElement)return;
+  const st=d.createElement('style');
+  st.textContent='html,body{-webkit-user-select:none!important;user-select:none!important;cursor:grab}html{scroll-behavior:auto!important}*{-webkit-user-drag:none;touch-action:none!important}input,textarea{-webkit-user-select:text!important;user-select:text!important}';
+  (d.head||d.documentElement).appendChild(st);
+  d.addEventListener('selectstart',e=>{if(!/^(INPUT|TEXTAREA)$/.test(e.target.tagName))e.preventDefault()});
+  d.addEventListener('dragstart',e=>e.preventDefault());
+  ['pointerdown','touchstart','wheel','keydown'].forEach(ev=>d.addEventListener(ev,userAct,{passive:true,capture:true})); // activity inside the page also pauses auto-advance
+  const root=()=>d.scrollingElement||d.documentElement;
+  let id=null,x0=0,y0=0,t0=0,top0=0,mode=null,moved=false,vy=0,ly=0,lt=0,dxs=0;
+  d.addEventListener('pointerdown',e=>{
+    if(e.button!==0||(e.target.closest&&e.target.closest('input,textarea,select')))return;
+    cancelAnimationFrame(fr._raf);
+    id=e.pointerId;x0=e.clientX;y0=ly=e.clientY;lt=t0=performance.now();
+    top0=root().scrollTop;mode=null;moved=false;vy=0;dxs=0;
+  });
+  d.addEventListener('pointermove',e=>{
+    if(e.pointerId!==id)return;
+    const dx=e.clientX-x0,dy=e.clientY-y0,k=scr.clientWidth/W;
+    if(!mode){
+      if(Math.hypot(dx,dy)<8)return;
+      mode=Math.abs(dx)>Math.abs(dy)?'h':'v';moved=true;
+      try{d.documentElement.setPointerCapture(id)}catch(_){}
+      if(mode==='h')track.style.transition='none';
+    }
+    if(mode==='h'){
+      dxs=dx*k;
+      track.style.transform='translateX(calc('+(-cur*100)+'% + '+dxs+'px))';
+    }else{
+      root().scrollTop=top0-dy*GAIN;
+      const n=performance.now();vy=(e.clientY-ly)*GAIN/Math.max(1,n-lt);ly=e.clientY;lt=n;
+    }
+  });
+  const up=e=>{
+    if(e.pointerId!==id)return;id=null;
+    if(moved)enterFS();
+    if(mode==='h')endH(dxs,performance.now()-t0);
+    else if(mode==='v'&&Math.abs(vy)>.1){
+      let v=vy;
+      const step=()=>{root().scrollTop-=v*16;v*=.965;if(Math.abs(v)>.02)fr._raf=requestAnimationFrame(step)};
+      step();
+    }
+  };
+  d.addEventListener('pointerup',up);d.addEventListener('pointercancel',up);
+  d.addEventListener('click',e=>{
+    if(moved){moved=false;e.preventDefault();e.stopPropagation();return}
+    const a=e.target.closest&&e.target.closest('a[href]');if(!a)return;
+    const h=a.getAttribute('href');e.preventDefault();
+    if(h&&h[0]==='#'){const t=d.getElementById(decodeURIComponent(h.slice(1)));if(t)t.scrollIntoView({behavior:'smooth'});return}
+    const j=S.findIndex(s=>s.u===a.href);
+    if(j>=0)go(j);else window.open(a.href,'_blank','noopener');
+  },true);
+  d.addEventListener('wheel',wheelNav,{passive:false});
+  d.addEventListener('keydown',e=>{
+    if(/^(INPUT|TEXTAREA)$/.test(e.target.tagName))return;
+    if(e.key==='ArrowRight')go(cur+1);else if(e.key==='ArrowLeft')go(cur-1);
+  });
+}
+
+// swipe left/right on edges and bezel (also used for cross-origin fallback pages)
+function swipe(el,bezelOnly){
+  let x0=0,t0=0,on=false;
+  el.addEventListener('pointerdown',e=>{
+    if(bezelOnly&&e.target!==el)return;
+    on=true;x0=e.clientX;t0=performance.now();el.setPointerCapture(e.pointerId);track.style.transition='none';
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!on)return;
+    track.style.transform='translateX(calc('+(-cur*100)+'% + '+(e.clientX-x0)+'px))';
+  });
+  const end=e=>{
+    if(!on)return;on=false;enterFS();
+    endH(e.clientX-x0,performance.now()-t0);
+  };
+  el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
+  el.addEventListener('wheel',wheelNav,{passive:false});
+}
+swipe($('#bg'),true);
+
+// search
+let hits=[],sel=0;
+function show(){
+  const v=q.value.trim().toLowerCase();
+  res.innerHTML='';
+  if(!v){res.style.display='none';hits=[];return}
+  hits=S.map((s,i)=>({s,i})).filter(o=>(o.s.n+' '+o.s.u).toLowerCase().includes(v)).slice(0,8);
+  sel=0;
+  hits.forEach((o,k)=>{
+    const d=document.createElement('div'),b=document.createElement('b'),sm=document.createElement('small');
+    b.textContent=o.s.t;sm.textContent=(o.s.d?o.s.d+' · ':'')+o.s.u.replace('https://','');d.append(b,sm);
+    if(!k)d.className='on';
+    d.onmousedown=e=>{e.preventDefault();pick(o.i)};
+    res.appendChild(d);
+  });
+  if(!hits.length){const d=document.createElement('div');d.textContent='No examples found';res.appendChild(d)}
+  res.style.display='block';
+}
+function pick(i){q.value='';res.style.display='none';q.blur();go(i)}
+q.addEventListener('input',show);
+q.addEventListener('focus',()=>setTimeout(()=>q.select(),0));
+q.addEventListener('blur',()=>{res.style.display='none';if(S[cur])q.value=S[cur].t});
+q.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&hits[sel])pick(hits[sel].i);
+  else if(e.key==='Escape'){q.value='';show();q.blur()}
+  else if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+    e.preventDefault();if(!hits.length)return;
+    sel=(sel+(e.key==='ArrowDown'?1:-1)+hits.length)%hits.length;
+    [...res.children].forEach((c,k)=>c.classList.toggle('on',k===sel));
+  }
+});
+$('#prev').onclick=()=>go(cur-1);
+$('#next').onclick=()=>go(cur+1);
+$('#rnd').onclick=rnd;
+['pointerup','touchend'].forEach(ev=>$('#bar').addEventListener(ev,enterFS,{passive:true}));
+$('#tg').onclick=()=>{const m=$('#bar').classList.toggle('min');$('#tg').textContent=m?'▴':'▾'};
+addEventListener('keydown',e=>{
+  if(document.activeElement===q)return;
+  if(e.key==='ArrowRight')go(cur+1);
+  else if(e.key==='ArrowLeft')go(cur-1);
+  else if(e.key==='r'||e.key==='R')rnd();
+  else if(e.key==='/'){e.preventDefault();q.focus()}
+});
+function layout(){ // desktop (mouse + wide window): real desktop layout; otherwise phone layout
+  let emb=false;try{emb=window.self!==window.top}catch(e){emb=true} // inside the iPad frame: always use the wide layout, even on touch phones
+  const desk=(matchMedia('(pointer:fine)').matches||emb)&&innerWidth>=800;
+  document.body.classList.toggle('desk',desk);
+  W=desk?Math.max(innerWidth,1024):390;
+  track.querySelectorAll('iframe').forEach(sizeF);
+}
+new ResizeObserver(layout).observe(scr);
+addEventListener('resize',layout);
+layout();
+
+// auto-advance: next slide every 8 s; any touch/click/key/wheel stops it, and it resumes after 16 s without activity
+const AP_EVERY=8000, AP_IDLE=16000;
+let apTimer=null, idleTimer=null;
+function apStart(){
+  clearInterval(apTimer);
+  apTimer=setInterval(()=>{ if(document.hidden||document.activeElement===q||S.length<2)return; go(cur+1) },AP_EVERY);
+}
+function userAct(){
+  clearInterval(apTimer);apTimer=null;
+  clearTimeout(idleTimer);idleTimer=setTimeout(apStart,AP_IDLE);
+}
+['pointerdown','touchstart','wheel','keydown'].forEach(ev=>document.addEventListener(ev,userAct,{passive:true,capture:true}));
+// clicks inside a cross-origin page can't be seen directly, but they move focus into the iframe
+addEventListener('blur',()=>{ if(document.activeElement&&document.activeElement.tagName==='IFRAME')userAct() });
+
+// build slides and start on a random example
+loadList().then(list=>{
+  S=list;
+  const hint=document.querySelector('.hint');
+  hint.textContent=(LIVE?'Loaded '+S.length+' examples from hub.html':'Could not reach hub.html — showing saved list ('+S.length+')')+' · swipe ⇄ · © 2026 EasyLandX';
+  hint.style.animation='none';hint.style.opacity=1;setTimeout(()=>hint.style.opacity=0,6000);
+  track.innerHTML='';
+  S.forEach(s=>{const d=document.createElement('div'),p=document.createElement('div');d.className='slide';p.className='ph';p.textContent=s.t;d.appendChild(p);track.appendChild(d)});
+  cur=Math.floor(Math.random()*S.length);
+  go(cur);
+  apStart();
+});
+</script>
+</body>
+</html>
