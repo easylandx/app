@@ -257,6 +257,13 @@ footer{background:var(--blue-deep); color:#fff; padding-top:clamp(48px,7vw,80px)
 .xtv2-open{position:absolute; top:-13px; right:22px; z-index:6; display:inline-flex; align-items:center; gap:4px; padding:5px 11px; border:2px solid #171412; border-radius:999px; background:#FFD400; color:#171412; font:800 11px/1 'Poppins',system-ui,sans-serif; text-decoration:none; box-shadow:2px 2px 0 #171412}
 .xtv2-open:active{transform:translate(1px,1px); box-shadow:1px 1px 0 #171412}
 @media (max-width:700px){ .xtv2{border-radius:24px; padding:2px} .xtv2-bezel{border-radius:22px; padding:8px} .xtv2-screen{border-radius:14px} }
+/* phones: let the iPad use (almost) the full screen width so the desktop page is as large as possible */
+@media (max-width:700px){
+  .convert .cwrap{padding-left:6px; padding-right:6px}
+  .xtv2{width:100%}
+  .xtv2-bezel{padding:6px}
+  .xtv2-screen{-webkit-overflow-scrolling:touch}
+}
 @media (max-width:600px){ .xtv{--xtv-w:1024px;--xtv-h:768px} }
 @media (max-width:480px){
   .xtv-wrap{padding-left:6px;padding-right:6px}
@@ -627,7 +634,7 @@ html.green .offerbar .modebtn *{background:transparent !important; color:inherit
           <a class="xtv2-open" href="https://easylandx.github.io/app/ipad.html" target="_blank" rel="noopener" title="Open full screen">Open iPad ↗</a>
           <div class="xtv2-bezel">
             <div class="xtv2-screen" id="xtv2Screen">
-              <iframe class="xtv2-frame" id="xtv2Frame" src="https://easylandx.github.io/app/ipad.html" title="EasyLandX iPad app" loading="lazy" allow="fullscreen"></iframe>
+              <iframe class="xtv2-frame" id="xtv2Frame" src="https://easylandx.github.io/app/ipad.html?desk=1" title="EasyLandX iPad app" loading="lazy" allow="fullscreen"></iframe>
             </div>
           </div>
         </div>
@@ -956,13 +963,20 @@ html.green .offerbar .modebtn *{background:transparent !important; color:inherit
 </script>
 <script>
 (function(){
-  /* Big iPad: show the site full-bleed inside the frame; below 1024px wide, render at 1024x768 and scale down */
+  /* Big iPad: always lay the embedded site out as a DESKTOP page (1280x960 virtual screen, 4:3),
+     then scale it to cover the whole iPad screen. Works on iPhone/iPad/Android so the mobile layout never kicks in. */
   var sc=document.getElementById("xtv2Screen"),fr=document.getElementById("xtv2Frame");
   if(!sc||!fr)return;
+  var VW=1280,VH=960;
+  fr.removeAttribute("loading");
   function fit(){
     var w=sc.clientWidth,h=sc.clientHeight;if(!w)return;
-    if(w>=1024){fr.style.width=w+"px";fr.style.height=h+"px";fr.style.transform="none";}
-    else{fr.style.width="1024px";fr.style.height="768px";fr.style.transform="scale("+(w/1024).toFixed(4)+")";}
+    if(w>=VW){fr.style.width=w+"px";fr.style.height=h+"px";fr.style.transform="none";}
+    else{
+      var k=w/VW;
+      fr.style.width=VW+"px";fr.style.height=Math.ceil(h/k)+"px";
+      fr.style.transform="scale("+k.toFixed(5)+")";
+    }
   }
   fit();
   if(window.ResizeObserver)new ResizeObserver(fit).observe(sc);

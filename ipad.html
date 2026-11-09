@@ -63,7 +63,9 @@ input:focus{outline:0;border-color:var(--cyan)}
 <div class="hint">Swipe ⇄ to change site · swipe ↕ to scroll · swipe up on the bar to hide the browser toolbar</div>
 
 <script>
-if(matchMedia('(pointer:coarse)').matches)document.documentElement.classList.add('touch');
+/* Embedded in another page (e.g. the iPad frame on the landing page) or ?desk=1: always use the real DESKTOP layout, even on phones */
+const EMB=(function(){try{return window.top!==window}catch(e){return true}})()||/[?&]desk=1/.test(location.search);
+if(!EMB&&matchMedia('(pointer:coarse)').matches)document.documentElement.classList.add('touch');
 const IDX='https://easylandx.github.io/all/';
 let W=390; // page width in CSS px: phone width, or the real window width on desktop
 const $=s=>document.querySelector(s), track=$('#track'), scr=$('#screen'), q=$('#q'), res=$('#res');
@@ -134,7 +136,7 @@ function rnd(){if(S.length<2)return;let i;do{i=Math.floor(Math.random()*S.length
 const cache=new Map(), GAIN=2.8; // GAIN = how much faster than the finger the page scrolls
 let fsTried=false;
 function enterFS(){ // touch devices: go full screen on the first swipe/scroll (hides the browser bars where supported)
-  if(fsTried||!matchMedia('(pointer:coarse)').matches)return;
+  if(EMB||fsTried||!matchMedia('(pointer:coarse)').matches)return;
   const el=document.documentElement,f=el.requestFullscreen||el.webkitRequestFullscreen;
   if(!f)return;fsTried=true;
   try{const r=f.call(el);if(r&&r.catch)r.catch(()=>{fsTried=false})}catch(e){fsTried=false}
@@ -300,7 +302,7 @@ addEventListener('keydown',e=>{
   else if(e.key==='/'){e.preventDefault();q.focus()}
 });
 function layout(){ // desktop (mouse + wide window): real desktop layout across the whole window; otherwise phone layout
-  const desk=matchMedia('(pointer:fine)').matches&&innerWidth>=800;
+  const desk=EMB||(matchMedia('(pointer:fine)').matches&&innerWidth>=800);
   document.body.classList.toggle('desk',desk);
   W=desk?Math.max(innerWidth,1024):390;
   track.querySelectorAll('iframe').forEach(sizeF);
