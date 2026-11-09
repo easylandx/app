@@ -142,7 +142,7 @@ function rnd(){if(S.length<2)return;let i;do{i=Math.floor(Math.random()*S.length
    Engine: Google's public "gtx" endpoint (auto-detects the source language).
    To use an official/paid API (Google Cloud Translation, DeepL...), replace gt().
    ===================================================================== */
-const TKEY='ipad_tr_es_v5';
+const TKEY='ipad_tr_es_v6';
 const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){return false}}};
 const T={on:ls.get('ipad_tr_on')!=='0'};
 let TC={};try{TC=JSON.parse(ls.get(TKEY)||'{}')||{}}catch(e){TC={}}
@@ -226,6 +226,28 @@ async function trChunks(s){
   if(c)chunks.push(c);
   return (await Promise.all(chunks.map(gt))).join('');
 }
+/* =====================================================================
+   GLOSSARY: fixes words the translator gets wrong out of context.
+   SUB  = [what to find, English word that translates correctly]. Verb forms keep working because the
+          replacement is still English (e.g. "ships" -> "launches" -> "lanza"), and capitalisation is preserved.
+   KEEP = terms left in English on purpose (the brand and common startup jargon).
+   To add a term, just add a line here and bump TKEY (v6 -> v7) so old cached translations are dropped.
+   ===================================================================== */
+const SUB=[
+  [/\bshipped\b/gi,'launched'],
+  [/\bships\b/gi,'launches'],
+  [/\bship\b/gi,'launch'],
+  [/\bshipping(?=\s+(?:faster|fast|features?|code|products?|updates?|software|every|daily|weekly|quickly|ideas?|apps?)\b)/gi,'launching'],
+  [/\bwent live\b/gi,'launched'],[/\bgone live\b/gi,'launched'],[/\bgoing live\b/gi,'launching'],[/\bgoes live\b/gi,'launches'],[/\bgo live\b/gi,'launch']
+];
+const KEEP=/easy[\s-]?land(?:[\s-]?x)?|\blanding pages?\b|\bpitch decks?\b|\bno-code\b|\blow-code\b|\bproduct-market fit\b|\bburn rate\b/gi;
+function glossCase(m,r){
+  if(m.length>1&&m===m.toUpperCase())return r.toUpperCase();
+  if(m[0]!==m[0].toLowerCase())return r[0].toUpperCase()+r.slice(1);
+  return r;
+}
+function glossSub(s){for(const [re,r] of SUB)s=s.replace(re,m=>glossCase(m,r));return s}
+
 const inf=new Map();
 function ttl(s){
   if(TC[s]!==undefined)return Promise.resolve(TC[s]);
@@ -233,7 +255,7 @@ function ttl(s){
   if(!p){
     // brand name EasyLandX is never translated: swap it for a placeholder before translating, put it back after
     const br=[];
-    const pre=s.replace(/easy[\s-]?land(?:[\s-]?x)?/gi,m=>{br.push(m);return 'QBRAND'+(br.length-1)+'Q'});
+    const pre=glossSub(s).replace(KEEP,m=>{br.push(m);return 'QBRAND'+(br.length-1)+'Q'});
     const only=!/\p{L}/u.test(pre.replace(/QBRAND\d+Q/g,''));
     p=(only?Promise.resolve(s):trChunks(pre).then(t=>t&&t.replace(/QBRAND\s*(\d+)\s*Q/gi,(m,i)=>br[+i]!==undefined?br[+i]:m)))
       .then(t=>{inf.delete(s);if(t){TC[s]=t;tcDirty=true}return t},e=>{inf.delete(s);throw e});
