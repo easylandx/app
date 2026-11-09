@@ -142,7 +142,7 @@ function rnd(){if(S.length<2)return;let i;do{i=Math.floor(Math.random()*S.length
    Engine: Google's public "gtx" endpoint (auto-detects the source language).
    To use an official/paid API (Google Cloud Translation, DeepL...), replace gt().
    ===================================================================== */
-const TKEY='ipad_tr_es_v1';
+const TKEY='ipad_tr_es_v2';
 const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){return false}}};
 const T={on:ls.get('ipad_tr_on')!=='0'};
 let TC={};try{TC=JSON.parse(ls.get(TKEY)||'{}')||{}}catch(e){TC={}}
@@ -152,22 +152,52 @@ setInterval(()=>{if(!tcDirty)return;tcDirty=false;if(ls.set(TKEY,JSON.stringify(
 let act=0;const wait=[];
 const slot=()=>new Promise(r=>{if(act<6){act++;r()}else wait.push(r)});
 const free=()=>{const n=wait.shift();if(n)n();else act--};
-let cool=0,fails=0; // after repeated failures (rate limit) pause requests for a while
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+/* Translation engines, tried in order. An engine that fails goes on a growing cooldown and the next one takes over,
+   so if Google blocks one endpoint the page keeps translating. In the console: trStatus() shows each engine's state. */
+const gj=j=>{
+  if(j&&j.sentences)return j.sentences.map(x=>x.trans||'').join('');
+  if(Array.isArray(j)){
+    const a=j[0];
+    if(typeof a==='string')return a;
+    if(Array.isArray(a)){
+      if(Array.isArray(a[0]))return a.map(x=>x[0]||'').join('');
+      if(typeof a[0]==='string')return a[0];
+    }
+  }
+  throw new Error('bad response');
+};
+const jget=async(url,sig)=>{const r=await fetch(url,{signal:sig});if(!r.ok)throw new Error('HTTP '+r.status);return r.json()};
+const ENG=[
+  {n:'google',max:3500,f:(s,g)=>jget('https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=es&dt=t&q='+encodeURIComponent(s),g).then(gj)},
+  {n:'google2',max:3500,f:(s,g)=>jget('https://translate.google.com/translate_a/single?client=gtx&sl=auto&tl=es&dt=t&q='+encodeURIComponent(s),g).then(gj)},
+  {n:'chrome',max:3000,f:(s,g)=>jget('https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=es&q='+encodeURIComponent(s),g).then(gj)},
+  {n:'lingva',max:1500,f:(s,g)=>jget('https://lingva.ml/api/v1/auto/es/'+encodeURIComponent(s),g).then(j=>{if(!j||!j.translation)throw new Error('empty');return j.translation})},
+  {n:'mymemory',max:450,f:(s,g)=>jget('https://api.mymemory.translated.net/get?langpair=Autodetect%7Ces&q='+encodeURIComponent(s),g).then(j=>{const t=j&&j.responseData&&j.responseData.translatedText;if(!t||+j.responseStatus!==200||/MYMEMORY WARNING|INVALID/i.test(t))throw new Error('quota');return t})}
+];
+ENG.forEach(e=>{e.cool=0;e.fails=0;e.err=''});
+const allCool=()=>{const n=Date.now();return ENG.every(e=>e.cool>n)};
+window.trStatus=()=>{const r=ENG.map(e=>({engine:e.n,fails:e.fails,cooldown_s:Math.max(0,Math.round((e.cool-Date.now())/1000)),lastError:e.err}));console.table(r);return r};
 async function gtRaw(s){
-  const now=Date.now();if(cool>now)await sleep(cool-now);
   await slot();
-  const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),9000); // never hang: 9 s timeout
   try{
-    const r=await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=es&dt=t&q='+encodeURIComponent(s),{signal:ac.signal});
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const j=await r.json();
-    fails=0;
-    return j[0].map(x=>x[0]||'').join('');
-  }catch(e){
-    if(++fails>=3)cool=Date.now()+Math.min(60000,5000*fails);
-    throw e;
-  }finally{clearTimeout(tm);free()}
+    const now=Date.now();let last=null;
+    for(const e of ENG){
+      if(s.length>e.max||e.cool>now)continue;
+      const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),8000); // never hang: 8 s timeout
+      try{
+        const t=await e.f(s,ac.signal);
+        if(!t||!t.trim())throw new Error('empty');
+        e.fails=0;e.err='';
+        return t;
+      }catch(er){
+        e.fails++;e.err=String((er&&er.message)||er);
+        e.cool=Date.now()+Math.min(180000,6000*Math.pow(2,e.fails-1));
+        last=er;
+      }finally{clearTimeout(tm)}
+    }
+    throw last||new Error('all engines cooling');
+  }finally{free()}
 }
 // Batching: many short strings go in ONE request (joined by newlines) to avoid hitting rate limits
 const bq=[];let bt=0;
@@ -183,11 +213,10 @@ function flush(){
 }
 async function runBatch(b){
   if(b.length===1){try{b[0].res(await gtRaw(b[0].s))}catch(e){b[0].rej(e)}return}
-  let out;
-  try{out=(await gtRaw(b.map(x=>x.s.replace(/\n/g,' ')).join('\n'))).split('\n')}
-  catch(e){b.forEach(x=>x.rej(e));return}
-  if(out.length===b.length){b.forEach((x,i)=>x.res(out[i].trim()));return}
-  // segment count mismatch: translate one by one
+  let out=null;
+  try{out=(await gtRaw(b.map(x=>x.s.replace(/\n/g,' ')).join('\n'))).split('\n')}catch(e){out=null}
+  if(out&&out.length===b.length){b.forEach((x,i)=>x.res(out[i].trim()));return}
+  // failed or segment count mismatch: translate one by one
   await Promise.all(b.map(async x=>{try{x.res(await gtRaw(x.s))}catch(er){x.rej(er)}}));
 }
 async function trChunks(s){
@@ -229,7 +258,7 @@ function doNode(n,tries=0){
   };
   if(TC[key]!==undefined){ap(TC[key]);return}
   ttl(key).then(ap).catch(()=>{ // failed (rate limit / timeout): retry later with backoff instead of staying in English
-    if(tries<6)setTimeout(()=>{if(T.on&&n.isConnected&&n.data===raw)doNode(n,tries+1)},2500*(tries+1));
+    if(tries<12)setTimeout(()=>{if(T.on&&n.isConnected&&n.data===raw)doNode(n,tries+1)},Math.min(20000,3000*(tries+1)));
   });
 }
 function doAttr(el,a,tries=0){
@@ -247,7 +276,7 @@ function doAttr(el,a,tries=0){
   };
   if(TC[key]!==undefined){ap(TC[key]);return}
   ttl(key).then(ap).catch(()=>{
-    if(tries<6)setTimeout(()=>{if(T.on&&el.isConnected&&el.getAttribute(a)===raw)doAttr(el,a,tries+1)},2500*(tries+1));
+    if(tries<12)setTimeout(()=>{if(T.on&&el.isConnected&&el.getAttribute(a)===raw)doAttr(el,a,tries+1)},Math.min(20000,3000*(tries+1)));
   });
 }
 function attrs(el){for(const a of ATTR)if(el.hasAttribute&&el.hasAttribute(a))doAttr(el,a)}
@@ -492,7 +521,17 @@ addEventListener('resize',layout);
 layout();
 setTr(T.on); // paint the 🌐 button state
 // the button shows ⏳ while translation is paused because Google is limiting requests
-setInterval(()=>{const b=$('#tr'),p=T.on&&Date.now()<cool;const t=p?'🌐⏳':'🌐';if(b.textContent!==t)b.textContent=t},1000);
+setInterval(()=>{const b=$('#tr'),p=T.on&&allCool();const t=p?'🌐⏳':'🌐';if(b.textContent!==t)b.textContent=t},1000);
+
+setInterval(()=>{
+  if(!T.on)return;
+  track.querySelectorAll('iframe').forEach(fr=>{
+    if(fr.dataset.mode!=='doc')return;
+    const d=fr.contentDocument;
+    if(!d||!d.documentElement||d.readyState!=='complete')return;
+    if(d.__mo)walk(d.documentElement,d);else startTr(d);
+  });
+},12000);
 
 loadList().then(list=>{
   S=list;
