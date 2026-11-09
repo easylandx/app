@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#ffd23f">
+<title>EasyLandX · Mobile Showcase (ES)</title>
+<style>
+:root{--gold:#ffd23f;--cyan:#27f0ff;--deep:#1c0a5c;--w:min(100vw,560px,max(390px,50dvh))}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+html.touch,html.touch body{height:auto;overflow:visible;overscroll-behavior:none}
+html.touch body{min-height:calc(100dvh + 400px)}
+html{background:#ffd23f} /* colour around the notch / island: change here and in the theme-color meta */
+body{background:transparent;color:#fff;font:15px/1.3 -apple-system,system-ui,"Segoe UI",sans-serif;-webkit-user-select:none;user-select:none}
+.bg{position:fixed;inset:0;touch-action:none;cursor:grab}
+.desk{--w:100vw}
+.desk .screen{box-shadow:none}
+.desk .bg{display:none}
+.screen{position:fixed;top:0;bottom:0;width:var(--w);left:calc(50% - var(--w)/2);overflow:hidden;background:#12082e;z-index:1;box-shadow:0 0 70px rgba(0,0,0,.55)}
+.track{position:absolute;inset:0;display:flex;will-change:transform}
+.slide{flex:0 0 100%;position:relative;overflow:hidden;background:#12082e}
+.slide.pop{animation:pop .35s ease}
+@keyframes pop{from{opacity:0;transform:scale(.96)}}
+.ph{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:12%;font-weight:800;font-size:20px;color:var(--gold)}
+.slide iframe{position:absolute;top:0;left:0;border:0;background:#fff;transform-origin:0 0}
+.zone{position:absolute;top:0;bottom:0;width:26px;z-index:5;touch-action:none;cursor:grab}
+.zl{left:0}.zr{right:0}
+.glass{touch-action:pan-y;position:fixed;left:50%;transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:8px;padding:8px;border-radius:18px;background:rgba(24,8,72,.62);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);border:1px solid rgba(255,255,255,.22);box-shadow:0 8px 30px rgba(0,0,0,.45);width:min(96vw,500px)}
+.bar{bottom:max(12px,env(safe-area-inset-bottom))}
+.bar.min{width:auto}.bar.min>*:not(#tg):not(.count){display:none}
+.count{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(6px);padding:5px 12px;border-radius:14px;background:rgba(24,8,72,.78);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.22);font:700 13px/1 inherit;font-family:inherit;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s,transform .2s}
+.count.show{opacity:1;transform:translateX(-50%)}
+.b{border:0;border-radius:12px;padding:9px 11px;font:700 15px inherit;font-family:inherit;background:var(--gold);color:var(--deep);cursor:pointer;white-space:nowrap;text-decoration:none}
+.b:active{transform:scale(.95)}
+.b.alt{background:rgba(255,255,255,.18);color:#fff}
+input{flex:1;min-width:0;border-radius:12px;border:2px solid rgba(255,255,255,.25);background:rgba(0,0,0,.35);color:#fff;padding:9px 11px;font:inherit;-webkit-user-select:text;user-select:text}
+input:focus{outline:0;border-color:var(--cyan)}
+.res{position:absolute;bottom:calc(100% + 8px);left:0;right:0;background:rgba(20,7,61,.95);border:1px solid rgba(255,255,255,.2);border-radius:14px;max-height:45vh;overflow:auto;display:none}
+.res div{padding:8px 12px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.08)}
+.res div:hover,.res .on{background:rgba(39,240,255,.2)}
+.res small{display:block;opacity:.65;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hint{position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:19;background:rgba(0,0,0,.6);padding:7px 12px;border-radius:14px;font-size:12px;white-space:nowrap;pointer-events:none;animation:fade 6s forwards}
+@keyframes fade{0%,70%{opacity:1}100%{opacity:0}}
+@media(max-width:480px){.b{padding:9px 8px;font-size:14px}.glass{gap:5px;padding:7px}.hint{white-space:normal;width:86vw;text-align:center}}
+</style>
+</head>
+<body>
+<div class="bg" id="bg"></div>
+<div class="screen" id="screen">
+  <div class="track" id="track"><div class="slide"><div class="ph">Cargando sitios…</div></div></div>
+</div>
+<div class="glass bar" id="bar">
+  <div class="res" id="res"></div>
+  <div class="count" id="count"></div>
+  <button class="b alt" id="prev" aria-label="Sitio anterior">◀</button>
+  <button class="b" id="rnd" aria-label="Sitio aleatorio">🎲</button>
+  <input id="q" type="search" placeholder="Buscar sitios…" autocomplete="off" aria-label="Título de la página y búsqueda">
+  <button class="b" id="tr" aria-label="Traducción al español activada o desactivada" title="Traducción al español">🌐</button>
+  <a class="b alt" id="open" href="#" target="_blank" rel="noopener" title="Abrir en una pestaña nueva" aria-label="Abrir en una pestaña nueva">↗</a>
+  <button class="b alt" id="next" aria-label="Sitio siguiente">▶</button>
+  <button class="b alt" id="tg" aria-label="Ocultar o mostrar controles">▾</button>
+</div>
+<div class="hint">Desliza ⇄ para cambiar de sitio · desliza ↕ para desplazarte · 🌐 activa o desactiva la traducción al español</div>
+
+<script>
+/* ?desk=1 (used by the big iPad frame on the landing page): always use the real DESKTOP layout, even on phones.
+   Without it, the page keeps its normal behaviour (phone layout on phones / the small virtual iPhone). */
+const EMB=/[?&]desk=1/.test(location.search);
+if(!EMB&&matchMedia('(pointer:coarse)').matches)document.documentElement.classList.add('touch');
+const IDX='https://easylandx.github.io/all/';
+let W=390; // page width in CSS px: phone width, or the real window width on desktop
+const $=s=>document.querySelector(s), track=$('#track'), scr=$('#screen'), q=$('#q'), res=$('#res');
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const FALL='work make give disc parad core swan scou how brai trig change influence social human choice'.split(' ');
+let S=[], cur=0;
+
+async function loadList(){
+  let list=[];
+  try{
+    const t=await (await fetch(IDX)).text(), seen=new Set();
+    const d=new DOMParser().parseFromString(t,'text/html');
+    d.querySelectorAll('a[href]').forEach(a=>{
+      let u; try{u=new URL(a.getAttribute('href'),IDX)}catch(e){return}
+      if(!/\/all\/[\w-]+\.html$/.test(u.pathname)||/\/index\.html$/.test(u.pathname)||seen.has(u.href))return;
+      seen.add(u.href);
+      let L=[...a.querySelectorAll('*')].filter(e=>!e.children.length).map(e=>e.textContent.trim()).filter(x=>x&&!/^Open\s*→?$/.test(x));
+      if(!L.length)L=[a.textContent.replace(/Open\s*→/,'').trim()||cap(u.pathname.split('/').pop().replace('.html',''))];
+      let ic=''; if(L.length>1&&/^[^\p{L}\p{N}]{1,8}$/u.test(L[0]))ic=L.shift();
+      list.push({u:u.href,t:(ic?ic+' ':'')+L[0],d:L.slice(1).join(' ')});
+    });
+    if(list.length<20){ // page may be script-rendered: scan raw text for page names
+      list=[]; seen.clear();
+      for(const m of t.matchAll(/["'(\/]([a-z0-9-]+)\.html/gi)){
+        const s=m[1]; if(['index','all'].includes(s)||seen.has(s))continue; seen.add(s);
+        list.push({u:IDX+s+'.html',t:cap(s),d:''});
+      }
+    }
+  }catch(e){}
+  if(list.length<5) list=FALL.map(s=>({u:IDX+s+'.html',t:cap(s),d:''}));
+  // Newest pages: always in the carousel (added at the end, skipped if the index already lists them)
+  [['monk','🧘','Monk','Quiet focus, clear mind.'],['decided','✅','Decided','Choose, commit, move.'],['forward','➡️','Forward','Always one step ahead.']].forEach(([s,ic,t,d])=>{
+    const u=IDX+s+'.html'; if(!list.some(o=>o.u===u))list.push({u:u,t:ic+' '+t,d:d});
+  });
+  return list;
+}
+
+function sizeF(f){const k=scr.clientWidth/W;f.style.width=W+'px';f.style.height=(scr.clientHeight/k)+'px';f.style.transform='scale('+k+')'}
+function sync(){
+  [...track.children].forEach((sl,i)=>{
+    const need=Math.abs(i-cur)<=1, f=sl.querySelector('iframe');
+    if(need&&!f)mkFrame(i);
+    else if(!need&&f)f.remove();
+  });
+}
+function ui(){
+  if(document.activeElement!==q)q.value=S[cur].t; // the search box shows the current page title
+  $('#open').href=S[cur].u;
+}
+function go(i){
+  i=(i+S.length)%S.length;
+  const far=Math.abs(i-cur)>1,chg=i!==cur; cur=i; sync();
+  track.style.transition=far?'none':'transform .35s cubic-bezier(.2,.8,.2,1)';
+  track.style.transform='translateX('+(-cur*100)+'%)';
+  if(far){const sl=track.children[cur];sl.classList.remove('pop');void sl.offsetWidth;sl.classList.add('pop')}
+  ui();
+  if(chg)showCount();
+}
+let ct;
+function showCount(){ // small temporary page counter above the search box
+  const c=$('#count');c.textContent=(cur+1)+' / '+S.length;c.classList.add('show');
+  clearTimeout(ct);ct=setTimeout(()=>c.classList.remove('show'),1300);
+}
+function rnd(){if(S.length<2)return;let i;do{i=Math.floor(Math.random()*S.length)}while(i===cur);go(i)}
+
+/* =====================================================================
+   REAL-TIME TRANSLATION TO SPANISH
+   Every embedded page is same-origin (srcdoc), so we can walk its DOM, translate
+   text nodes + a few attributes (placeholder, title, alt, aria-label) and keep a
+   MutationObserver running so text added later by the page's own scripts is
+   translated as well. Translations are cached in localStorage.
+   Engine: Google's public "gtx" endpoint (auto-detects the source language).
+   To use an official/paid API (Google Cloud Translation, DeepL...), replace gt().
+   ===================================================================== */
+const TKEY='ipad_tr_es_v1';
+const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){return false}}};
+const T={on:ls.get('ipad_tr_on')!=='0'};
+let TC={};try{TC=JSON.parse(ls.get(TKEY)||'{}')||{}}catch(e){TC={}}
+let tcDirty=false;
+setInterval(()=>{if(!tcDirty)return;tcDirty=false;if(ls.set(TKEY,JSON.stringify(TC))===false){TC={}}},4000);
+
+let act=0;const wait=[];
+const slot=()=>new Promise(r=>{if(act<6){act++;r()}else wait.push(r)});
+const free=()=>{const n=wait.shift();if(n)n();else act--};
+async function gt(s){
+  await slot();
+  try{
+    for(let a=0;a<2;a++){
+      try{
+        const r=await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=es&dt=t&q='+encodeURIComponent(s));
+        if(!r.ok)throw 0;
+        const j=await r.json();
+        return j[0].map(x=>x[0]||'').join('');
+      }catch(e){if(a)throw e;await new Promise(r=>setTimeout(r,400))}
+    }
+  }finally{free()}
+}
+async function trChunks(s){
+  if(s.length<=1200)return gt(s);
+  const parts=s.match(/[^.!?]+[.!?]*\s*/g)||[s],chunks=[];let c='';
+  parts.forEach(p=>{if((c+p).length>1200&&c){chunks.push(c);c=''}c+=p});
+  if(c)chunks.push(c);
+  return (await Promise.all(chunks.map(gt))).join('');
+}
+const inf=new Map();
+function ttl(s){
+  if(TC[s]!==undefined)return Promise.resolve(TC[s]);
+  let p=inf.get(s);
+  if(!p){
+    p=trChunks(s).then(t=>{inf.delete(s);if(t){TC[s]=t;tcDirty=true}return t},e=>{inf.delete(s);throw e});
+    inf.set(s,p);
+  }
+  return p;
+}
+
+const ORIG=new WeakMap(),OUT=new WeakMap();
+const ATTR=['placeholder','title','alt','aria-label'];
+const SKIPSEL='script,style,noscript,textarea,code,pre,[translate=no],.notranslate';
+const skipEl=e=>(e.matches&&e.matches(SKIPSEL))||false;
+
+function doNode(n){
+  if(!T.on)return;
+  const raw=n.data;
+  if(OUT.get(n)===raw)return;
+  const m=raw.match(/^(\s*)([\s\S]*?)(\s*)$/),core=m[2];
+  if(!core||!/\p{L}/u.test(core)||core.length>6000)return;
+  const p=n.parentElement;
+  if(p&&p.closest&&p.closest(SKIPSEL))return;
+  const key=core.replace(/\s+/g,' ');
+  ORIG.set(n,raw);
+  const ap=t=>{
+    if(!T.on||!t||n.data!==raw)return;
+    const o=m[1]+t+m[3];OUT.set(n,o);n.data=o;
+  };
+  if(TC[key]!==undefined){ap(TC[key]);return}
+  ttl(key).then(ap).catch(()=>{});
+}
+function doAttr(el,a){
+  if(!T.on)return;
+  const raw=el.getAttribute(a);
+  if(!raw||!/\p{L}/u.test(raw))return;
+  const o=el.__o||(el.__o={});
+  if(o[a]&&o[a].out===raw)return;
+  if(el.closest&&el.closest('[translate=no],.notranslate'))return;
+  const rec=o[a]={orig:raw,out:null};
+  const key=raw.replace(/\s+/g,' ').trim();
+  const ap=t=>{
+    if(!T.on||!t||o[a]!==rec||el.getAttribute(a)!==raw)return;
+    rec.out=t;el.setAttribute(a,t);
+  };
+  if(TC[key]!==undefined){ap(TC[key]);return}
+  ttl(key).then(ap).catch(()=>{});
+}
+function attrs(el){for(const a of ATTR)if(el.hasAttribute&&el.hasAttribute(a))doAttr(el,a)}
+function walk(root,d){
+  if(!root)return;
+  if(root.nodeType===3){doNode(root);return}
+  if(root.nodeType!==1||skipEl(root))return;
+  attrs(root);
+  const w=d.createTreeWalker(root,5,{acceptNode(n){
+    if(n.nodeType===1){if(skipEl(n))return 2;attrs(n);return 3}
+    return 1;
+  }});
+  let n;while((n=w.nextNode()))doNode(n);
+}
+function startTr(d){
+  const w=d.defaultView;if(!w||!d.documentElement)return;
+  if(d.__mo){d.__mo.disconnect();d.__mo=null}
+  if(d.__lang===undefined)d.__lang=d.documentElement.getAttribute('lang');
+  d.documentElement.setAttribute('lang','es');
+  walk(d.documentElement,d);
+  const mo=new w.MutationObserver(ms=>{
+    if(!T.on)return;
+    for(const m of ms){
+      if(m.type==='childList')m.addedNodes.forEach(n=>walk(n,d));
+      else if(m.type==='characterData')doNode(m.target);
+      else if(m.type==='attributes')doAttr(m.target,m.attributeName);
+    }
+  });
+  mo.observe(d.documentElement,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:ATTR});
+  d.__mo=mo;
+}
+function stopTr(d){
+  if(d.__mo){d.__mo.disconnect();d.__mo=null}
+  const w=d.createTreeWalker(d.documentElement,4);let n;
+  while((n=w.nextNode())){if(ORIG.has(n)&&OUT.get(n)===n.data){n.data=ORIG.get(n);OUT.delete(n)}}
+  d.querySelectorAll('*').forEach(el=>{
+    const o=el.__o;if(!o)return;
+    for(const a in o){if(o[a].out!==null&&el.getAttribute(a)===o[a].out)el.setAttribute(a,o[a].orig);delete o[a]}
+  });
+  if(d.__lang===null)d.documentElement.removeAttribute('lang');
+  else if(d.__lang!==undefined)d.documentElement.setAttribute('lang',d.__lang);
+}
+// Fallback for pages that cannot be read directly (cross-origin): Google's translate proxy
+function gtUrl(u){
+  const x=new URL(u);
+  return x.protocol+'//'+x.hostname.replace(/-/g,'--').replace(/\./g,'-')+'.translate.goog'+x.pathname+x.search+(x.search?'&':'?')+'_x_tr_sl=auto&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=wapp';
+}
+function setTr(on){
+  T.on=on;ls.set('ipad_tr_on',on?'1':'0');
+  const b=$('#tr');b.className=on?'b':'b alt';b.title=on?'Traducción al español: ACTIVADA (toca para ver el original)':'Traducción al español: DESACTIVADA (toca para activar)';
+  track.querySelectorAll('iframe').forEach(fr=>{
+    if(fr.dataset.mode==='doc'){
+      const d=fr.contentDocument;
+      if(d&&d.documentElement){if(on)startTr(d);else stopTr(d)}
+    }else if(fr.dataset.mode==='src'){
+      const u=S[fr.dataset.i].u;fr.src=on?gtUrl(u):u;
+    }
+  });
+}
+
+// Pages are fetched and injected via srcdoc so they are same-origin with this file:
+// that lets us add mouse-drag scrolling, left/right swipes and live translation anywhere on the screen.
+const cache=new Map(), GAIN=2.8; // GAIN = how much faster than the finger the page scrolls
+let fsTried=false;
+function enterFS(){ // touch devices: go full screen on the first swipe/scroll (hides the browser bars where supported)
+  if(EMB||fsTried||!matchMedia('(pointer:coarse)').matches)return;
+  const el=document.documentElement,f=el.requestFullscreen||el.webkitRequestFullscreen;
+  if(!f)return;fsTried=true;
+  try{const r=f.call(el);if(r&&r.catch)r.catch(()=>{fsTried=false})}catch(e){fsTried=false}
+}
+let wl=0;
+function wheelNav(e){
+  if(Math.abs(e.deltaX)>Math.abs(e.deltaY)&&Math.abs(e.deltaX)>15){
+    e.preventDefault();const n=Date.now();
+    if(n-wl>450){wl=n;go(cur+(e.deltaX>0?1:-1))}
+  }
+}
+function endH(dx,dt){
+  const v=dx/Math.max(1,dt),th=scr.clientWidth*.18;
+  if(dx<-th||(v<-.5&&dx<-30))go(cur+1);
+  else if(dx>th||(v>.5&&dx>30))go(cur-1);
+  else go(cur);
+}
+function mkFrame(i){
+  const fr=document.createElement('iframe');
+  fr.title=S[i].t;fr.allow='fullscreen';fr.dataset.i=i;
+  track.children[i].appendChild(fr);sizeF(fr);
+  fr.addEventListener('load',()=>{if(fr.dataset.mode==='doc')hook(fr)});
+  loadDoc(fr,i);
+}
+async function loadDoc(fr,i){
+  try{
+    let h=cache.get(i);
+    if(!h){
+      const r=await fetch(S[i].u);if(!r.ok)throw 0;
+      h=await r.text();
+      const b='<base href="'+S[i].u+'">';
+      h=/<head(\s[^>]*)?>/i.test(h)?h.replace(/<head(\s[^>]*)?>/i,m=>m+b):b+h;
+      cache.set(i,h);
+    }
+    if(!fr.isConnected)return;
+    fr.dataset.mode='doc';fr.srcdoc=h;
+  }catch(e){ // fallback: normal cross-origin embed (edge/bezel swipes still work)
+    if(fr.isConnected){
+      fr.dataset.mode='src';fr.src=T.on?gtUrl(S[i].u):S[i].u;
+      ['zl','zr'].forEach(c=>{const z=document.createElement('div');z.className='zone '+c;fr.parentNode.appendChild(z);swipe(z)});
+    }
+  }
+}
+function hook(fr){
+  const d=fr.contentDocument;if(!d||!d.documentElement)return;
+  const st=d.createElement('style');
+  st.textContent='html,body{-webkit-user-select:none!important;user-select:none!important;cursor:grab}html{scroll-behavior:auto!important}*{-webkit-user-drag:none;touch-action:none!important}input,textarea{-webkit-user-select:text!important;user-select:text!important}';
+  (d.head||d.documentElement).appendChild(st);
+  d.addEventListener('selectstart',e=>{if(!/^(INPUT|TEXTAREA)$/.test(e.target.tagName))e.preventDefault()});
+  d.addEventListener('dragstart',e=>e.preventDefault());
+  const root=()=>d.scrollingElement||d.documentElement;
+  let id=null,x0=0,y0=0,t0=0,top0=0,mode=null,moved=false,vy=0,ly=0,lt=0,dxs=0;
+  d.addEventListener('pointerdown',e=>{
+    if(e.button!==0||(e.target.closest&&e.target.closest('input,textarea,select')))return;
+    cancelAnimationFrame(fr._raf);
+    id=e.pointerId;x0=e.clientX;y0=ly=e.clientY;lt=t0=performance.now();
+    top0=root().scrollTop;mode=null;moved=false;vy=0;dxs=0;
+  });
+  d.addEventListener('pointermove',e=>{
+    if(e.pointerId!==id)return;
+    const dx=e.clientX-x0,dy=e.clientY-y0,k=scr.clientWidth/W;
+    if(!mode){
+      if(Math.hypot(dx,dy)<8)return;
+      mode=Math.abs(dx)>Math.abs(dy)?'h':'v';moved=true;
+      try{d.documentElement.setPointerCapture(id)}catch(_){}
+      if(mode==='h')track.style.transition='none';
+    }
+    if(mode==='h'){
+      dxs=dx*k;
+      track.style.transform='translateX(calc('+(-cur*100)+'% + '+dxs+'px))';
+    }else{
+      root().scrollTop=top0-dy*GAIN;
+      const n=performance.now();vy=(e.clientY-ly)*GAIN/Math.max(1,n-lt);ly=e.clientY;lt=n;
+    }
+  });
+  const up=e=>{
+    if(e.pointerId!==id)return;id=null;
+    if(moved)enterFS();
+    if(mode==='h')endH(dxs,performance.now()-t0);
+    else if(mode==='v'&&Math.abs(vy)>.1){
+      let v=vy;
+      const step=()=>{root().scrollTop-=v*16;v*=.965;if(Math.abs(v)>.02)fr._raf=requestAnimationFrame(step)};
+      step();
+    }
+  };
+  d.addEventListener('pointerup',up);d.addEventListener('pointercancel',up);
+  d.addEventListener('click',e=>{ // no accidental clicks after a drag; keep navigation inside the showcase
+    if(moved){moved=false;e.preventDefault();e.stopPropagation();return}
+    const a=e.target.closest&&e.target.closest('a[href]');if(!a)return;
+    const h=a.getAttribute('href');e.preventDefault();
+    if(h&&h[0]==='#'){const t=d.getElementById(decodeURIComponent(h.slice(1)));if(t)t.scrollIntoView({behavior:'smooth'});return}
+    const j=S.findIndex(s=>s.u===a.href);
+    if(j>=0)go(j);else window.open(a.href,'_blank','noopener');
+  },true);
+  d.addEventListener('wheel',wheelNav,{passive:false});
+  d.addEventListener('keydown',e=>{
+    if(/^(INPUT|TEXTAREA)$/.test(e.target.tagName))return;
+    if(e.key==='ArrowRight')go(cur+1);else if(e.key==='ArrowLeft')go(cur-1);
+  });
+  if(T.on)startTr(d); // live translation to Spanish
+}
+
+// swipe left/right on edges, home bar and bezel (also used for cross-origin fallback pages)
+function swipe(el,bezelOnly){
+  let x0=0,t0=0,on=false;
+  el.addEventListener('pointerdown',e=>{
+    if(bezelOnly&&e.target!==el)return;
+    on=true;x0=e.clientX;t0=performance.now();el.setPointerCapture(e.pointerId);track.style.transition='none';
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!on)return;
+    track.style.transform='translateX(calc('+(-cur*100)+'% + '+(e.clientX-x0)+'px))';
+  });
+  const end=e=>{
+    if(!on)return;on=false;enterFS();
+    endH(e.clientX-x0,performance.now()-t0);
+  };
+  el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
+  el.addEventListener('wheel',wheelNav,{passive:false});
+}
+swipe($('#bg'),true); // drag the backdrop beside the phone-width column
+
+// search
+let hits=[],sel=0;
+function show(){
+  const v=q.value.trim().toLowerCase();
+  res.innerHTML='';
+  if(!v){res.style.display='none';hits=[];return}
+  hits=S.map((s,i)=>({s,i})).filter(o=>(o.s.t+' '+o.s.d+' '+o.s.u).toLowerCase().includes(v)).slice(0,8);
+  sel=0;
+  hits.forEach((o,k)=>{
+    const d=document.createElement('div'),b=document.createElement('b'),sm=document.createElement('small');
+    b.textContent=o.s.t;sm.textContent=o.s.d||o.s.u;d.append(b,sm);
+    if(!k)d.className='on';
+    d.onmousedown=e=>{e.preventDefault();pick(o.i)};
+    res.appendChild(d);
+  });
+  if(!hits.length){const d=document.createElement('div');d.textContent='No se encontraron sitios';res.appendChild(d)}
+  res.style.display='block';
+}
+function pick(i){q.value='';res.style.display='none';q.blur();go(i)}
+q.addEventListener('input',show);
+q.addEventListener('focus',()=>setTimeout(()=>q.select(),0));
+q.addEventListener('blur',()=>{res.style.display='none';if(S[cur])q.value=S[cur].t});
+q.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&hits[sel])pick(hits[sel].i);
+  else if(e.key==='Escape'){q.value='';show();q.blur()}
+  else if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+    e.preventDefault();if(!hits.length)return;
+    sel=(sel+(e.key==='ArrowDown'?1:-1)+hits.length)%hits.length;
+    [...res.children].forEach((c,k)=>c.classList.toggle('on',k===sel));
+  }
+});
+$('#prev').onclick=()=>go(cur-1);
+$('#next').onclick=()=>go(cur+1);
+$('#rnd').onclick=rnd;
+$('#tr').onclick=()=>setTr(!T.on);
+['pointerup','touchend'].forEach(ev=>$('#bar').addEventListener(ev,enterFS,{passive:true})); // touch or swipe the bar -> full screen
+$('#tg').onclick=()=>{const m=$('#bar').classList.toggle('min');$('#tg').textContent=m?'▴':'▾'};
+addEventListener('keydown',e=>{
+  if(document.activeElement===q)return;
+  if(e.key==='ArrowRight')go(cur+1);
+  else if(e.key==='ArrowLeft')go(cur-1);
+  else if(e.key==='r'||e.key==='R')rnd();
+  else if(e.key==='t'||e.key==='T')setTr(!T.on);
+  else if(e.key==='/'){e.preventDefault();q.focus()}
+});
+function layout(){ // desktop (mouse + wide window): real desktop layout across the whole window; otherwise phone layout
+  const desk=EMB||(matchMedia('(pointer:fine)').matches&&innerWidth>=800);
+  document.body.classList.toggle('desk',desk);
+  W=desk?Math.max(innerWidth,1024):390;
+  track.querySelectorAll('iframe').forEach(sizeF);
+}
+new ResizeObserver(layout).observe(scr);
+addEventListener('resize',layout);
+layout();
+setTr(T.on); // paint the 🌐 button state
+
+loadList().then(list=>{
+  S=list;
+  track.innerHTML='';
+  S.forEach(s=>{const d=document.createElement('div'),p=document.createElement('div');d.className='slide';p.className='ph';p.textContent=s.t;d.appendChild(p);track.appendChild(d)});
+  // Start on a random site each time the page loads or is refreshed.
+  cur=Math.floor(Math.random()*S.length);
+  go(cur);
+});
+</script>
+</body>
+</html>
