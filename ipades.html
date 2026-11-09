@@ -675,7 +675,10 @@ loadList().then(list=>{
   track.innerHTML='';
   S.forEach(s=>{const d=document.createElement('div'),p=document.createElement('div');d.className='slide';p.className='ph';p.textContent=s.t;d.appendChild(p);track.appendChild(d)});
   // Start on a random site each time the page loads or is refreshed.
-  cur=Math.floor(Math.random()*S.length);
+  // ?open=<page url or slug> (used by the Spanish cards on the landing page): start on that site
+  const want=new URLSearchParams(location.search).get('open');
+  const k=want?S.findIndex(o=>o.u===want||o.u.endsWith('/'+want+'.html')):-1;
+  cur=k>=0?k:Math.floor(Math.random()*S.length);
   go(cur);
 });
 </script>
