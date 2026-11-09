@@ -142,7 +142,7 @@ function rnd(){if(S.length<2)return;let i;do{i=Math.floor(Math.random()*S.length
    Engine: Google's public "gtx" endpoint (auto-detects the source language).
    To use an official/paid API (Google Cloud Translation, DeepL...), replace gt().
    ===================================================================== */
-const TKEY='ipad_tr_es_v8';
+const TKEY='ipad_tr_es_v9';
 const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){return false}}};
 const T={on:ls.get('ipad_tr_on')!=='0'};
 let TC={};try{TC=JSON.parse(ls.get(TKEY)||'{}')||{}}catch(e){TC={}}
@@ -245,7 +245,8 @@ const FORCE=[
   [/\bresponsive\b/gi,'adaptable'],
   [/\brelease notes\b/gi,'notas de la versión'],
   [/\bseed round\b/gi,'ronda semilla'],
-  [/\bseed funding\b/gi,'financiación semilla']
+  [/\bseed funding\b/gi,'financiación semilla'],
+  [/\bgrit\b/gi,'coraje']   // grit = coraje (not "arena")
 ];
 const KEEP=new RegExp([
   'easy[\\s-]?land(?:[\\s-]?x)?',
