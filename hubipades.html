@@ -365,7 +365,8 @@ addEventListener('keydown',e=>{
   else if(e.key==='/'){e.preventDefault();q.focus()}
 });
 function layout(){ // desktop (mouse + wide window): real desktop layout; otherwise phone layout
-  const desk=matchMedia('(pointer:fine)').matches&&innerWidth>=800;
+  let emb=false;try{emb=window.self!==window.top}catch(e){emb=true} // inside the iPad frame: always use the wide layout, even on touch phones
+  const desk=(matchMedia('(pointer:fine)').matches||emb)&&innerWidth>=800;
   document.body.classList.toggle('desk',desk);
   W=desk?Math.max(innerWidth,1024):390;
   track.querySelectorAll('iframe').forEach(sizeF);
