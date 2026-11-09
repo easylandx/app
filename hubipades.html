@@ -133,29 +133,52 @@ const DATA=[
 ["🔥", "La Idea Principal", "app/ease.html"]
 ];
 const HUB=B+'app/hubes.html';
+const HUBS=[HUB,B+'hubes.html',B+'app/hubes/index.html',B+'hubes/index.html']; // possible locations of the hub page
 const FALLBACK=DATA.map(d=>({t:d[0]+' '+d[1],n:d[1],u:B+d[2]}));
 let S=[], cur=0;
 
-// Read the live hub page and take one entry per box (card): its link, icon and title
+// fetch with timeout
+async function getText(url,ms){
+  const ac=new AbortController(),t=setTimeout(()=>ac.abort(),ms||8000);
+  try{const r=await fetch(url,{signal:ac.signal,cache:'no-store'});if(!r.ok)throw new Error(r.status);return await r.text()}
+  finally{clearTimeout(t)}
+}
+// parse the hub html: first the <a class="card"> boxes, otherwise any link to another .html page of the site
+function parseHub(html,base){
+  const doc=new DOMParser().parseFromString(html,'text/html');
+  const seen=new Set(),list=[];
+  const add=(a,strict)=>{
+    let u;try{u=new URL(a.getAttribute('href'),base).href}catch(e){return}
+    u=u.split('#')[0];
+    if(!/^https?:/.test(u)||seen.has(u)||u===base)return;
+    if(!strict&&(!/\.html?$/i.test(u)||u.indexOf(B)!==0))return;
+    const h=a.querySelector('h1,h2,h3,h4,strong,b'),i=a.querySelector('.card-icon,.icon,.emoji');
+    let n=((h||a).textContent||'').trim().replace(/\s+/g,' ');
+    if(!h&&n.length>90)n=n.slice(0,90);
+    if(!n)return;
+    const ic=i?i.textContent.trim():'';
+    seen.add(u);list.push({t:(ic&&n.indexOf(ic)!==0?ic+' ':'')+n,n,u});
+  };
+  doc.querySelectorAll('a.card, a[class*="card"]').forEach(a=>add(a,true));
+  if(list.length<5){seen.clear();list.length=0;doc.querySelectorAll('a[href]').forEach(a=>add(a,false))}
+  return list;
+}
 let LIVE=false;
 async function loadList(){
-  const urls=[HUB,'https://corsproxy.io/?'+encodeURIComponent(HUB)]; // second one only if the direct request is blocked
-  for(const url of urls){
-    try{
-      const r=await fetch(url,{cache:'no-store'});if(!r.ok)continue;
-      const doc=new DOMParser().parseFromString(await r.text(),'text/html');
-      const seen=new Set(),list=[];
-      // every box on the hub: <a class="card" href="…"> with icon, title (h3) and caption ("View yoga example →")
-      doc.querySelectorAll('a.card').forEach(a=>{
-        let u;try{u=new URL(a.getAttribute('href'),HUB).href}catch(e){return}
-        if(!/^https?:/.test(u)||seen.has(u))return;seen.add(u);
-        const h=a.querySelector('h3'),c=a.querySelector('.card-link'),i=a.querySelector('.card-icon');
-        const n=((h||a).textContent||'').trim().replace(/\s+/g,' ');
-        const ic=i?i.textContent.trim():'';
-        list.push({t:(ic?ic+' ':'')+n,n,u,d:c?c.textContent.trim():''});
-      });
-      if(list.length>=5){LIVE=true;return list}
-    }catch(e){}
+  for(const hub of HUBS){
+    const url=hub+(hub.indexOf('?')<0?'?v=':'&v=')+Date.now();
+    const tries=[
+      ()=>getText(url),
+      ()=>getText('https://corsproxy.io/?'+encodeURIComponent(hub)),
+      ()=>getText('https://api.allorigins.win/raw?url='+encodeURIComponent(hub)),
+      ()=>getText('https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(hub))
+    ];
+    for(const t of tries){
+      try{
+        const list=parseHub(await t(),hub);
+        if(list.length>=5){LIVE=true;return list}
+      }catch(e){}
+    }
   }
   return FALLBACK;
 }
