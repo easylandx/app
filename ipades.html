@@ -142,7 +142,7 @@ function rnd(){if(S.length<2)return;let i;do{i=Math.floor(Math.random()*S.length
    Engine: Google's public "gtx" endpoint (auto-detects the source language).
    To use an official/paid API (Google Cloud Translation, DeepL...), replace gt().
    ===================================================================== */
-const TKEY='ipad_tr_es_v2';
+const TKEY='ipad_tr_es_v5';
 const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){return false}}};
 const T={on:ls.get('ipad_tr_on')!=='0'};
 let TC={};try{TC=JSON.parse(ls.get(TKEY)||'{}')||{}}catch(e){TC={}}
@@ -231,7 +231,12 @@ function ttl(s){
   if(TC[s]!==undefined)return Promise.resolve(TC[s]);
   let p=inf.get(s);
   if(!p){
-    p=trChunks(s).then(t=>{inf.delete(s);if(t){TC[s]=t;tcDirty=true}return t},e=>{inf.delete(s);throw e});
+    // brand name EasyLandX is never translated: swap it for a placeholder before translating, put it back after
+    const br=[];
+    const pre=s.replace(/easy[\s-]?land(?:[\s-]?x)?/gi,m=>{br.push(m);return 'QBRAND'+(br.length-1)+'Q'});
+    const only=!/\p{L}/u.test(pre.replace(/QBRAND\d+Q/g,''));
+    p=(only?Promise.resolve(s):trChunks(pre).then(t=>t&&t.replace(/QBRAND\s*(\d+)\s*Q/gi,(m,i)=>br[+i]!==undefined?br[+i]:m)))
+      .then(t=>{inf.delete(s);if(t){TC[s]=t;tcDirty=true}return t},e=>{inf.delete(s);throw e});
     inf.set(s,p);
   }
   return p;
@@ -242,6 +247,22 @@ const ATTR=['placeholder','title','alt','aria-label'];
 const SKIPSEL='script,style,noscript,textarea,code,pre,[translate=no],.notranslate';
 const skipEl=e=>(e.matches&&e.matches(SKIPSEL))||false;
 
+// Brand logo split into pieces (e.g. <span>Easy</span><span>Land</span><span>X</span>): never translate the pieces
+const BR=/easy[\s-]?land(?:[\s-]?x)?/gi;
+function inBrand(n){
+  let a=n.parentElement;
+  for(let k=0;k<4&&a;k++,a=a.parentElement){
+    const full=a.textContent;
+    BR.lastIndex=0;
+    if(!BR.test(full))continue;
+    let off=0;const w=n.ownerDocument.createTreeWalker(a,4);let x;
+    while((x=w.nextNode())&&x!==n)off+=x.data.length;
+    const end=off+n.data.length;
+    BR.lastIndex=0;let m;
+    while((m=BR.exec(full))){if(off<m.index+m[0].length&&end>m.index){BR.lastIndex=0;return true}}
+  }
+  BR.lastIndex=0;return false;
+}
 function doNode(n,tries=0){
   if(!T.on)return;
   const raw=n.data;
@@ -250,6 +271,7 @@ function doNode(n,tries=0){
   if(!core||!/\p{L}/u.test(core)||core.length>6000)return;
   const p=n.parentElement;
   if(p&&p.closest&&p.closest(SKIPSEL))return;
+  if(/^(easy|land|landx|easyland|x)$/i.test(core.trim())&&inBrand(n))return;
   const key=core.replace(/\s+/g,' ');
   ORIG.set(n,raw);
   const ap=t=>{
