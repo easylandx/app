@@ -324,10 +324,20 @@ const YOU_S=/\byou\b|\byou['’](?:ll|re|ve|d)\b/i;
 const THIRD=/\b(?:he|she|his|her|hers|him|they|them|their|theirs|its)\b/i;
 const THIRD_V=/\b(?:he|she|his|her|hers|him|they|them|their|theirs|its|it)\b/i;
 const tuCase=(m,r)=>m[0]!==m[0].toLowerCase()?r[0].toUpperCase()+r.slice(1):r;
+/* "ustedes" (plural formal) -> tú: "con ustedes" -> "contigo", "para ustedes" -> "para ti", "ustedes pueden" -> "tú puedes", any other "ustedes" -> "tú" */
+const UST_V=new Map(Object.entries({pueden:'puedes',quieren:'quieres',necesitan:'necesitas',tienen:'tienes',obtienen:'obtienes',reciben:'recibes',encuentran:'encuentras',buscan:'buscas',hacen:'haces',saben:'sabes',desean:'deseas',prefieren:'prefieres',deciden:'decides',eligen:'eliges',merecen:'mereces',consiguen:'consigues',pagan:'pagas',controlan:'controlas',ganan:'ganas',ahorran:'ahorras',son:'eres',están:'estás',van:'vas',verán:'verás',podrán:'podrás',tendrán:'tendrás',serán:'serás',querrán:'querrás',necesitarán:'necesitarás',podrían:'podrías',tendrían:'tendrías',quisieran:'quisieras',puedan:'puedas',tengan:'tengas',sean:'seas',quieran:'quieras',necesiten:'necesites'}));
+const USTVRE=new RegExp('(?<![\\p{L}])(ustedes)(\\s+(?:no\\s+|ya\\s+|también\\s+)?)('+[...UST_V.keys()].join('|')+')(?![\\p{L}])','giu');
+function ustedesFix(out){
+  out=out.replace(/(?<![\p{L}])con\s+ustedes(?![\p{L}])/giu,m=>tuCase(m,'contigo'));
+  out=out.replace(/(?<![\p{L}])(para|a|de|por|sin|sobre|en|hacia|desde|hasta)\s+ustedes(?![\p{L}])/giu,(m,pr)=>pr+' ti');
+  out=out.replace(USTVRE,(m,u,sp,v)=>tuCase(u,'tú')+sp+tuCase(v,UST_V.get(v.toLowerCase())));
+  return out.replace(/(?<![\p{L}])ustedes(?![\p{L}])/giu,m=>tuCase(m,'tú'));
+}
 function tuify(src,out){
   if(!out)return out;
   out=out.replace(IMPRE,(m,pre,v)=>pre+tuCase(v,IMP.get(v.toLowerCase())));
   if(YOU_ANY.test(src)&&!THIRD.test(src)){
+    out=ustedesFix(out);
     out=out.replace(POSSRE,m=>tuCase(m,POSS.get(m.toLowerCase())));
     if(YOU_S.test(src)&&!THIRD_V.test(src)){
       out=out.replace(/(?<![\p{L}])le(?![\p{L}])/gu,'te').replace(/(?<![\p{L}])Le(?![\p{L}])/gu,'Te');
