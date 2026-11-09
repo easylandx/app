@@ -142,7 +142,7 @@ function rnd(){if(S.length<2)return;let i;do{i=Math.floor(Math.random()*S.length
    Engine: Google's public "gtx" endpoint (auto-detects the source language).
    To use an official/paid API (Google Cloud Translation, DeepL...), replace gt().
    ===================================================================== */
-const TKEY='ipad_tr_es_v6';
+const TKEY='ipad_tr_es_v8';
 const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){return false}}};
 const T={on:ls.get('ipad_tr_on')!=='0'};
 let TC={};try{TC=JSON.parse(ls.get(TKEY)||'{}')||{}}catch(e){TC={}}
@@ -227,20 +227,60 @@ async function trChunks(s){
   return (await Promise.all(chunks.map(gt))).join('');
 }
 /* =====================================================================
-   GLOSSARY: fixes words the translator gets wrong out of context.
-   SUB  = [what to find, English word that translates correctly]. Verb forms keep working because the
-          replacement is still English (e.g. "ships" -> "launches" -> "lanza"), and capitalisation is preserved.
-   KEEP = terms left in English on purpose (the brand and common startup jargon).
-   To add a term, just add a line here and bump TKEY (v6 -> v7) so old cached translations are dropped.
+   GLOSSARY: fixes words the translator gets wrong out of context.  To add a term, add a line and bump TKEY (v7 -> v8).
+   FORCE = [what to find, exact Spanish to use]   (the Spanish text is inserted as is: best for nouns / fixed phrases)
+   KEEP  = terms left in English on purpose (brand + startup / web jargon)
+   SUB   = [what to find, English word that translates correctly]. The replacement is still English, so verb forms
+           keep conjugating (e.g. "ships" -> "launches" -> "lanza"). Capitalisation is preserved in all three lists.
+   Order of use: FORCE and KEEP first (protected by placeholders), then SUB, then the translator.
    ===================================================================== */
-const SUB=[
-  [/\bshipped\b/gi,'launched'],
-  [/\bships\b/gi,'launches'],
-  [/\bship\b/gi,'launch'],
-  [/\bshipping(?=\s+(?:faster|fast|features?|code|products?|updates?|software|every|daily|weekly|quickly|ideas?|apps?)\b)/gi,'launching'],
-  [/\bwent live\b/gi,'launched'],[/\bgone live\b/gi,'launched'],[/\bgoing live\b/gi,'launching'],[/\bgoes live\b/gi,'launches'],[/\bgo live\b/gi,'launch']
+const GROW='growth|sales|results|traffic|conversions?|revenue|engagement|success|innovation|business|leads';
+const FORCE=[
+  [/\btech stack\b/gi,'stack tecnológico'],
+  [/\bsales pipeline\b/gi,'pipeline de ventas'],
+  [/\bhero section\b/gi,'sección principal'],
+  [/\bhero image\b/gi,'imagen principal'],
+  [/\bresponsive design\b/gi,'diseño adaptable'],
+  [/\bmobile-responsive\b/gi,'adaptable a móviles'],
+  [/\bresponsive\b/gi,'adaptable'],
+  [/\brelease notes\b/gi,'notas de la versión'],
+  [/\bseed round\b/gi,'ronda semilla'],
+  [/\bseed funding\b/gi,'financiación semilla']
 ];
-const KEEP=/easy[\s-]?land(?:[\s-]?x)?|\blanding pages?\b|\bpitch decks?\b|\bno-code\b|\blow-code\b|\bproduct-market fit\b|\bburn rate\b/gi;
+const KEEP=new RegExp([
+  'easy[\\s-]?land(?:[\\s-]?x)?',
+  // web / marketing jargon commonly left in English in Spanish
+  '\\blanding pages?\\b','\\bpitch decks?\\b','\\belevator pitch\\b','\\blead magnets?\\b','\\babove the fold\\b',
+  '\\bbranding\\b','\\bportfolio\\b','\\bwireframes?\\b','\\bmobile-first\\b','\\bgrowth hacking\\b','\\bchangelog\\b',
+  // startup jargon
+  '\\bno-code\\b','\\blow-code\\b','\\bproduct-market fit\\b','\\bburn rate\\b','\\brunway\\b','\\bcap table\\b',
+  '\\bpre-seed\\b','\\bbacklog\\b','\\bchurn\\b','\\bbuild in public\\b','\\bindie hackers?\\b',
+  // acronyms
+  '\\b(?:MVP|SaaS|B2B|B2C|API|SEO|CRM|KPIs?|ROI|UX|UI|CTA|CMS|SDK|MRR|ARR)\\b'
+].join('|'),'gi');
+const SUB=[
+  // ship = launch (not "barco")
+  [/\bshipped\b/gi,'launched'],[/\bships\b/gi,'launches'],[/\bship\b/gi,'launch'],
+  [/\bshipping(?=\s+(?:faster|fast|features?|code|products?|updates?|software|every|daily|weekly|quickly|ideas?|apps?)\b)/gi,'launching'],
+  // go live = launch (not "ir en vivo")
+  [/\bwent live\b/gi,'launched'],[/\bgone live\b/gi,'launched'],[/\bgoing live\b/gi,'launching'],[/\bgoes live\b/gi,'launches'],[/\bgo live\b/gi,'launch'],
+  // new release = new launch
+  [/\bnew releases\b/gi,'new launches'],[/\bnew release\b/gi,'new launch'],
+  // reach out = contact (not "alcanzar")
+  [/\breached out\b/gi,'contacted'],[/\breaches out\b/gi,'contacts'],[/\breaching out\b/gi,'contacting'],[/\breach out\b/gi,'contact'],
+  [/\bdrop us a line\b/gi,'write to us'],[/\bdrop me a line\b/gi,'write to me'],
+  // drive growth = boost growth (not "conducir")
+  [new RegExp('\\bdriving(?=\\s+(?:'+GROW+')\\b)','gi'),'boosting'],
+  [new RegExp('\\bdrives(?=\\s+(?:'+GROW+')\\b)','gi'),'boosts'],
+  [new RegExp('\\bdrive(?=\\s+(?:'+GROW+')\\b)','gi'),'boost'],
+  // bootstrapped = self-funded
+  [/\bbootstrapped\b/gi,'self-funded'],[/\bbootstrapping\b/gi,'self-funding'],
+  // deck = presentation (not "mazo / cubierta")
+  [/\bdecks\b/gi,'presentations'],[/\bdeck\b/gi,'presentation'],
+  // pitch as a verb = present (not "tono")
+  [/\bpitching\b/gi,'presenting'],[/\bpitched\b/gi,'presented'],
+  [/\bpitch(?=\s+(?:your|my|our|to|it|ideas?|investors?)\b)/gi,'present']
+];
 function glossCase(m,r){
   if(m.length>1&&m===m.toUpperCase())return r.toUpperCase();
   if(m[0]!==m[0].toLowerCase())return r[0].toUpperCase()+r.slice(1);
@@ -248,16 +288,68 @@ function glossCase(m,r){
 }
 function glossSub(s){for(const [re,r] of SUB)s=s.replace(re,m=>glossCase(m,r));return s}
 
+/* =====================================================================
+   TÚ (informal) instead of USTED (formal). Google writes formal Spanish ("su", "Cree", "Obtenga", "puede").
+   After translating, the text is converted to informal "tú". Three safety rules:
+   - possessives / "usted" / "le" are changed only when the English source says you/your and never he/she/his/her/its/they/their
+   - verbs ("puede" -> "puedes", "podrá" -> "podrás", "pueda" -> "puedas") only when the source has "you" as a subject/object and no third person or "it"
+   - commands ("Obtenga" -> "Obtén") are changed at the start of a sentence or after a comma / "y" / "o"
+   To add a command verb, add it to IMP as 'formal:informal'.
+   ===================================================================== */
+const IMP_RAW=('Obtenga:Obtén,Obténgalo:Obtenlo,Haga:Haz,Hágalo:Hazlo,Háganos:Háznos,Póngase:Ponte,Descubra:Descubre,Descúbralo:Descúbrelo,Cree:Crea,Empiece:Empieza,Comience:Comienza,'+
+'Solicite:Solicita,Solicítelo:Solicítalo,Reserve:Reserva,Contacte:Contacta,Contáctenos:Contáctanos,Llame:Llama,Llámenos:Llámanos,Únase:Únete,Regístrese:Regístrate,Inscríbase:Inscríbete,'+
+'Suscríbase:Suscríbete,Pruebe:Prueba,Pruébelo:Pruébalo,Consulte:Consulta,Vea:Mira,Mire:Mira,Explore:Explora,Aprenda:Aprende,Lea:Lee,Elija:Elige,Seleccione:Selecciona,Escriba:Escribe,'+
+'Escríbanos:Escríbenos,Envíe:Envía,Envíenos:Envíanos,Compre:Compra,Pida:Pide,Visite:Visita,Visítenos:Visítanos,Descargue:Descarga,Inicie:Inicia,Pague:Paga,Añada:Añade,Agregue:Agrega,'+
+'Cambie:Cambia,Use:Usa,Utilice:Utiliza,Disfrute:Disfruta,Aproveche:Aprovecha,Mejore:Mejora,Aumente:Aumenta,Impulse:Impulsa,Lance:Lanza,Lleve:Lleva,Transforme:Transforma,'+
+'Convierta:Convierte,Construya:Construye,Diseñe:Diseña,Conozca:Conoce,Conózcanos:Conócenos,Siga:Sigue,Síganos:Síguenos,Pregunte:Pregunta,Pregúntenos:Pregúntanos,Cuéntenos:Cuéntanos,'+
+'Permítanos:Permítenos,Déjenos:Déjanos,Deje:Deja,Pase:Pasa,Tome:Toma,Mantenga:Mantén,Reclame:Reclama,Gestione:Gestiona,Optimice:Optimiza,Maximice:Maximiza,Genere:Genera,Cargue:Carga,'+
+'Suba:Sube,Rellene:Rellena,Complete:Completa,Introduzca:Introduce,Participe:Participa,Reciba:Recibe,Ahorre:Ahorra,Gane:Gana,Tenga:Ten,Diga:Di,Salga:Sal,Acceda:Accede,Navegue:Navega,'+
+'Busque:Busca,Encuentre:Encuentra,Hable:Habla,Comparta:Comparte,Guarde:Guarda,Cancele:Cancela,Vuelva:Vuelve,Pulse:Pulsa,Presione:Presiona,Toque:Toca,Deslice:Desliza,Cierre:Cierra,'+
+'Abra:Abre,Relájese:Relájate,Confíe:Confía,Cuente:Cuenta,Imagine:Imagina,Piense:Piensa,Recuerde:Recuerda,Considere:Considera,Asegúrese:Asegúrate,Compruebe:Comprueba,Verifique:Verifica,'+
+'Revise:Revisa,Escuche:Escucha,Sorpréndase:Sorpréndete').split(',');
+const IMP=new Map(IMP_RAW.map(x=>x.split(':')).map(([f,i])=>[f.toLowerCase(),i.toLowerCase()]));
+const IMPRE=new RegExp('(^|[.!?¡¿:;,\\n—–]\\s*|(?<![\\p{L}])(?:y|o|e|u)\\s+)('+[...IMP.keys()].sort((a,b)=>b.length-a.length).join('|')+')(?![\\p{L}])','giu');
+const POSS=new Map([['su','tu'],['sus','tus'],['suyo','tuyo'],['suya','tuya'],['suyos','tuyos'],['suyas','tuyas'],['usted','tú']]);
+const POSSRE=/(?<![\p{L}])(su|sus|suyo|suya|suyos|suyas|usted)(?![\p{L}])/giu;
+const VERB=new Map(Object.entries({
+  puede:'puedes',quiere:'quieres',necesita:'necesitas',tiene:'tienes',obtiene:'obtienes',recibe:'recibes',encuentra:'encuentras',busca:'buscas',hace:'haces',sabe:'sabes',desea:'deseas',
+  prefiere:'prefieres',ahorra:'ahorras',gana:'ganas',decide:'decides',elige:'eliges',merece:'mereces',consigue:'consigues',paga:'pagas',controla:'controlas',
+  pueda:'puedas',tenga:'tengas',obtenga:'obtengas',quiera:'quieras',necesite:'necesites',encuentre:'encuentres',reciba:'recibas',haga:'hagas',sea:'seas',esté:'estés',vea:'veas',desee:'desees',sepa:'sepas',logre:'logres'
+}));
+const VERBRE=new RegExp('(?<![\\p{L}])('+[...VERB.keys()].join('|')+')(?![\\p{L}])','giu');
+const FUTRE=/(?<![\p{L}])(?!habrá(?![\p{L}]))([\p{L}]+rá)(?![\p{L}])/giu;
+const YOU_ANY=/\b(?:you|your|yours|yourself)\b|\byou['’](?:ll|re|ve|d)\b/i;
+const YOU_S=/\byou\b|\byou['’](?:ll|re|ve|d)\b/i;
+const THIRD=/\b(?:he|she|his|her|hers|him|they|them|their|theirs|its)\b/i;
+const THIRD_V=/\b(?:he|she|his|her|hers|him|they|them|their|theirs|its|it)\b/i;
+const tuCase=(m,r)=>m[0]!==m[0].toLowerCase()?r[0].toUpperCase()+r.slice(1):r;
+function tuify(src,out){
+  if(!out)return out;
+  out=out.replace(IMPRE,(m,pre,v)=>pre+tuCase(v,IMP.get(v.toLowerCase())));
+  if(YOU_ANY.test(src)&&!THIRD.test(src)){
+    out=out.replace(POSSRE,m=>tuCase(m,POSS.get(m.toLowerCase())));
+    if(YOU_S.test(src)&&!THIRD_V.test(src)){
+      out=out.replace(/(?<![\p{L}])le(?![\p{L}])/gu,'te').replace(/(?<![\p{L}])Le(?![\p{L}])/gu,'Te');
+      out=out.replace(VERBRE,m=>tuCase(m,VERB.get(m.toLowerCase())));
+      out=out.replace(FUTRE,'$1s');
+    }
+  }
+  return out;
+}
+
 const inf=new Map();
 function ttl(s){
   if(TC[s]!==undefined)return Promise.resolve(TC[s]);
   let p=inf.get(s);
   if(!p){
-    // brand name EasyLandX is never translated: swap it for a placeholder before translating, put it back after
-    const br=[];
-    const pre=glossSub(s).replace(KEEP,m=>{br.push(m);return 'QBRAND'+(br.length-1)+'Q'});
+    // protected terms (brand, FORCE, KEEP) are swapped for placeholders before translating and put back after
+    const br=[],hold=(m,r)=>{br.push(r);return 'QBRAND'+(br.length-1)+'Q'};
+    let pre=s;
+    for(const [re,es] of FORCE)pre=pre.replace(re,m=>hold(m,glossCase(m,es)));
+    pre=glossSub(pre.replace(KEEP,m=>hold(m,m)));
+    const rest=t=>t.replace(/QBRAND\s*(\d+)\s*Q/gi,(m,i)=>br[+i]!==undefined?br[+i]:m);
     const only=!/\p{L}/u.test(pre.replace(/QBRAND\d+Q/g,''));
-    p=(only?Promise.resolve(s):trChunks(pre).then(t=>t&&t.replace(/QBRAND\s*(\d+)\s*Q/gi,(m,i)=>br[+i]!==undefined?br[+i]:m)))
+    p=(only?Promise.resolve(rest(pre)):trChunks(pre).then(t=>t&&tuify(s,rest(t))))
       .then(t=>{inf.delete(s);if(t){TC[s]=t;tcDirty=true}return t},e=>{inf.delete(s);throw e});
     inf.set(s,p);
   }
