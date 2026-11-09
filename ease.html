@@ -250,6 +250,22 @@ footer{background:var(--blue-deep); color:#fff; padding-top:clamp(48px,7vw,80px)
 .xtv-frame{position:absolute;top:0;left:0;width:var(--xtv-w,800px);height:var(--xtv-h,600px);max-width:none;border:0;background:#fff;transform-origin:0 0;transform:scale(var(--xtv-scale,.55))}
 .xtv-open{position:absolute;top:-13px;right:22px;z-index:6;display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border:2px solid #171412;border-radius:999px;background:#FFD400;color:#171412;font:800 11px/1 'Poppins',system-ui,sans-serif;text-decoration:none;box-shadow:2px 2px 0 #171412;-webkit-tap-highlight-color:transparent}
 .xtv-open:active{transform:translate(1px,1px);box-shadow:1px 1px 0 #171412}
+
+/* Landing Pages y Apps que convierten de verdad: iPad */
+.convert{background:var(--mist); color:var(--ink)}
+.convert .cwrap{max-width:1240px; margin:0 auto; padding-left:clamp(10px,3vw,40px); padding-right:clamp(10px,3vw,40px)}
+.convert-head{text-align:center; margin:0 auto 40px; padding:0 var(--gutter)}
+.convert-head h2{max-width:none; margin:0 0 .4em}
+.convert-head h2 span{display:block}
+.convert-head .lede{margin:0 auto}
+.xtv2-wrap{display:flex; justify-content:center; padding:18px 0 12px; width:100%}
+.xtv2{position:relative; width:min(560px,100%); border-radius:22px; padding:2px; background:linear-gradient(145deg,#f4f4f6,#b9bcc4 55%,#e6e7ea); box-shadow:0 14px 34px rgba(0,0,0,.28),0 2px 6px rgba(0,0,0,.2)}
+.xtv2-bezel{background:#050506; border-radius:20px; padding:9px; box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+.xtv2-screen{position:relative; width:100%; aspect-ratio:4/3; background:#fff; border-radius:14px; overflow:hidden; isolation:isolate; transform:translateZ(0); -webkit-mask-image:-webkit-radial-gradient(white,black)}
+.xtv2-frame{position:absolute; top:0; left:0; width:100%; height:100%; max-width:none; border:0; background:#fff; transform-origin:0 0}
+.xtv2-open{position:absolute; top:-13px; right:22px; z-index:6; display:inline-flex; align-items:center; gap:4px; padding:5px 11px; border:2px solid #171412; border-radius:999px; background:#FFD400; color:#171412; font:800 11px/1 'Poppins',system-ui,sans-serif; text-decoration:none; box-shadow:2px 2px 0 #171412}
+.xtv2-open:active{transform:translate(1px,1px); box-shadow:1px 1px 0 #171412}
+@media (max-width:700px){ .xtv2{border-radius:18px} .xtv2-bezel{border-radius:16px; padding:6px} .xtv2-screen{border-radius:11px} }
 @media (max-width:600px){ .xtv{--xtv-w:1024px;--xtv-h:768px} }
 @media (max-width:480px){
   .xtv-wrap{padding-left:6px;padding-right:6px}
@@ -584,6 +600,25 @@ html.green .offerbar .modebtn *{background:transparent !important; color:inherit
       </div>
     </div>
   </section>
+
+  <section class="convert block" id="convert">
+    <div class="cwrap">
+      <div class="convert-head">
+        <h2><span>Landing Pages y Apps</span><span>que convierten de verdad</span></h2>
+        <p class="lede">Principios, marcos y patrones probados para landing pages de alta conversión, basados en cómo toman decisiones las personas reales.</p>
+      </div>
+      <div class="xtv2-wrap">
+        <div class="xtv2" id="xtv2">
+          <a class="xtv2-open" href="https://easylandx.github.io/app/ipad.html" target="_blank" rel="noopener" title="Abrir en pantalla completa">Abrir iPad ↗</a>
+          <div class="xtv2-bezel">
+            <div class="xtv2-screen" id="xtv2Screen">
+              <iframe class="xtv2-frame" id="xtv2Frame" src="https://easylandx.github.io/app/ipad.html" title="App iPad de EasyLandX" loading="lazy" allow="fullscreen"></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer>
@@ -848,6 +883,20 @@ html.green .offerbar .modebtn *{background:transparent !important; color:inherit
   }
   fit();
   if(window.ResizeObserver){var ro=new ResizeObserver(fit);if(screen)ro.observe(screen);if(pScreen)ro.observe(pScreen);}
+  window.addEventListener("resize",fit);
+})();
+</script>
+<script>
+(function(){
+  var sc=document.getElementById("xtv2Screen"),fr=document.getElementById("xtv2Frame");
+  if(!sc||!fr)return;
+  function fit(){
+    var w=sc.clientWidth,h=sc.clientHeight;if(!w)return;
+    if(w>=1024){fr.style.width=w+"px";fr.style.height=h+"px";fr.style.transform="none";}
+    else{fr.style.width="1024px";fr.style.height="768px";fr.style.transform="scale("+(w/1024).toFixed(4)+")";}
+  }
+  fit();
+  if(window.ResizeObserver)new ResizeObserver(fit).observe(sc);
   window.addEventListener("resize",fit);
 })();
 </script>
