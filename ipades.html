@@ -115,7 +115,7 @@ function sync(){
 }
 function ui(){
   if(document.activeElement!==q)q.value=S[cur].t; // the search box shows the current page title
-  $('#open').href=S[cur].u;
+  $('#open').href='https://easylandx.github.io/app/ipades.html?open='+encodeURIComponent(S[cur].u.split('/').pop().replace(/\.html$/,''));
 }
 function go(i){
   i=(i+S.length)%S.length;
