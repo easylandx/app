@@ -280,7 +280,9 @@ const SUB=[
   [/\bdecks\b/gi,'presentations'],[/\bdeck\b/gi,'presentation'],
   // pitch as a verb = present (not "tono")
   [/\bpitching\b/gi,'presenting'],[/\bpitched\b/gi,'presented'],
-  [/\bpitch(?=\s+(?:your|my|our|to|it|ideas?|investors?)\b)/gi,'present']
+  [/\bpitch(?=\s+(?:your|my|our|to|it|ideas?|investors?)\b)/gi,'present'],
+  // bold = brave / valiente (not "negrita")
+  [/\bboldness\b/gi,'bravery'],[/\bboldly\b/gi,'bravely'],[/\bboldest\b/gi,'bravest'],[/\bbolder\b/gi,'braver'],[/\bbold\b/gi,'brave']
 ];
 function glossCase(m,r){
   if(m.length>1&&m===m.toUpperCase())return r.toUpperCase();
