@@ -123,6 +123,15 @@ header.nav{position:sticky; top:env(safe-area-inset-top,0px); z-index:40; backgr
 .screen-embed{padding:0; position:relative; aspect-ratio:390/730; overflow:hidden; background:#fff; isolation:isolate; transform:translateZ(0); -webkit-mask-image:-webkit-radial-gradient(white,black)}
 /* Embedded site is rendered at 390x730 and scaled to fill the whole phone screen */
 .phone-frame{position:absolute; top:0; left:0; width:390px; height:730px; border:0; background:#fff; transform-origin:0 0; transform:scale(var(--ph-scale,.76))}
+
+/* flip button beside the phone */
+.phone-wrap{display:flex; align-items:center; justify-content:center; gap:12px; perspective:1400px}
+.phone-wrap .phone{flex:0 1 340px; min-width:0}
+.phone-frame-b[hidden]{display:none}
+.flip-btn{flex:0 0 auto; display:inline-flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; width:58px; height:58px; padding:0; border:2px solid #171412; border-radius:50%; background:var(--yellow); color:#171412; font:800 .62rem/1 var(--text); letter-spacing:.02em; cursor:pointer; box-shadow:2px 2px 0 #171412; -webkit-tap-highlight-color:transparent}
+.flip-btn svg{width:22px; height:22px}
+.flip-btn:active{transform:translate(1px,1px); box-shadow:1px 1px 0 #171412}
+.flip-btn:disabled{opacity:.7; cursor:default}
 .appgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px 14px; list-style:none; margin:0; padding:0}
 .appgrid li{text-align:center; font:600 .7rem/1.2 var(--text)}
 .appgrid li a{display:block; text-decoration:none}
@@ -491,10 +500,17 @@ html.green .offerbar .modebtn *{background:transparent !important; color:inherit
           </a>
           <button type="button" class="hero-promo-next" id="hero-promo-next" aria-label="Next banner" title="Next banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
           </div>
-        <div class="phone" aria-label="Example phone home screen with EasyLandX apps">
+        <div class="phone-wrap">
+        <div class="phone" id="phoneDevice" aria-label="Example phone home screen with EasyLandX apps">
         <div class="screen screen-embed" id="phoneScreen">
           <iframe class="phone-frame" id="phoneFrame" src="https://easylandx.github.io/app/hubipad.html" title="EasyLandX business examples" loading="lazy" allow="fullscreen"></iframe>
+          <iframe class="phone-frame phone-frame-b" id="phoneFrameB" src="https://easylandx.github.io/app/ipad.html" title="EasyLandX iPad app" loading="lazy" allow="fullscreen" hidden></iframe>
         </div>
+        </div>
+        <button type="button" class="flip-btn" id="flipBtn" aria-pressed="false" aria-label="Flip the phone to show the iPad version" title="Flip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></svg>
+          <span id="flipLbl">Flip</span>
+        </button>
         </div>
       </div>
     </div>
@@ -910,6 +926,32 @@ html.green .offerbar .modebtn *{background:transparent !important; color:inherit
   fit();
   if(window.ResizeObserver){var ro=new ResizeObserver(fit);ro.observe(screen);if(pScreen)ro.observe(pScreen);}
   window.addEventListener("resize",fit);
+})();
+</script>
+<script>
+(function(){
+  var dev=document.getElementById("phoneDevice"),a=document.getElementById("phoneFrame"),b=document.getElementById("phoneFrameB"),
+      btn=document.getElementById("flipBtn"),lbl=document.getElementById("flipLbl"),scr=document.getElementById("phoneScreen");
+  if(!dev||!a||!b||!btn)return;
+  var showB=false,busy=false,base="rotate(3deg) ";
+  function scale(){var w=scr.clientWidth;if(w)b.style.setProperty("--ph-scale",(w/390).toFixed(4));}
+  scale();if(window.ResizeObserver)new ResizeObserver(scale).observe(scr);window.addEventListener("resize",scale);
+  function swap(){
+    showB=!showB;a.hidden=showB;b.hidden=!showB;
+    btn.setAttribute("aria-pressed",showB?"true":"false");
+    btn.setAttribute("aria-label",showB?"Flip the phone back to the examples":"Flip the phone to show the iPad version");
+    lbl.textContent=showB?"Back":"Flip";
+  }
+  btn.addEventListener("click",function(){
+    if(busy)return;busy=true;btn.disabled=true;
+    if(!dev.animate){swap();busy=false;btn.disabled=false;return;}
+    var o=dev.animate([{transform:base+"rotateY(0deg)"},{transform:base+"rotateY(90deg)"}],{duration:260,easing:"ease-in",fill:"forwards"});
+    o.onfinish=function(){
+      swap();
+      var i=dev.animate([{transform:base+"rotateY(-90deg)"},{transform:base+"rotateY(0deg)"}],{duration:320,easing:"ease-out"});
+      i.onfinish=function(){o.cancel();busy=false;btn.disabled=false;};
+    };
+  });
 })();
 </script>
 <script>
