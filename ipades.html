@@ -152,18 +152,43 @@ setInterval(()=>{if(!tcDirty)return;tcDirty=false;if(ls.set(TKEY,JSON.stringify(
 let act=0;const wait=[];
 const slot=()=>new Promise(r=>{if(act<6){act++;r()}else wait.push(r)});
 const free=()=>{const n=wait.shift();if(n)n();else act--};
-async function gt(s){
+let cool=0,fails=0; // after repeated failures (rate limit) pause requests for a while
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function gtRaw(s){
+  const now=Date.now();if(cool>now)await sleep(cool-now);
   await slot();
+  const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),9000); // never hang: 9 s timeout
   try{
-    for(let a=0;a<2;a++){
-      try{
-        const r=await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=es&dt=t&q='+encodeURIComponent(s));
-        if(!r.ok)throw 0;
-        const j=await r.json();
-        return j[0].map(x=>x[0]||'').join('');
-      }catch(e){if(a)throw e;await new Promise(r=>setTimeout(r,400))}
-    }
-  }finally{free()}
+    const r=await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=es&dt=t&q='+encodeURIComponent(s),{signal:ac.signal});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const j=await r.json();
+    fails=0;
+    return j[0].map(x=>x[0]||'').join('');
+  }catch(e){
+    if(++fails>=3)cool=Date.now()+Math.min(60000,5000*fails);
+    throw e;
+  }finally{clearTimeout(tm);free()}
+}
+// Batching: many short strings go in ONE request (joined by newlines) to avoid hitting rate limits
+const bq=[];let bt=0;
+function gt(s){return new Promise((res,rej)=>{bq.push({s,res,rej});if(!bt)bt=setTimeout(flush,60)})}
+function flush(){
+  bt=0;
+  while(bq.length){
+    const batch=[];let len=0;
+    while(bq.length&&batch.length<30&&len+bq[0].s.length<3000){const it=bq.shift();batch.push(it);len+=it.s.length+1}
+    if(!batch.length)batch.push(bq.shift());
+    runBatch(batch);
+  }
+}
+async function runBatch(b){
+  if(b.length===1){try{b[0].res(await gtRaw(b[0].s))}catch(e){b[0].rej(e)}return}
+  let out;
+  try{out=(await gtRaw(b.map(x=>x.s.replace(/\n/g,' ')).join('\n'))).split('\n')}
+  catch(e){b.forEach(x=>x.rej(e));return}
+  if(out.length===b.length){b.forEach((x,i)=>x.res(out[i].trim()));return}
+  // segment count mismatch: translate one by one
+  await Promise.all(b.map(async x=>{try{x.res(await gtRaw(x.s))}catch(er){x.rej(er)}}));
 }
 async function trChunks(s){
   if(s.length<=1200)return gt(s);
@@ -188,7 +213,7 @@ const ATTR=['placeholder','title','alt','aria-label'];
 const SKIPSEL='script,style,noscript,textarea,code,pre,[translate=no],.notranslate';
 const skipEl=e=>(e.matches&&e.matches(SKIPSEL))||false;
 
-function doNode(n){
+function doNode(n,tries=0){
   if(!T.on)return;
   const raw=n.data;
   if(OUT.get(n)===raw)return;
@@ -203,9 +228,11 @@ function doNode(n){
     const o=m[1]+t+m[3];OUT.set(n,o);n.data=o;
   };
   if(TC[key]!==undefined){ap(TC[key]);return}
-  ttl(key).then(ap).catch(()=>{});
+  ttl(key).then(ap).catch(()=>{ // failed (rate limit / timeout): retry later with backoff instead of staying in English
+    if(tries<6)setTimeout(()=>{if(T.on&&n.isConnected&&n.data===raw)doNode(n,tries+1)},2500*(tries+1));
+  });
 }
-function doAttr(el,a){
+function doAttr(el,a,tries=0){
   if(!T.on)return;
   const raw=el.getAttribute(a);
   if(!raw||!/\p{L}/u.test(raw))return;
@@ -219,7 +246,9 @@ function doAttr(el,a){
     rec.out=t;el.setAttribute(a,t);
   };
   if(TC[key]!==undefined){ap(TC[key]);return}
-  ttl(key).then(ap).catch(()=>{});
+  ttl(key).then(ap).catch(()=>{
+    if(tries<6)setTimeout(()=>{if(T.on&&el.isConnected&&el.getAttribute(a)===raw)doAttr(el,a,tries+1)},2500*(tries+1));
+  });
 }
 function attrs(el){for(const a of ATTR)if(el.hasAttribute&&el.hasAttribute(a))doAttr(el,a)}
 function walk(root,d){
@@ -462,6 +491,8 @@ new ResizeObserver(layout).observe(scr);
 addEventListener('resize',layout);
 layout();
 setTr(T.on); // paint the 🌐 button state
+// the button shows ⏳ while translation is paused because Google is limiting requests
+setInterval(()=>{const b=$('#tr'),p=T.on&&Date.now()<cool;const t=p?'🌐⏳':'🌐';if(b.textContent!==t)b.textContent=t},1000);
 
 loadList().then(list=>{
   S=list;
