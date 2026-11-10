@@ -98,7 +98,8 @@ async function loadList(){
   }catch(e){}
   if(list.length<5) list=FALL.map(s=>({u:IDX+s+'.html',t:cap(s),d:''}));
   // Newest pages: always in the carousel (added at the end, skipped if the index already lists them)
-  [['monk','🧘','Monk','Quiet focus, clear mind.'],['decided','✅','Decided','Choose, commit, move.'],['forward','➡️','Forward','Always one step ahead.']].forEach(([s,ic,t,d])=>{
+  [['monk','🧘','Monk','Quiet focus, clear mind.'],['decided','✅','Decided','Choose, commit, move.'],['forward','➡️','Forward','Always one step ahead.'],
+   ['breath','🌬️','Breath','Slow down, breathe in.'],['read','📖','Read','Read people like a book.'],['unlearn','🧠','Unlearn','Let old patterns go.'],['within','🧭','Within','Look inward.'],['youcan','💪','You Can','You can do it.']].forEach(([s,ic,t,d])=>{
     const u=IDX+s+'.html'; if(!list.some(o=>o.u===u))list.push({u:u,t:ic+' '+t,d:d});
   });
   return list;
