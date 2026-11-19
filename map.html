@@ -15,6 +15,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#faf6ef">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📍</text></svg>">
+<link rel="preconnect" href="https://overpass-api.de">
+<link rel="preconnect" href="https://nominatim.openstreetmap.org">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -86,6 +88,13 @@ form{padding:8px 16px 4px;display:grid;gap:8px}
 .foot a{color:var(--mute)}
 
 /* detail */
+.dnav{display:flex;align-items:center;gap:8px;margin:4px 0 10px}
+.dnav .back{margin:0}
+.dnav .pn{margin-left:auto;display:flex;align-items:center;gap:6px}
+.dnav .pn button{border:0;background:#fff;border-radius:99px;padding:8px 13px;font-weight:700;font-size:.85rem;box-shadow:0 1px 2px rgba(29,43,42,.08)}
+.dnav .pn button:hover:not(:disabled){background:var(--soft-teal);color:var(--teal)}
+.dnav .pn button:disabled{opacity:.35;cursor:default}
+.dnav .pn span{font-size:.78rem;font-weight:700;color:var(--mute);min-width:42px;text-align:center}
 .back{border:0;background:#fff;border-radius:99px;padding:8px 14px;font-weight:700;font-size:.85rem;margin:4px 0 10px;box-shadow:0 1px 2px rgba(29,43,42,.08)}
 .dhead{display:flex;gap:12px;align-items:flex-start}
 .dhead .ico{width:54px;height:54px;font-size:1.6rem;border-radius:16px}
@@ -376,35 +385,64 @@ function catForTags(t){
 }
 
 /* ================= DATA LAYER (OpenStreetMap; swappable provider) ================= */
+var GEO_CACHE={},SEARCH_CACHE={},CACHE_MS=10*60*1000;
 var provider={
   geocode:function(q){
-    return fetch(CONFIG.NOMINATIM+'?format=jsonv2&limit=1&q='+encodeURIComponent(q),{headers:{'Accept':'application/json'}}).then(function(r){if(!r.ok)throw new Error('geocode');return r.json();}).then(function(a){
-      if(!a.length)return null;var b=a[0].boundingbox;return{lat:+a[0].lat,lon:+a[0].lon,name:a[0].display_name,bbox:b?[+b[2],+b[0],+b[3],+b[1]]:null};
-    });
+    var key=q.toLowerCase();
+    if(GEO_CACHE[key])return Promise.resolve(GEO_CACHE[key]);
+    var ctl=new AbortController(),to=setTimeout(function(){ctl.abort();},8000);
+    return fetch(CONFIG.NOMINATIM+'?format=jsonv2&limit=1&q='+encodeURIComponent(q),{headers:{'Accept':'application/json'},signal:ctl.signal}).then(function(r){clearTimeout(to);if(!r.ok)throw new Error('geocode');return r.json();}).then(function(a){
+      if(!a.length)return null;var b=a[0].boundingbox;var g={lat:+a[0].lat,lon:+a[0].lon,name:a[0].display_name,bbox:b?[+b[2],+b[0],+b[3],+b[1]]:null};GEO_CACHE[key]=g;return g;
+    },function(e){clearTimeout(to);throw e;});
   },
   search:function(cats,text,bounds){
     var bb=[bounds.s,bounds.w,bounds.n,bounds.e].map(function(x){return x.toFixed(5);}).join(',');
+    var cacheKey=(cats.length?cats.map(function(c){return c.id;}).sort().join('+'):'t:'+text.toLowerCase())+'|'+bb;
+    var hit=SEARCH_CACHE[cacheKey];
+    if(hit&&Date.now()-hit.t<CACHE_MS){console.info('[EasyLandX Map] cache hit');return Promise.resolve(hit.v);}
     var parts=[];
-    if(cats.length){cats.forEach(function(cat){cat.tags.forEach(function(t){parts.push('nwr["'+t[0]+'"="'+t[1]+'"]('+bb+');');});});}
-    else{
+    if(cats.length){
+      // one statement per tag key (shop, amenity...) instead of one per value: much lighter for the server
+      var byKey={};
+      cats.forEach(function(cat){cat.tags.forEach(function(t){(byKey[t[0]]=byKey[t[0]]||{})[t[1]]=1;});});
+      Object.keys(byKey).forEach(function(k){
+        var vals=Object.keys(byKey[k]);
+        parts.push(vals.length===1?'nwr["'+k+'"="'+vals[0]+'"]('+bb+');':'nwr["'+k+'"~"^('+vals.join('|')+')$"]('+bb+');');
+      });
+    }else{
       var rx=text.replace(/[\\.^$*+?()[\]{}|"]/g,'\\$&');
       ['shop','amenity','office','craft','tourism','leisure','healthcare'].forEach(function(k){parts.push('nwr["name"~"'+rx+'",i]["'+k+'"]('+bb+');');});
     }
     var LIMIT=cats.length>1?400:300;
-    var q='[out:json][timeout:20];('+parts.join('')+');out center tags '+LIMIT+';';
-    var i=0,lastErr=null;
-    function go(){
-      var ctl=new AbortController();var to=setTimeout(function(){ctl.abort();},21000);
-      return fetch(CONFIG.OVERPASS[i],{method:'POST',body:'data='+encodeURIComponent(q),headers:{'Content-Type':'application/x-www-form-urlencoded'},signal:ctl.signal})
-        .then(function(r){clearTimeout(to);if(!r.ok)throw new Error('overpass '+r.status);return r.json();})
-        .then(function(j){
-          // Overpass answers HTTP 200 with an empty list and a "remark" when it times out or is overloaded
-          if(j&&j.remark&&/error|timed out|out of memory|too busy/i.test(j.remark)&&!(j.elements&&j.elements.length))throw new Error('overpass remark: '+j.remark);
-          return j;
-        })
-        .catch(function(e){clearTimeout(to);lastErr=e;console.warn('[EasyLandX Map] Overpass server '+i+' failed:',e&&e.message);i++;if(i<CONFIG.OVERPASS.length)return go();throw lastErr;});
-    }
-    return go().then(function(j){var out=normalize(j.elements||[],cats.length===1?cats[0]:null);out.capped=(j.elements||[]).length>=LIMIT;console.info('[EasyLandX Map] '+out.length+' businesses found');return out;});
+    var q='[out:json][timeout:12];('+parts.join('')+');out center tags qt '+LIMIT+';';
+    // Race the mirrors: start the first now, and add the next ones only if it is slow (2.5 s apart).
+    // The first valid answer wins and the others are cancelled.
+    return new Promise(function(resolve,reject){
+      var ctls=[],timers=[],failed=0,done=false,lastErr=null,N=CONFIG.OVERPASS.length;
+      function finish(fn,v){if(done)return;done=true;timers.forEach(clearTimeout);ctls.forEach(function(c){try{c.abort();}catch(e){}});fn(v);}
+      function launch(i){
+        if(done)return;
+        var ctl=new AbortController();ctls.push(ctl);
+        var to=setTimeout(function(){ctl.abort();},13000);timers.push(to);
+        fetch(CONFIG.OVERPASS[i],{method:'POST',body:'data='+encodeURIComponent(q),headers:{'Content-Type':'application/x-www-form-urlencoded'},signal:ctl.signal})
+          .then(function(r){if(!r.ok)throw new Error('overpass '+r.status);return r.json();})
+          .then(function(j){
+            if(j&&j.remark&&/error|timed out|out of memory|too busy/i.test(j.remark)&&!(j.elements&&j.elements.length))throw new Error('overpass remark: '+j.remark);
+            var out=normalize(j.elements||[],cats.length===1?cats[0]:null);out.capped=(j.elements||[]).length>=LIMIT;
+            SEARCH_CACHE[cacheKey]={t:Date.now(),v:out};
+            console.info('[EasyLandX Map] '+out.length+' businesses found (server '+i+')');
+            finish(resolve,out);
+          })
+          .catch(function(e){
+            if(done)return;
+            lastErr=e;failed++;console.warn('[EasyLandX Map] Overpass server '+i+' failed:',e&&e.message);
+            if(failed>=N)finish(reject,lastErr);
+            else if(i+1<N&&!launched[i+1]){launched[i+1]=1;launch(i+1);}   // failed fast: bring the next one in right away
+          });
+      }
+      var launched={0:1};launch(0);
+      for(var k=1;k<N;k++)(function(k){timers.push(setTimeout(function(){if(!launched[k]){launched[k]=1;launch(k);}},2500*k));})(k);
+    });
   }
 };
 
@@ -548,17 +586,17 @@ function doSearch(fromChip){
     step=provider.geocode(where).then(function(g){
       if(!g)throw new Error('nogeo');
       doSearch._lastWhere=where;
-      return new Promise(function(res){
-        $('here').dataset.lock='1';
-        var fin=false;function done(){if(fin)return;fin=true;setTimeout(function(){delete $('here').dataset.lock;res();},60);}
-        map.once('moveend',done);setTimeout(done,3500);
-        map.flyTo({center:[g.lon,g.lat],zoom:15.4,pitch:60,bearing:-15,duration:1600,essential:true});
-      });
+      // Fly the camera and query the data at the same time (no waiting for the animation)
+      $('here').dataset.lock='1';
+      var fin=false;function done(){if(fin)return;fin=true;setTimeout(function(){delete $('here').dataset.lock;},60);}
+      map.once('moveend',done);setTimeout(done,3500);
+      map.flyTo({center:[g.lon,g.lat],zoom:15.4,pitch:60,bearing:-15,duration:1600,essential:true});
+      doSearch._target={n:g.lat+0.016,s:g.lat-0.016,e:g.lon+0.022,w:g.lon-0.022};
     });
   }
   step.then(function(){
-    var bnd=viewBounds();lastSearchBounds=bnd;
-    if(map.getZoom()<11.5)toast('Zoomed out far: searching the centre of the view. Zoom in to see everything.');
+    var fromGeo=!!doSearch._target,bnd=doSearch._target||viewBounds();doSearch._target=null;lastSearchBounds=bnd;
+    if(!fromGeo&&map.getZoom()<11.5)toast('Zoomed out far: searching the centre of the view. Zoom in to see everything.');
     track('map_search',{category:cats.length?selCats.join('+'):'free_text',has_where:!!where});
     return provider.search(cats,what,bnd).then(function(l){return l.length?l:tileSearch(cats,what,null);},function(e){
       // Area too big for the free service? Retry once on the centre of the view.
@@ -603,11 +641,15 @@ $('btnSaved').onclick=function(){
 };
 persistSaved();
 
-function renderList(){
-  $('side').classList.remove('indetail');$('detail').hidden=true;$('list').hidden=false;
+function visibleRows(){
   var only=$('fNoWeb').checked;
   var rows=results.filter(function(b){return !only||b.status!=='web';});
   rows.sort(function(a,b){return a.d-b.d;});
+  return rows;
+}
+function renderList(){
+  $('side').classList.remove('indetail');$('detail').hidden=true;$('list').hidden=false;
+  var rows=visibleRows();
   $('count').textContent=rows.length+(capped&&!showSaved?'+':'')+(rows.length===1?' business':' businesses');
   if(!rows.length){
     if(results.length)emptyMsg('All of these already have a website','Untick "Only without a website" to see them, or search another category.');
@@ -676,7 +718,9 @@ function renderDetail(b){
   if(b.hours)facts+='<div><span>🕒</span><span>'+esc(b.hours)+'</span></div>';
   if(b.web&&/^https?:\/\//i.test(b.web))facts+='<div><span>🌐</span><a href="'+esc(b.web)+'" target="_blank" rel="noopener">'+esc(b.web.replace(/^https?:\/\//,''))+'</a></div>';
   facts+='<div><span>🧭</span><a href="https://www.openstreetmap.org/?mlat='+b.lat+'&mlon='+b.lon+'#map=19/'+b.lat+'/'+b.lon+'" target="_blank" rel="noopener">View on OpenStreetMap</a></div>';
-  var h='<button class="back" id="dBackBtn">← Results</button>'+
+  var vis=visibleRows(),ix=-1;for(var q=0;q<vis.length;q++)if(vis[q].id===b.id){ix=q;break;}
+  var nav='<div class="dnav"><button class="back" id="dBackBtn">← Results</button>'+(ix>-1&&vis.length>1?'<div class="pn"><button id="dPrevBiz" title="Previous (←)" aria-label="Previous business"'+(ix===0?' disabled':'')+'>‹ Prev</button><span>'+(ix+1)+' / '+vis.length+'</span><button id="dNextBiz" title="Next (→)" aria-label="Next business"'+(ix===vis.length-1?' disabled':'')+'>Next ›</button></div>':'')+'</div>';
+  var h=nav+
    '<div class="dhead"><span class="ico">'+c.emoji+'</span><div><h2>'+esc(b.name)+'</h2><p>'+esc(c.label)+'</p></div></div>'+stat+
    '<div class="facts">'+facts+'</div>'+
    (OUTREACH?'<div class="row"><button class="btn p" id="dSend" style="flex:1">💬 Send sample by WhatsApp</button><button class="btn l" id="dLang" style="width:64px;flex:none" title="Message language"></button></div><p class="note" id="dSendTo"></p>':'')+
@@ -689,6 +733,8 @@ function renderDetail(b){
   }
   d.innerHTML=h;$('list').hidden=true;d.hidden=false;d.scrollTop=0;$('side').classList.add('indetail');
   $('dBackBtn').onclick=function(){setSel(null);cur=null;renderList();};
+  if($('dPrevBiz'))$('dPrevBiz').onclick=function(){if(ix>0)select(vis[ix-1].id,true);};
+  if($('dNextBiz'))$('dNextBiz').onclick=function(){if(ix<vis.length-1)select(vis[ix+1].id,true);};
   $('dPrev').onclick=function(){openPreview(b);};
   $('dMine').onclick=function(){openWa('Hi! I found my business "'+b.name+'"'+(b.addr?' ('+b.addr+')':'')+' on your map and I would like my real page. Could you send me a courtesy sample?','detail_mine');};
   $('dEx').onclick=function(){openViewer(c.exUrl,c.exTitle);};
@@ -936,6 +982,11 @@ function handleHash(){
 initMap();
 handleHash();
 window.addEventListener('hashchange',handleHash);
+window.addEventListener('keydown',function(e){
+  if((e.key==='ArrowLeft'||e.key==='ArrowRight')&&!$('detail').hidden&&$('mAR').hidden&&$('viewer').hidden&&$('mPrev').hidden&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'')){
+    var bt=$(e.key==='ArrowLeft'?'dPrevBiz':'dNextBiz');if(bt&&!bt.disabled){e.preventDefault();bt.click();}
+  }
+});
 window.addEventListener('keydown',function(e){if(e.key==='Escape'){if(!$('mAR').hidden)$('mAR').hidden=true;else if(!$('viewer').hidden)$('vBack').click();else if(!$('mPrev').hidden)$('pBack').click();}});
 window.__elx={get map(){return map;},get results(){return results;},select:select,openPreview:openPreview};
 })();
