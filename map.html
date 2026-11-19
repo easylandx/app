@@ -228,6 +228,7 @@ model-viewer{width:100%;height:100%;--poster-color:transparent;background:transp
     <div class="t"><span id="pTitle"></span><small>Concept preview · made with EasyLandX</small></div>
     <button class="pill t" id="pAR">📱 View in AR</button>
     <button class="pill" id="pCopy">🔗 Copy link</button>
+    <button class="pill" id="pSend" style="background:var(--green);border-color:var(--green);color:#fff" hidden>📤 Send to business</button>
     <button class="pill c" id="pWa">💬 I want this page</button>
   </div>
   <div class="stage">
@@ -307,6 +308,7 @@ var params=new URLSearchParams(location.search);
 if(params.get('outreach')==='1')store('elx_outreach','1');
 if(params.get('outreach')==='0')store('elx_outreach','0');
 var OUTREACH=store('elx_outreach')==='1';
+var CANSEND=true;   // "Send sample to this business" is always available; the extra outreach tools (save, copy pitch) stay behind ?outreach=1
 if(OUTREACH){$('tagOut').hidden=false;$('fNoWeb').checked=true;$('btnSaved').hidden=false;}
 
 /* ================= CATEGORIES ================= */
@@ -723,7 +725,7 @@ function renderDetail(b){
   var h=nav+
    '<div class="dhead"><span class="ico">'+c.emoji+'</span><div><h2>'+esc(b.name)+'</h2><p>'+esc(c.label)+'</p></div></div>'+stat+
    '<div class="facts">'+facts+'</div>'+
-   (OUTREACH?'<div class="row"><button class="btn p" id="dSend" style="flex:1">💬 Send sample by WhatsApp</button><button class="btn l" id="dLang" style="width:64px;flex:none" title="Message language"></button></div><p class="note" id="dSendTo"></p>':'')+
+   (CANSEND?'<div class="row"><button class="btn p" id="dSend" style="flex:1">💬 Send sample by WhatsApp</button><button class="btn l" id="dLang" style="width:64px;flex:none" title="Message language"></button></div><p class="note" id="dSendTo"></p>':'')+
    '<button class="btn p" id="dPrev">✨ Preview a page for this business</button>'+
    '<button class="btn t" id="dMine">🙋 This is my business</button>'+
    '<div class="ex"><span>See what we built for '+esc(c.label.toLowerCase())+'</span><button id="dEx">Open ↗</button></div>';
@@ -738,7 +740,7 @@ function renderDetail(b){
   $('dPrev').onclick=function(){openPreview(b);};
   $('dMine').onclick=function(){openWa('Hi! I found my business "'+b.name+'"'+(b.addr?' ('+b.addr+')':'')+' on your map and I would like my real page. Could you send me a courtesy sample?','detail_mine');};
   $('dEx').onclick=function(){openViewer(c.exUrl,c.exTitle);};
-  if(OUTREACH){
+  if(CANSEND){
     var refreshDSend=function(){
       var n=waNumber(b.phone),ph=String(b.phone||'').split(';')[0].trim(),land=/^(\+?34)?[89]\d{8}$/.test(ph.replace(/[^\d+]/g,''));
       $('dLang').textContent=sendLang.toUpperCase();
@@ -752,6 +754,8 @@ function renderDetail(b){
       if(!n){copyText(msg);toast('No phone listed. Message copied: paste it in their WhatsApp chat.');return;}
       window.open(waLink(msg,n),'_blank','noopener');
     };
+  }
+  if(OUTREACH){
     $('dSave').onclick=function(){if(saved[b.id]){delete saved[b.id];this.textContent='☆ Save';}else{saved[b.id]=b;this.textContent='★ Saved';}persistSaved();};
     $('dCopyEn').onclick=function(){copyText(pitch(b,'en'));};
     $('dCopyEs').onclick=function(){copyText(pitch(b,'es'));};
@@ -855,7 +859,8 @@ function buildMsg(b,lang){
 }
 function refreshSend(force){
   var box=$('sendBox');
-  if(!OUTREACH||!pvB||pvB.id==='shared'){box.hidden=true;return;}
+  if(!CANSEND||!pvB||pvB.id==='shared'){box.hidden=true;$('pSend').hidden=true;return;}
+  $('pSend').hidden=false;
   box.hidden=false;
   $('sEs').classList.toggle('on',sendLang==='es');$('sEn').classList.toggle('on',sendLang==='en');
   if(force||!sendEdited){$('sMsg').value=buildMsg(pvB,sendLang);sendEdited=false;}
@@ -866,6 +871,7 @@ function refreshSend(force){
 $('sEs').onclick=function(){sendLang='es';store('elx_sendlang','es');refreshSend(true);};
 $('sEn').onclick=function(){sendLang='en';store('elx_sendlang','en');refreshSend(true);};
 $('sMsg').addEventListener('input',function(){sendEdited=true;});
+$('pSend').onclick=function(){if(!$('sendBox').hidden){$('sGo').click();}};
 $('sGo').onclick=function(){
   var msg=$('sMsg').value,n=waNumber(pvB&&pvB.phone);
   track('map_send_business',{category:pvB&&pvB.cat,lang:sendLang,has_phone:!!n});
