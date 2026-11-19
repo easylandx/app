@@ -252,7 +252,7 @@ model-viewer{width:100%;height:100%;--poster-color:transparent;background:transp
 /* ================= CONFIG ================= */
 var CONFIG={
   STYLE:'https://tiles.openfreemap.org/styles/liberty',   // free vector tiles with 3D buildings, no key
-  OVERPASS:['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'],
+  OVERPASS:['https://overpass-api.de/api/interpreter','https://overpass.private.coffee/api/interpreter','https://overpass.kumi.systems/api/interpreter'],
   NOMINATIM:'https://nominatim.openstreetmap.org/search',
   WA:'34609204298',
   SITE:'https://easylandx.github.io/',
@@ -346,15 +346,20 @@ var provider={
       var rx=text.replace(/[\\.^$*+?()[\]{}|"]/g,'\\$&');
       ['shop','amenity','office','craft','tourism','leisure','healthcare'].forEach(function(k){parts.push('nwr["name"~"'+rx+'",i]["'+k+'"]('+bb+');');});
     }
-    var q='[out:json][timeout:25];('+parts.join('')+');out center tags 150;';
-    var i=0;
+    var q='[out:json][timeout:15];('+parts.join('')+');out center tags 120;';
+    var i=0,lastErr=null;
     function go(){
-      var ctl=new AbortController();var to=setTimeout(function(){ctl.abort();},28000);
+      var ctl=new AbortController();var to=setTimeout(function(){ctl.abort();},16000);
       return fetch(CONFIG.OVERPASS[i],{method:'POST',body:'data='+encodeURIComponent(q),headers:{'Content-Type':'application/x-www-form-urlencoded'},signal:ctl.signal})
         .then(function(r){clearTimeout(to);if(!r.ok)throw new Error('overpass '+r.status);return r.json();})
-        .catch(function(e){clearTimeout(to);i++;if(i<CONFIG.OVERPASS.length)return go();throw e;});
+        .then(function(j){
+          // Overpass answers HTTP 200 with an empty list and a "remark" when it times out or is overloaded
+          if(j&&j.remark&&/error|timed out|out of memory|too busy/i.test(j.remark)&&!(j.elements&&j.elements.length))throw new Error('overpass remark: '+j.remark);
+          return j;
+        })
+        .catch(function(e){clearTimeout(to);lastErr=e;console.warn('[EasyLandX Map] Overpass server '+i+' failed:',e&&e.message);i++;if(i<CONFIG.OVERPASS.length)return go();throw lastErr;});
     }
-    return go().then(function(j){return normalize(j.elements||[],cat);});
+    return go().then(function(j){var out=normalize(j.elements||[],cat);console.info('[EasyLandX Map] '+out.length+' businesses found');return out;});
   }
 };
 function normalize(els,forced){
@@ -411,7 +416,7 @@ function haversine(a,b,c,d){var R=6371000,r=Math.PI/180,x=(c-a)*r,y=(d-b)*r,h=Ma
 function fmtDist(m){return m<950?Math.round(m/10)*10+' m':(m/1000).toFixed(1)+' km';}
 function viewBounds(){
   var b=map.getBounds(),c=map.getCenter(),n=b.getNorth(),s=b.getSouth(),e=b.getEast(),w=b.getWest();
-  var maxLat=0.09,maxLon=0.12;
+  var maxLat=0.035,maxLon=0.05;   // about 3.9 x 4.2 km: small enough for the free servers to answer fast
   if(n-s>maxLat){n=c.lat+maxLat/2;s=c.lat-maxLat/2;}
   if(e-w>maxLon){e=c.lng+maxLon/2;w=c.lng-maxLon/2;}
   return{n:n,s:s,e:e,w:w};
@@ -432,7 +437,8 @@ function doSearch(fromChip){
       doSearch._lastWhere=where;
       return new Promise(function(res){
         $('here').dataset.lock='1';
-        map.once('moveend',function(){setTimeout(function(){delete $('here').dataset.lock;res();},60);});
+        var fin=false;function done(){if(fin)return;fin=true;setTimeout(function(){delete $('here').dataset.lock;res();},60);}
+        map.once('moveend',done);setTimeout(done,3500);
         map.flyTo({center:[g.lon,g.lat],zoom:15.4,pitch:60,bearing:-15,duration:1600,essential:true});
       });
     });
@@ -448,7 +454,7 @@ function doSearch(fromChip){
     if(!list.length)emptyMsg('Nothing found here','Try zooming out, moving the map, or another category. OpenStreetMap does not list every business.');
   }).catch(function(e){
     if(e&&e.message==='nogeo')emptyMsg('Place not found','Check the spelling of the city or neighbourhood and try again.');
-    else emptyMsg('Could not load businesses','The free map data service is busy. Wait a few seconds and try again.');
+    else{console.error('[EasyLandX Map] search failed',e);emptyMsg('Could not load businesses','The free map data service did not answer ('+((e&&e.message)||'network error')+'). Wait a few seconds and try again.');}
   }).then(function(){busy=false;});
 }
 $('form').addEventListener('submit',function(e){e.preventDefault();doSearch();});
