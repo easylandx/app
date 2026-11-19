@@ -390,10 +390,11 @@ var provider={
       var rx=text.replace(/[\\.^$*+?()[\]{}|"]/g,'\\$&');
       ['shop','amenity','office','craft','tourism','leisure','healthcare'].forEach(function(k){parts.push('nwr["name"~"'+rx+'",i]["'+k+'"]('+bb+');');});
     }
-    var q='[out:json][timeout:15];('+parts.join('')+');out center tags '+(cats.length>1?220:120)+';';
+    var LIMIT=cats.length>1?400:300;
+    var q='[out:json][timeout:20];('+parts.join('')+');out center tags '+LIMIT+';';
     var i=0,lastErr=null;
     function go(){
-      var ctl=new AbortController();var to=setTimeout(function(){ctl.abort();},16000);
+      var ctl=new AbortController();var to=setTimeout(function(){ctl.abort();},21000);
       return fetch(CONFIG.OVERPASS[i],{method:'POST',body:'data='+encodeURIComponent(q),headers:{'Content-Type':'application/x-www-form-urlencoded'},signal:ctl.signal})
         .then(function(r){clearTimeout(to);if(!r.ok)throw new Error('overpass '+r.status);return r.json();})
         .then(function(j){
@@ -403,7 +404,7 @@ var provider={
         })
         .catch(function(e){clearTimeout(to);lastErr=e;console.warn('[EasyLandX Map] Overpass server '+i+' failed:',e&&e.message);i++;if(i<CONFIG.OVERPASS.length)return go();throw lastErr;});
     }
-    return go().then(function(j){var out=normalize(j.elements||[],cats.length===1?cats[0]:null);console.info('[EasyLandX Map] '+out.length+' businesses found');return out;});
+    return go().then(function(j){var out=normalize(j.elements||[],cats.length===1?cats[0]:null);out.capped=(j.elements||[]).length>=LIMIT;console.info('[EasyLandX Map] '+out.length+' businesses found');return out;});
   }
 };
 
@@ -527,12 +528,12 @@ function haversine(a,b,c,d){var R=6371000,r=Math.PI/180,x=(c-a)*r,y=(d-b)*r,h=Ma
 function fmtDist(m){return m<950?Math.round(m/10)*10+' m':(m/1000).toFixed(1)+' km';}
 function viewBounds(){
   var b=map.getBounds(),c=map.getCenter(),n=b.getNorth(),s=b.getSouth(),e=b.getEast(),w=b.getWest();
-  var maxLat=0.035,maxLon=0.05;   // about 3.9 x 4.2 km: small enough for the free servers to answer fast
+  var maxLat=0.11,maxLon=0.15;   // about 12 x 12 km around the centre of the view
   if(n-s>maxLat){n=c.lat+maxLat/2;s=c.lat-maxLat/2;}
   if(e-w>maxLon){e=c.lng+maxLon/2;w=c.lng-maxLon/2;}
   return{n:n,s:s,e:e,w:w};
 }
-var busy=false;
+var busy=false,capped=false;
 function skeleton(){$('side').classList.remove('indetail');$('list').hidden=false;$('detail').hidden=true;$('list').innerHTML='<div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div>';}
 function emptyMsg(t,s){$('side').classList.remove('indetail');$('list').hidden=false;$('detail').hidden=true;$('list').innerHTML='<div class="empty"><b>'+esc(t)+'</b>'+esc(s)+'</div>';$('count').textContent='';}
 function doSearch(fromChip){
@@ -557,12 +558,21 @@ function doSearch(fromChip){
   }
   step.then(function(){
     var bnd=viewBounds();lastSearchBounds=bnd;
+    if(map.getZoom()<11.5)toast('Zoomed out far: searching the centre of the view. Zoom in to see everything.');
     track('map_search',{category:cats.length?selCats.join('+'):'free_text',has_where:!!where});
-    return provider.search(cats,what,bnd).then(function(l){return l.length?l:tileSearch(cats,what,null);},function(e){return tileSearch(cats,what,e);});
+    return provider.search(cats,what,bnd).then(function(l){return l.length?l:tileSearch(cats,what,null);},function(e){
+      // Area too big for the free service? Retry once on the centre of the view.
+      var w=bnd.e-bnd.w,h=bnd.n-bnd.s,cx=(bnd.e+bnd.w)/2,cy=(bnd.n+bnd.s)/2;
+      if(h>0.03||w>0.04){
+        var sm={n:cy+Math.min(h,0.035)/2,s:cy-Math.min(h,0.035)/2,e:cx+Math.min(w,0.05)/2,w:cx-Math.min(w,0.05)/2};lastSearchBounds=sm;
+        toast('That area is too big for the free data service. Searching the centre of the view.');
+        return provider.search(cats,what,sm).then(function(l){return l.length?l:tileSearch(cats,what,null);},function(e2){return tileSearch(cats,what,e2);});
+      }
+      return tileSearch(cats,what,e);});
   }).then(function(list){
     var c=map.getCenter();
     list.forEach(function(b){b.d=haversine(c.lat,c.lng,b.lat,b.lon);});
-    results=list;setSel(null);pushData();renderList();
+    capped=!!list.capped;results=list;setSel(null);pushData();renderList();
     if(!list.length)emptyMsg('Nothing found here','Try zooming out, moving the map, or another category. OpenStreetMap does not list every business.');
   }).catch(function(e){
     if(e&&e.message==='nogeo')emptyMsg('Place not found','Check the spelling of the city or neighbourhood and try again.');
@@ -598,7 +608,7 @@ function renderList(){
   var only=$('fNoWeb').checked;
   var rows=results.filter(function(b){return !only||b.status!=='web';});
   rows.sort(function(a,b){return a.d-b.d;});
-  $('count').textContent=rows.length+(rows.length===1?' business':' businesses');
+  $('count').textContent=rows.length+(capped&&!showSaved?'+':'')+(rows.length===1?' business':' businesses');
   if(!rows.length){
     if(results.length)emptyMsg('All of these already have a website','Untick "Only without a website" to see them, or search another category.');
     else if(showSaved)emptyMsg('No saved businesses yet','Open a business and tap the star to save it.');
@@ -609,6 +619,7 @@ function renderList(){
     var c=catOf(b),lab={noweb:'No website listed',social:'Social only',web:'Has website',unk:'Website unknown'}[b.status];
     h+='<button class="biz'+(b.id===selId?' on':'')+'" data-id="'+esc(b.id)+'"><span class="ico">'+c.emoji+'</span><span class="tx"><b>'+esc(b.name)+'</b><small>'+esc(c.label)+' · '+fmtDist(b.d)+'</small><small>'+esc(b.addr||'Address not listed')+'</small></span><span class="badge '+b.status+'">'+lab+'</span></button>';
   });
+  if(capped&&!showSaved)h+='<div class="empty" style="margin:4px 0 0;padding:12px;border-style:solid">Showing the first '+rows.length+'. Zoom in or move the map and press <b style="display:inline">Search this area</b> to see more.</div>';
   $('list').innerHTML=h;
   [].forEach.call($('list').querySelectorAll('.biz'),function(el){el.onclick=function(){select(el.dataset.id,true);};});
 }
@@ -668,6 +679,7 @@ function renderDetail(b){
   var h='<button class="back" id="dBackBtn">← Results</button>'+
    '<div class="dhead"><span class="ico">'+c.emoji+'</span><div><h2>'+esc(b.name)+'</h2><p>'+esc(c.label)+'</p></div></div>'+stat+
    '<div class="facts">'+facts+'</div>'+
+   (OUTREACH?'<div class="row"><button class="btn p" id="dSend" style="flex:1">💬 Send sample by WhatsApp</button><button class="btn l" id="dLang" style="width:64px;flex:none" title="Message language"></button></div><p class="note" id="dSendTo"></p>':'')+
    '<button class="btn p" id="dPrev">✨ Preview a page for this business</button>'+
    '<button class="btn t" id="dMine">🙋 This is my business</button>'+
    '<div class="ex"><span>See what we built for '+esc(c.label.toLowerCase())+'</span><button id="dEx">Open ↗</button></div>';
@@ -681,6 +693,19 @@ function renderDetail(b){
   $('dMine').onclick=function(){openWa('Hi! I found my business "'+b.name+'"'+(b.addr?' ('+b.addr+')':'')+' on your map and I would like my real page. Could you send me a courtesy sample?','detail_mine');};
   $('dEx').onclick=function(){openViewer(c.exUrl,c.exTitle);};
   if(OUTREACH){
+    var refreshDSend=function(){
+      var n=waNumber(b.phone),ph=String(b.phone||'').split(';')[0].trim(),land=/^(\+?34)?[89]\d{8}$/.test(ph.replace(/[^\d+]/g,''));
+      $('dLang').textContent=sendLang.toUpperCase();
+      $('dSendTo').textContent=n?('Opens WhatsApp to '+ph+' with the link to their sample page and the example for their niche.'+(land?' This looks like a landline, so WhatsApp may not reach it.':'')):'No phone listed for this business: the message will be copied so you can paste it in their chat.';
+    };
+    refreshDSend();
+    $('dLang').onclick=function(){sendLang=sendLang==='es'?'en':'es';store('elx_sendlang',sendLang);refreshDSend();};
+    $('dSend').onclick=function(){
+      var n=waNumber(b.phone),msg=buildMsg(b,sendLang);
+      track('map_send_business',{category:b.cat,lang:sendLang,has_phone:!!n,from:'detail'});
+      if(!n){copyText(msg);toast('No phone listed. Message copied: paste it in their WhatsApp chat.');return;}
+      window.open(waLink(msg,n),'_blank','noopener');
+    };
     $('dSave').onclick=function(){if(saved[b.id]){delete saved[b.id];this.textContent='☆ Save';}else{saved[b.id]=b;this.textContent='★ Saved';}persistSaved();};
     $('dCopyEn').onclick=function(){copyText(pitch(b,'en'));};
     $('dCopyEs').onclick=function(){copyText(pitch(b,'es'));};
