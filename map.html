@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>EasyLandX Map — Find local businesses and see the website they could have</title>
+<meta name="description" content="Search real local businesses on a 3D map, see who has no website listed, preview a landing page for any of them, and view it in AR in your own shop.">
+<link rel="canonical" href="https://easylandx.github.io/app/map.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EasyLandX">
+<meta property="og:title" content="EasyLandX Map — see the website your business could have">
+<meta property="og:description" content="Search your business on the map, preview a landing page for it, and view it in AR.">
+<meta property="og:url" content="https://easylandx.github.io/app/map.html">
+<meta property="og:image" content="https://easylandx.github.io/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#faf6ef">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📍</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<style>
+:root{
+  --bg:#faf6ef; --card:#ffffff; --ink:#1d2b2a; --mute:#66736f; --line:#e9e2d4;
+  --teal:#0f766e; --teal2:#14b8a6; --coral:#f4623a; --amber:#f59e0b; --sky:#3b82f6; --green:#16a34a;
+  --soft-teal:#e3f6f2; --soft-coral:#ffe9e1; --soft-amber:#fff3d6; --soft-sky:#e6f0ff;
+  --font:'Plus Jakarta Sans',ui-sans-serif,system-ui,'Segoe UI',sans-serif;
+  --r:16px; --shadow:0 1px 2px rgba(29,43,42,.06),0 10px 30px rgba(29,43,42,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%;font-family:var(--font);color:var(--ink);background:var(--bg);overflow:hidden}
+button,input,select{font-family:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--teal)}
+#map{position:fixed;inset:0}
+.maplibregl-ctrl-group{border-radius:12px!important;box-shadow:var(--shadow)!important;border:0!important}
+.maplibregl-ctrl-top-right{top:12px;right:6px}
+
+/* sidebar */
+#side{position:fixed;z-index:10;top:12px;left:12px;bottom:12px;width:408px;background:var(--bg);border-radius:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(255,255,255,.7)}
+.handle{display:none}
+.brand{display:flex;align-items:center;gap:10px;padding:16px 18px 6px}
+.brand a{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.12rem;text-decoration:none;color:var(--ink);letter-spacing:-.01em}
+.logo{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--teal),var(--teal2));display:grid;place-items:center;color:#fff;font-size:1.05rem}
+.brand .tag{margin-left:auto;font-size:.7rem;font-weight:700;padding:4px 9px;border-radius:99px;background:var(--soft-coral);color:var(--coral);letter-spacing:.04em}
+.brand .tag[hidden]{display:none}
+form{padding:8px 16px 4px;display:grid;gap:8px}
+.field{position:relative}
+.field label{position:absolute;left:14px;top:7px;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);pointer-events:none}
+.field input{width:100%;border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:23px 44px 8px 14px;font-size:.98rem;font-weight:600;outline:none;transition:border-color .15s,box-shadow .15s}
+.field input:focus{border-color:var(--teal2);box-shadow:0 0 0 4px rgba(20,184,166,.15)}
+.field input::placeholder{color:#a3aeaa;font-weight:500}
+.loc{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:10px;border:0;background:var(--soft-teal);font-size:1rem}
+.go{border:0;border-radius:14px;padding:13px;font-weight:800;font-size:1rem;color:#fff;background:linear-gradient(135deg,var(--teal),#0d9488);box-shadow:0 6px 16px rgba(15,118,110,.28);transition:transform .1s}
+.go:active{transform:translateY(1px)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;overflow-y:auto;max-height:100px;padding:8px 16px 4px;flex:none;overscroll-behavior:contain;transition:max-height .2s}
+.chips.open{max-height:44vh}
+.more{flex:none;border:0;background:none;text-align:left;padding:2px 18px 8px;font-weight:700;font-size:.8rem;color:var(--teal)}
+.chip{flex:none;border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:5px 11px;font-weight:600;font-size:.8rem;white-space:nowrap}
+.chip.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.bar{display:flex;align-items:center;gap:10px;padding:2px 18px 8px;font-size:.84rem;color:var(--mute);flex:none}
+.bar label{display:flex;align-items:center;gap:7px;font-weight:600;color:var(--ink);cursor:pointer}
+.bar input{accent-color:var(--teal);width:16px;height:16px}
+.bar .n{margin-left:auto;font-weight:600}
+.bar .sl{border:0;background:none;font-weight:700;color:var(--coral);padding:0}
+#list,#detail{flex:1;overflow:auto;padding:0 12px 12px;overscroll-behavior:contain}
+#detail[hidden],#list[hidden]{display:none}
+.empty{margin:10px 6px;padding:22px 18px;border-radius:var(--r);background:#fff;border:1.5px dashed var(--line);text-align:center;color:var(--mute);font-size:.92rem;line-height:1.5}
+.empty b{display:block;color:var(--ink);font-size:1.02rem;margin-bottom:4px}
+.biz{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1.5px solid transparent;background:#fff;border-radius:var(--r);padding:11px 12px;margin-bottom:8px;box-shadow:0 1px 2px rgba(29,43,42,.05);transition:border-color .15s,transform .15s}
+.biz:hover{border-color:var(--teal2)}
+.biz.on{border-color:var(--coral)}
+.ico{flex:none;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-size:1.3rem;background:var(--soft-teal)}
+.biz .tx{flex:1;min-width:0}
+.biz b{display:block;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.biz small{display:block;color:var(--mute);font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{flex:none;font-size:.68rem;font-weight:800;padding:5px 9px;border-radius:99px;letter-spacing:.02em}
+.badge.noweb{background:var(--soft-amber);color:#a35f00}
+.badge.social{background:var(--soft-sky);color:#1d4fb5}
+.badge.web{background:#e0f6e8;color:#13703a}
+.badge.unk{background:#efe8ff;color:#5b31b8}
+.skel{height:64px;border-radius:var(--r);background:linear-gradient(90deg,#efe9dc 25%,#f8f3e8 50%,#efe9dc 75%);background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:8px}
+@keyframes sh{to{background-position:-200% 0}}
+.foot{padding:8px 18px 12px;font-size:.7rem;color:var(--mute);line-height:1.4;flex:none;border-top:1px solid var(--line)}
+.foot a{color:var(--mute)}
+
+/* detail */
+.back{border:0;background:#fff;border-radius:99px;padding:8px 14px;font-weight:700;font-size:.85rem;margin:4px 0 10px;box-shadow:0 1px 2px rgba(29,43,42,.08)}
+.dhead{display:flex;gap:12px;align-items:flex-start}
+.dhead .ico{width:54px;height:54px;font-size:1.6rem;border-radius:16px}
+.dhead h2{margin:0;font-size:1.25rem;line-height:1.2;letter-spacing:-.01em}
+.dhead p{margin:3px 0 0;color:var(--mute);font-size:.88rem}
+.status{margin:14px 0;border-radius:var(--r);padding:12px 14px;font-size:.9rem;line-height:1.45}
+.status.noweb{background:var(--soft-amber);color:#6b4300}
+.status.social{background:var(--soft-sky);color:#17408f}
+.status.web{background:#e0f6e8;color:#0f5a2e}
+.status.unk{background:#efe8ff;color:#3f2288}
+.status b{display:block;font-size:.98rem;margin-bottom:2px}
+.facts{background:#fff;border-radius:var(--r);padding:4px 14px;margin-bottom:12px;box-shadow:0 1px 2px rgba(29,43,42,.05)}
+.facts div{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:.88rem}
+.facts div:last-child{border:0}
+.facts span:first-child{flex:none;width:22px}
+.facts a{word-break:break-all}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;border-radius:14px;padding:14px;font-weight:800;font-size:.98rem;text-decoration:none;margin-bottom:8px;transition:transform .1s}
+.btn:active{transform:translateY(1px)}
+.btn.p{background:linear-gradient(135deg,var(--coral),#ff8a5c);color:#fff;box-shadow:0 6px 16px rgba(244,98,58,.3)}
+.btn.t{background:var(--teal);color:#fff}
+.btn.l{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.btn.sm{padding:10px;font-size:.86rem}
+.row{display:flex;gap:8px}.row .btn{margin-bottom:8px}
+.note{font-size:.75rem;color:var(--mute);line-height:1.45;margin:4px 2px 10px}
+.ex{display:flex;align-items:center;gap:10px;background:var(--soft-teal);border-radius:var(--r);padding:11px 13px;margin:6px 0 10px;font-size:.86rem}
+.ex button{margin-left:auto;border:0;border-radius:10px;background:#fff;padding:8px 12px;font-weight:700}
+
+/* floating */
+#here{position:fixed;z-index:9;top:18px;left:calc(408px + 12px + (100vw - 408px - 12px)/2 - 70px);border:0;border-radius:99px;padding:11px 18px;font-weight:800;font-size:.9rem;background:#fff;box-shadow:var(--shadow);transition:opacity .2s,transform .2s}
+#here[hidden]{display:none}
+#tools{position:fixed;z-index:9;right:12px;top:112px;display:grid;gap:8px}
+#tools button{width:29px;height:29px;border:0;border-radius:12px;background:#fff;box-shadow:var(--shadow);font-weight:800;font-size:.7rem}
+#legend{position:fixed;z-index:8;right:12px;bottom:26px;background:#fff;border-radius:14px;box-shadow:var(--shadow);padding:10px 12px;font-size:.76rem;font-weight:600;display:grid;gap:5px}
+#legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:-1px;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+#toast{position:fixed;z-index:80;left:50%;bottom:28px;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:99px;font-weight:600;font-size:.88rem;opacity:0;pointer-events:none;transition:.25s;max-width:92vw}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* modals */
+.modal{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column}
+.modal[hidden]{display:none}
+.mbar{display:flex;align-items:center;gap:8px;padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top));background:#fff;border-bottom:1px solid var(--line);flex:none;flex-wrap:wrap}
+.mbar .t{flex:1;min-width:140px;font-weight:800;font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mbar .t small{display:block;font-weight:500;color:var(--mute);font-size:.74rem}
+.pill{border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:9px 14px;font-weight:700;font-size:.84rem;text-decoration:none;color:var(--ink);white-space:nowrap}
+.pill.t{background:var(--teal);border-color:var(--teal);color:#fff}
+.pill.c{background:var(--coral);border-color:var(--coral);color:#fff}
+.stage{flex:1;display:grid;grid-template-columns:1fr 300px;min-height:0}
+.canvas{display:grid;place-items:center;padding:18px;min-height:0;background:radial-gradient(circle at 30% 20%,#fff2dc,#ffe4e0 55%,#e5f3ff)}
+.device{height:100%;max-height:820px;aspect-ratio:9/18.5;background:#fff;border-radius:34px;border:10px solid #fff;box-shadow:0 0 0 1.5px #d9d2c3,0 30px 70px rgba(29,43,42,.25);overflow:hidden;transition:aspect-ratio .3s,max-width .3s}
+.device.desk{aspect-ratio:16/10;height:auto;width:min(100%,980px);border-radius:16px;border-width:6px}
+.device iframe{width:100%;height:100%;border:0;display:block;background:#fff}
+.panel{background:#fff;border-left:1px solid var(--line);padding:16px;overflow:auto}
+.panel h3{margin:0 0 8px;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.sw{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.sw button{border:2px solid var(--line);border-radius:12px;padding:8px 10px;font-weight:700;font-size:.8rem;background:#fff;display:flex;align-items:center;gap:7px}
+.sw button i{width:16px;height:16px;border-radius:50%;display:inline-block}
+.sw button.on{border-color:var(--ink)}
+.seg{display:flex;background:#f1ece0;border-radius:12px;padding:3px;margin-bottom:18px}
+.seg button{flex:1;border:0;background:none;border-radius:9px;padding:8px;font-weight:700;font-size:.82rem}
+.seg button.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.panel p{font-size:.82rem;color:var(--mute);line-height:1.5;margin:0 0 14px}
+#arStage{flex:1;position:relative;min-height:0;background:radial-gradient(circle at 50% 30%,#fff7e6,#e6f2ff)}
+model-viewer{width:100%;height:100%;--poster-color:transparent;background:transparent}
+.arbtn{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);border:0;border-radius:99px;padding:15px 26px;font-weight:800;font-size:1rem;background:var(--coral);color:#fff;box-shadow:0 10px 26px rgba(244,98,58,.4);white-space:nowrap}
+.arinfo{position:absolute;left:12px;right:12px;top:12px;background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:12px 14px;font-size:.84rem;line-height:1.5;max-width:560px;margin:0 auto}
+.arload{position:absolute;inset:0;display:grid;place-items:center;font-weight:700;color:var(--mute);background:rgba(250,246,239,.8)}
+#viewer iframe{flex:1;border:0;width:100%;background:#fff}
+
+@media (max-width:820px){
+  #side{top:auto;left:0;right:0;bottom:0;width:auto;height:56vh;border-radius:24px 24px 0 0;transition:height .3s}
+  #side.min{height:176px}
+  .handle{display:block;border:0;background:none;padding:10px 0 2px;flex:none}
+  .handle::after{content:'';display:block;width:44px;height:5px;border-radius:9px;background:#d8cfbd;margin:0 auto}
+  .brand{padding-top:4px}
+  #here{left:50%;transform:translateX(-50%);top:12px}
+  #tools{top:114px}
+  #side.indetail .foot{display:none}
+  #legend{display:none}
+  .stage{grid-template-columns:1fr;grid-template-rows:1fr auto}
+  .panel{border-left:0;border-top:1px solid var(--line);max-height:36vh}
+  .canvas{padding:10px}
+  .device{border-width:6px;border-radius:26px}
+  #side.min .chips,#side.min .more,#side.min .bar,#side.min .foot,#side.min #list{display:none}
+}
+#side.indetail form,#side.indetail .chips,#side.indetail .bar,#side.indetail .more{display:none}
+@media (max-width:820px){
+}
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<aside id="side">
+  <button class="handle" id="handle" aria-label="Expand or collapse panel"></button>
+  <div class="brand">
+    <a href="index.html" target="_self"><span class="logo">📍</span>EasyLandX <span style="font-weight:600;color:var(--mute)">Map</span></a>
+    <span class="tag" id="tagOut" hidden>OUTREACH</span>
+  </div>
+  <form id="form" autocomplete="off">
+    <div class="field"><label for="qWhat">What</label><input id="qWhat" list="cats" placeholder="Hair salon, café, yoga…"><datalist id="cats"></datalist></div>
+    <div class="field"><label for="qWhere">Where</label><input id="qWhere" placeholder="City or neighbourhood"><button class="loc" type="button" id="btnLoc" title="Use my location" aria-label="Use my location">📍</button></div>
+    <button class="go" type="submit">Search businesses</button>
+  </form>
+  <div class="chips" id="chips"></div>
+  <button class="more" id="chipMore" type="button"></button>
+  <div class="bar">
+    <label><input type="checkbox" id="fNoWeb"> Only without a website</label>
+    <button class="sl" id="btnSaved" type="button" hidden>★ Saved (0)</button>
+    <span class="n" id="count"></span>
+  </div>
+  <section id="list"></section>
+  <section id="detail" hidden></section>
+  <div class="foot">Business data © <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap</a> contributors. "No website listed" means none is recorded on the map, so it can be incomplete. © 2026 EasyLandX</div>
+</aside>
+
+<button id="here" hidden>↻ Search this area</button>
+<div id="tools"><button id="tilt" title="Toggle 2D / 3D">3D</button></div>
+<div id="legend"><span><i style="background:#f59e0b"></i>No website listed</span><span><i style="background:#3b82f6"></i>Social media only</span><span><i style="background:#16a34a"></i>Has a website</span><span><i style="background:#8b5cf6"></i>Website unknown</span></div>
+<div id="toast"></div>
+
+<!-- Preview modal -->
+<div class="modal" id="mPrev" hidden>
+  <div class="mbar">
+    <button class="pill" id="pBack">← Back</button>
+    <div class="t"><span id="pTitle"></span><small>Concept preview · made with EasyLandX</small></div>
+    <button class="pill t" id="pAR">📱 View in AR</button>
+    <button class="pill" id="pCopy">🔗 Copy link</button>
+    <button class="pill c" id="pWa">💬 I want this page</button>
+  </div>
+  <div class="stage">
+    <div class="canvas"><div class="device" id="device"><iframe id="pFrame" title="Concept preview" sandbox="allow-popups allow-popups-to-escape-sandbox"></iframe></div></div>
+    <div class="panel">
+      <h3>Device</h3>
+      <div class="seg"><button id="dMob" class="on">📱 Phone</button><button id="dDesk">🖥️ Desktop</button></div>
+      <h3>Colors</h3>
+      <div class="sw" id="themes"></div>
+      <h3>About this preview</h3>
+      <p>A concept built from public map data (name, address, category). It is a sample of what a page could look like, not the business's official website. The real page is written together with the owner: their photos, services, prices and booking.</p>
+      <button class="btn l sm" id="pEx">See a real EasyLandX example for this niche ↗</button>
+    </div>
+  </div>
+</div>
+
+<!-- AR modal -->
+<div class="modal" id="mAR" hidden>
+  <div class="mbar">
+    <button class="pill" id="aBack">← Back to preview</button>
+    <div class="t">View in AR<small>Place the page on your counter</small></div>
+  </div>
+  <div id="arStage">
+    <div class="arinfo" id="arInfo">Building your 3D model…</div>
+    <div class="arload" id="arLoad">Preparing…</div>
+  </div>
+</div>
+
+<!-- Example viewer -->
+<div class="modal" id="viewer" hidden>
+  <div class="mbar"><button class="pill" id="vBack">← Back</button><div class="t" id="vTitle"></div><a class="pill" id="vTab" target="_blank" rel="noopener" href="#">↗ New tab</a></div>
+  <iframe id="vFrame" title="Example page"></iframe>
+</div>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C32H6BV2R3"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-C32H6BV2R3');</script>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script>
+(function(){
+'use strict';
+/* ================= CONFIG ================= */
+var CONFIG={
+  STYLE:'https://tiles.openfreemap.org/styles/liberty',   // free vector tiles with 3D buildings, no key
+  OVERPASS:['https://overpass-api.de/api/interpreter','https://overpass.private.coffee/api/interpreter','https://overpass.kumi.systems/api/interpreter'],
+  NOMINATIM:'https://nominatim.openstreetmap.org/search',
+  REVERSE:'https://nominatim.openstreetmap.org/reverse',
+  WA:'34609204298',
+  SITE:'https://easylandx.github.io/',
+  CENTER:[-3.7038,40.4168]                                  // Madrid, until the visitor searches
+};
+var $=function(id){return document.getElementById(id);};
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function track(n,p){try{if(window.gtag)gtag('event',n,p||{});}catch(e){}}
+function toast(t){var e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(function(){e.classList.remove('on');},2800);}
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
+function isMobile(){
+  var ua=navigator.userAgent||'';
+  if(/Android|iPhone|iPad|iPod|Mobile/i.test(ua))return true;
+  return /Macintosh/.test(ua)&&navigator.maxTouchPoints>1;   // iPadOS
+}
+// Phones: open the WhatsApp app straight away. Computers: open WhatsApp Web with the chat and text ready.
+function waLink(t){
+  var q='phone='+CONFIG.WA+'&text='+encodeURIComponent(t);
+  return isMobile()?'https://api.whatsapp.com/send?'+q:'https://web.whatsapp.com/send?'+q;
+}
+function openWa(t,where){track('map_whatsapp',{cta_location:where});window.open(waLink(t),'_blank','noopener');}
+
+var params=new URLSearchParams(location.search);
+if(params.get('outreach')==='1')store('elx_outreach','1');
+if(params.get('outreach')==='0')store('elx_outreach','0');
+var OUTREACH=store('elx_outreach')==='1';
+if(OUTREACH){$('tagOut').hidden=false;$('fNoWeb').checked=true;$('btnSaved').hidden=false;}
+
+/* ================= CATEGORIES ================= */
+// [id, label, emoji, copy-group, [[osm key, value]...], EasyLandX example title, example path]
+var CATS=[
+['hair','Hair salon','✂️','beauty',[['shop','hairdresser']],'Hair Stylists & Hair Salons','why/hair.html'],
+['beauty','Beauty & skincare','🧴','beauty',[['shop','beauty']],'Estheticians & Skincare Specialists','why/beauty.html'],
+['tattoo','Tattoo studio','🖋️','beauty',[['shop','tattoo']],'Tattoo Artists & Studios','why/tatoo.html'],
+['cafe','Café','☕','food',[['amenity','cafe']],'Independent Cafés & Coffee Shops','why/cafes.html'],
+['restaurant','Restaurant','🍽️','food',[['amenity','restaurant']],'Private Chefs & Catering','why/chef.html'],
+['bakery','Bakery','🍞','food',[['shop','bakery']],'Bakeries & Specialty Food','web/bakeries.html'],
+['pastry','Cakes & pastry','🎂','food',[['shop','pastry']],'Cake Designers & Custom Bakeries','why/cakes.html'],
+['choc','Chocolate','🍫','food',[['shop','chocolate']],'Chocolatier & Chocolate Makers','why/chocolat.html'],
+['cheese','Cheese shop','🧀','food',[['shop','cheese']],'Artisan Cheese Makers','why/cheese.html'],
+['florist','Florist','🌸','outdoor',[['shop','florist']],'Florists & Floral Designers','why/florists.html'],
+['garden','Garden & plants','🌱','outdoor',[['shop','garden_centre'],['craft','gardener']],'Gardeners & Garden Designers','why/garden.html'],
+['fitness','Gym & fitness','🏋️','fitness',[['leisure','fitness_centre']],'Personal Trainers & Studios','web/trainer.html'],
+['yoga','Yoga','🧘','fitness',[['sport','yoga']],'Yoga Teachers & Studios','web/yoga.html'],
+['pilates','Pilates','🤸','fitness',[['sport','pilates']],'Pilates Studios','why/pilates.html'],
+['dance','Dance school','💃','fitness',[['amenity','dancing_school']],'Dance Teachers & Dance Studios','why/dance.html'],
+['music','Music school','🎹','events',[['amenity','music_school']],'Piano Teachers & Private Music Studios','why/piano.html'],
+['therapy','Therapy & counselling','🧠','mind',[['healthcare','psychotherapist'],['healthcare','counselling'],['healthcare','alternative']],'Psychologists & Practices','web/psychologist.html'],
+['lawyer','Law firm','⚖️','pro',[['office','lawyer']],'Lawyers & Legal Services','why/lawyer.html'],
+['finance','Accountant & finance','💰','pro',[['office','accountant'],['office','financial_advisor'],['office','financial']],'Financial Advisors & Independent Planners','why/financial.html'],
+['realestate','Real estate','🏠','pro',[['office','estate_agent']],'Independent Real Estate Sales Professional','why/sales.html'],
+['photo','Photographer','📸','creative',[['shop','photo'],['craft','photographer']],'Photographers','why/photos.html'],
+['art','Art gallery & studio','🎨','creative',[['tourism','gallery'],['shop','art']],'Artists & Art Workshops','web/art.html'],
+['jewelry','Jewelry','💎','creative',[['shop','jewelry'],['craft','jeweller']],'Jewelry Designers & Makers','why/jewelry.html'],
+['pottery','Ceramics & pottery','🏺','creative',[['craft','pottery']],'Ceramic Artists & Pottery Studios','why/ceramics.html'],
+['pets','Pet grooming & shops','🐾','pets',[['shop','pet_grooming'],['shop','pet']],'Pet Groomers & Salons','web/pets.html'],
+['stay','Rural stay','🏡','outdoor',[['tourism','guest_house'],['tourism','chalet'],['tourism','apartment']],'Rural Accommodation','why/rental.html'],
+['outdoor','Outdoor & adventure','🏕️','outdoor',[['shop','outdoor'],['sport','climbing']],'Adventure & Outdoor Experiences','why/adventure.html'],
+['party','Party & events','🎈','events',[['shop','party']],'Children\'s Party & Entertainment Businesses','why/kids.html']
+].map(function(r){return{id:r[0],label:r[1],emoji:r[2],group:r[3],tags:r[4],exTitle:r[5],exUrl:CONFIG.SITE+r[6]};});
+var CAT={};CATS.forEach(function(c){CAT[c.id]=c;});
+var GENERIC={id:'generic',label:'Local business',emoji:'🏪',group:'generic',tags:[],exTitle:'Examples hub',exUrl:CONFIG.SITE+'app/hub.html'};
+
+(function(){
+  var dl=$('cats'),ch=$('chips');
+  CATS.forEach(function(c){
+    var o=document.createElement('option');o.value=c.label;dl.appendChild(o);
+    var b=document.createElement('button');b.type='button';b.className='chip';b.dataset.id=c.id;b.textContent=c.emoji+' '+c.label;
+    b.onclick=function(){$('qWhat').value=c.label;markChip();if($('chips').classList.contains('open'))$('chipMore').click();doSearch(true);};
+    ch.appendChild(b);
+  });
+})();
+(function(){
+  var ch=$('chips'),mb=$('chipMore');
+  function lab(){mb.textContent=ch.classList.contains('open')?'Show fewer ▴':'Show all '+CATS.length+' categories ▾';}
+  mb.onclick=function(){ch.classList.toggle('open');lab();};lab();
+})();
+function markChip(){
+  var c=catFromInput();
+  [].forEach.call($('chips').children,function(b){b.classList.toggle('on',!!c&&b.dataset.id===c.id);});
+}
+function catFromInput(){
+  var v=$('qWhat').value.trim().toLowerCase();if(!v)return null;
+  for(var i=0;i<CATS.length;i++)if(CATS[i].label.toLowerCase()===v)return CATS[i];
+  return null;
+}
+$('qWhat').addEventListener('input',markChip);
+function catForTags(t){
+  for(var i=0;i<CATS.length;i++){var c=CATS[i];for(var j=0;j<c.tags.length;j++){if(t[c.tags[j][0]]===c.tags[j][1])return c;}}
+  return GENERIC;
+}
+
+/* ================= DATA LAYER (OpenStreetMap; swappable provider) ================= */
+var provider={
+  geocode:function(q){
+    return fetch(CONFIG.NOMINATIM+'?format=jsonv2&limit=1&q='+encodeURIComponent(q),{headers:{'Accept':'application/json'}}).then(function(r){if(!r.ok)throw new Error('geocode');return r.json();}).then(function(a){
+      if(!a.length)return null;var b=a[0].boundingbox;return{lat:+a[0].lat,lon:+a[0].lon,name:a[0].display_name,bbox:b?[+b[2],+b[0],+b[3],+b[1]]:null};
+    });
+  },
+  search:function(cat,text,bounds){
+    var bb=[bounds.s,bounds.w,bounds.n,bounds.e].map(function(x){return x.toFixed(5);}).join(',');
+    var parts=[];
+    if(cat){cat.tags.forEach(function(t){parts.push('nwr["'+t[0]+'"="'+t[1]+'"]('+bb+');');});}
+    else{
+      var rx=text.replace(/[\\.^$*+?()[\]{}|"]/g,'\\$&');
+      ['shop','amenity','office','craft','tourism','leisure','healthcare'].forEach(function(k){parts.push('nwr["name"~"'+rx+'",i]["'+k+'"]('+bb+');');});
+    }
+    var q='[out:json][timeout:15];('+parts.join('')+');out center tags 120;';
+    var i=0,lastErr=null;
+    function go(){
+      var ctl=new AbortController();var to=setTimeout(function(){ctl.abort();},16000);
+      return fetch(CONFIG.OVERPASS[i],{method:'POST',body:'data='+encodeURIComponent(q),headers:{'Content-Type':'application/x-www-form-urlencoded'},signal:ctl.signal})
+        .then(function(r){clearTimeout(to);if(!r.ok)throw new Error('overpass '+r.status);return r.json();})
+        .then(function(j){
+          // Overpass answers HTTP 200 with an empty list and a "remark" when it times out or is overloaded
+          if(j&&j.remark&&/error|timed out|out of memory|too busy/i.test(j.remark)&&!(j.elements&&j.elements.length))throw new Error('overpass remark: '+j.remark);
+          return j;
+        })
+        .catch(function(e){clearTimeout(to);lastErr=e;console.warn('[EasyLandX Map] Overpass server '+i+' failed:',e&&e.message);i++;if(i<CONFIG.OVERPASS.length)return go();throw lastErr;});
+    }
+    return go().then(function(j){var out=normalize(j.elements||[],cat);console.info('[EasyLandX Map] '+out.length+' businesses found');return out;});
+  }
+};
+
+/* ===== Fallback: businesses already drawn in the base map's own data (no external API) ===== */
+function whenIdle(){return new Promise(function(res){
+  if(map.loaded()&&!map.isMoving())return res();
+  var d=false;function f(){if(d)return;d=true;res();}
+  map.once('idle',f);setTimeout(f,3000);});}
+function tileSearch(cat,what,err){
+  return whenIdle().then(function(){
+    var list=[];try{list=fromTiles(cat,what);}catch(e){console.warn('[EasyLandX Map] tile fallback failed',e);}
+    if(list.length){toast('Live business data unavailable. Showing places from the map itself (website info unknown).');return list;}
+    if(err)throw err;
+    return [];
+  });
+}
+function fromTiles(cat,what){
+  var st=map.getStyle(),ls=(st&&st.layers||[]).filter(function(l){return l['source-layer']==='poi';});
+  if(!ls.length)return [];
+  var feats=map.querySourceFeatures(ls[0].source,{sourceLayer:'poi'}),bn=lastSearchBounds,txt=what.toLowerCase(),seen={},out=[];
+  feats.forEach(function(f){
+    var p=f.properties||{},g=f.geometry;if(!g||g.type!=='Point')return;
+    var name=p.name||p['name:latin']||p['name_en'];if(!name)return;
+    var lon=g.coordinates[0],lat=g.coordinates[1];
+    if(bn&&(lat<bn.s||lat>bn.n||lon<bn.w||lon>bn.e))return;
+    var sub=String(p.subclass||''),cl=String(p.class||'');
+    var ok=cat?cat.tags.some(function(t){return sub===t[1]||cl===t[1];}):(String(name).toLowerCase().indexOf(txt)>-1||sub.indexOf(txt)>-1||cl.indexOf(txt)>-1);
+    if(!ok)return;
+    var id='t'+String(name).length+'_'+lat.toFixed(5)+'_'+lon.toFixed(5);if(seen[id])return;seen[id]=1;
+    var c=cat||catForTags({shop:sub,amenity:sub,office:sub,craft:sub,tourism:sub,leisure:sub,healthcare:sub,sport:sub});
+    out.push({id:id,name:String(name),cat:c.id,lat:lat,lon:lon,web:'',social:'',phone:'',hours:'',addr:'',status:'unk'});
+  });
+  return out.slice(0,150);
+}
+function normalize(els,forced){
+  var out=[],seen={};
+  els.forEach(function(e){
+    var t=e.tags||{};if(!t.name)return;
+    var lat=e.lat!=null?e.lat:(e.center&&e.center.lat),lon=e.lon!=null?e.lon:(e.center&&e.center.lon);if(lat==null)return;
+    var id=e.type[0]+e.id;if(seen[id])return;seen[id]=1;
+    var web=t.website||t['contact:website']||t.url||'';
+    var social=t['contact:facebook']||t['contact:instagram']||t.facebook||t.instagram||t['contact:twitter']||'';
+    var addr=[((t['addr:street']||'')+' '+(t['addr:housenumber']||'')).trim(),t['addr:city']||t['addr:suburb']||''].filter(Boolean).join(', ');
+    var cat=forced||catForTags(t);
+    out.push({id:id,name:t.name,cat:cat.id,lat:lat,lon:lon,web:web,social:social,phone:t.phone||t['contact:phone']||'',hours:t.opening_hours||'',addr:addr,
+      status:web?'web':(social?'social':'noweb')});
+  });
+  return out;
+}
+function catOf(b){return CAT[b.cat]||GENERIC;}
+
+/* ================= MAP ================= */
+var map=null,results=[],selId=null,lastSearchBounds=null,styleOk=false;
+var FALLBACK={version:8,sources:{},layers:[{id:'bg',type:'background',paint:{'background-color':'#e8efe4'}}]};
+var STATUS_COL=['match',['get','status'],'noweb','#f59e0b','social','#3b82f6','unk','#8b5cf6','#16a34a'];
+function initMap(){
+  if(typeof maplibregl==='undefined'){toast('The map library could not load. Check your connection.');return;}
+  map=new maplibregl.Map({container:'map',style:CONFIG.STYLE,center:CONFIG.CENTER,zoom:15.2,pitch:62,bearing:-18,maxPitch:78,attributionControl:{compact:true}});
+  map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'top-right');
+  map.on('style.load',ensureLayers);
+  map.once('load',function(){styleOk=true;});
+  setTimeout(function(){if(!styleOk&&map){toast('Map tiles are slow to load. Showing a simple map.');map.setStyle(FALLBACK);}},9000);
+  map.on('error',function(e){if(!styleOk&&e&&e.error&&/style|fetch|Failed/i.test(String(e.error.message||''))){/* handled by timer */}});
+  map.on('click','biz-dot',function(e){var f=e.features&&e.features[0];if(f)select(f.properties.id,true);});
+  map.on('mouseenter','biz-dot',function(){map.getCanvas().style.cursor='pointer';});
+  map.on('mouseleave','biz-dot',function(){map.getCanvas().style.cursor='';});
+  map.on('moveend',function(e){if(e.originalEvent&&!$('here').dataset.lock)$('here').hidden=false;});
+  geoFromQuery();
+}
+function geojson(){
+  return{type:'FeatureCollection',features:results.map(function(b){return{type:'Feature',properties:{id:b.id,status:b.status,name:b.name},geometry:{type:'Point',coordinates:[b.lon,b.lat]}};})};
+}
+function ensureLayers(){
+  if(!map.getSource('biz'))map.addSource('biz',{type:'geojson',data:geojson()});
+  if(!map.getLayer('biz-halo'))map.addLayer({id:'biz-halo',type:'circle',source:'biz',paint:{'circle-radius':['interpolate',['linear'],['zoom'],11,9,17,17],'circle-color':'#ffffff','circle-opacity':.95,'circle-pitch-alignment':'viewport'}});
+  if(!map.getLayer('biz-dot'))map.addLayer({id:'biz-dot',type:'circle',source:'biz',paint:{'circle-radius':['interpolate',['linear'],['zoom'],11,5.5,17,11],'circle-color':STATUS_COL,'circle-stroke-width':2,'circle-stroke-color':'#fff','circle-pitch-alignment':'viewport'}});
+  if(!map.getLayer('biz-label'))map.addLayer({id:'biz-label',type:'symbol',source:'biz',minzoom:15.5,layout:{'text-field':['get','name'],'text-size':12,'text-offset':[0,1.5],'text-anchor':'top','text-max-width':9,'text-font':['Noto Sans Bold']},paint:{'text-color':'#1d2b2a','text-halo-color':'#ffffff','text-halo-width':2}});
+  if(!map.getLayer('biz-sel'))map.addLayer({id:'biz-sel',type:'circle',source:'biz',filter:['==',['get','id'],selId||''],paint:{'circle-radius':['interpolate',['linear'],['zoom'],11,12,17,22],'circle-color':'rgba(244,98,58,.18)','circle-stroke-color':'#f4623a','circle-stroke-width':3,'circle-pitch-alignment':'viewport'}});
+}
+function pushData(){if(map&&map.getSource('biz'))map.getSource('biz').setData(geojson());}
+function setSel(id){selId=id;if(map&&map.getLayer('biz-sel'))map.setFilter('biz-sel',['==',['get','id'],id||'']);}
+$('tilt').onclick=function(){if(!map)return;var flat=map.getPitch()>10;map.easeTo({pitch:flat?0:62,bearing:flat?0:-18,duration:700});this.textContent=flat?'2D':'3D';};
+
+/* ================= SEARCH ================= */
+function haversine(a,b,c,d){var R=6371000,r=Math.PI/180,x=(c-a)*r,y=(d-b)*r,h=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*r)*Math.cos(c*r)*Math.sin(y/2)*Math.sin(y/2);return 2*R*Math.asin(Math.sqrt(h));}
+function fmtDist(m){return m<950?Math.round(m/10)*10+' m':(m/1000).toFixed(1)+' km';}
+function viewBounds(){
+  var b=map.getBounds(),c=map.getCenter(),n=b.getNorth(),s=b.getSouth(),e=b.getEast(),w=b.getWest();
+  var maxLat=0.035,maxLon=0.05;   // about 3.9 x 4.2 km: small enough for the free servers to answer fast
+  if(n-s>maxLat){n=c.lat+maxLat/2;s=c.lat-maxLat/2;}
+  if(e-w>maxLon){e=c.lng+maxLon/2;w=c.lng-maxLon/2;}
+  return{n:n,s:s,e:e,w:w};
+}
+var busy=false;
+function skeleton(){$('side').classList.remove('indetail');$('list').hidden=false;$('detail').hidden=true;$('list').innerHTML='<div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div>';}
+function emptyMsg(t,s){$('side').classList.remove('indetail');$('list').hidden=false;$('detail').hidden=true;$('list').innerHTML='<div class="empty"><b>'+esc(t)+'</b>'+esc(s)+'</div>';$('count').textContent='';}
+function doSearch(fromChip){
+  if(!map){toast('The map is not ready.');return;}
+  if(busy)return;
+  var what=$('qWhat').value.trim(),where=$('qWhere').value.trim(),cat=catFromInput();
+  if(!what){emptyMsg('Pick what to look for','Choose a category above or type something like "bakery" or "yoga".');return;}
+  busy=true;skeleton();$('here').hidden=true;
+  var step=Promise.resolve();
+  if(where&&where!==doSearch._lastWhere){
+    step=provider.geocode(where).then(function(g){
+      if(!g)throw new Error('nogeo');
+      doSearch._lastWhere=where;
+      return new Promise(function(res){
+        $('here').dataset.lock='1';
+        var fin=false;function done(){if(fin)return;fin=true;setTimeout(function(){delete $('here').dataset.lock;res();},60);}
+        map.once('moveend',done);setTimeout(done,3500);
+        map.flyTo({center:[g.lon,g.lat],zoom:15.4,pitch:60,bearing:-15,duration:1600,essential:true});
+      });
+    });
+  }
+  step.then(function(){
+    var bnd=viewBounds();lastSearchBounds=bnd;
+    track('map_search',{category:cat?cat.id:'free_text',has_where:!!where});
+    return provider.search(cat,what,bnd).then(function(l){return l.length?l:tileSearch(cat,what,null);},function(e){return tileSearch(cat,what,e);});
+  }).then(function(list){
+    var c=map.getCenter();
+    list.forEach(function(b){b.d=haversine(c.lat,c.lng,b.lat,b.lon);});
+    results=list;setSel(null);pushData();renderList();
+    if(!list.length)emptyMsg('Nothing found here','Try zooming out, moving the map, or another category. OpenStreetMap does not list every business.');
+  }).catch(function(e){
+    if(e&&e.message==='nogeo')emptyMsg('Place not found','Check the spelling of the city or neighbourhood and try again.');
+    else{console.error('[EasyLandX Map] search failed',e);emptyMsg('Could not load businesses','The free map data service did not answer ('+((e&&e.message)||'network error')+'). Wait a few seconds and try again.');}
+  }).then(function(){busy=false;});
+}
+$('form').addEventListener('submit',function(e){e.preventDefault();doSearch();});
+$('here').onclick=function(){this.hidden=true;doSearch();};
+$('fNoWeb').onchange=renderList;
+$('btnLoc').onclick=function(){
+  if(!navigator.geolocation){toast('Location is not available on this device.');return;}
+  toast('Finding your location…');
+  navigator.geolocation.getCurrentPosition(function(p){
+    $('qWhere').value='';doSearch._lastWhere='';
+    $('here').dataset.lock='1';
+    map.once('moveend',function(){setTimeout(function(){delete $('here').dataset.lock;if($('qWhat').value.trim())doSearch();},60);});
+    map.flyTo({center:[p.coords.longitude,p.coords.latitude],zoom:15.6,pitch:60,duration:1600,essential:true});
+  },function(){toast('Location permission was denied. Type a city instead.');},{enableHighAccuracy:false,timeout:9000});
+};
+// shortlist
+var saved={};try{saved=JSON.parse(store('elx_saved')||'{}');}catch(e){saved={};}
+var showSaved=false;
+function persistSaved(){store('elx_saved',JSON.stringify(saved));$('btnSaved').textContent='★ Saved ('+Object.keys(saved).length+')';}
+$('btnSaved').onclick=function(){
+  showSaved=!showSaved;this.style.textDecoration=showSaved?'underline':'none';
+  if(showSaved){results=Object.keys(saved).map(function(k){return saved[k];});var c=map.getCenter();results.forEach(function(b){b.d=haversine(c.lat,c.lng,b.lat,b.lon);});pushData();}
+  renderList();
+};
+persistSaved();
+
+function renderList(){
+  $('side').classList.remove('indetail');$('detail').hidden=true;$('list').hidden=false;
+  var only=$('fNoWeb').checked;
+  var rows=results.filter(function(b){return !only||b.status!=='web';});
+  rows.sort(function(a,b){return a.d-b.d;});
+  $('count').textContent=rows.length+(rows.length===1?' business':' businesses');
+  if(!rows.length){
+    if(results.length)emptyMsg('All of these already have a website','Untick "Only without a website" to see them, or search another category.');
+    else if(showSaved)emptyMsg('No saved businesses yet','Open a business and tap the star to save it.');
+    return;
+  }
+  var h='';
+  rows.forEach(function(b){
+    var c=catOf(b),lab={noweb:'No website listed',social:'Social only',web:'Has website',unk:'Website unknown'}[b.status];
+    h+='<button class="biz'+(b.id===selId?' on':'')+'" data-id="'+esc(b.id)+'"><span class="ico">'+c.emoji+'</span><span class="tx"><b>'+esc(b.name)+'</b><small>'+esc(c.label)+' · '+fmtDist(b.d)+'</small><small>'+esc(b.addr||'Address not listed')+'</small></span><span class="badge '+b.status+'">'+lab+'</span></button>';
+  });
+  $('list').innerHTML=h;
+  [].forEach.call($('list').querySelectorAll('.biz'),function(el){el.onclick=function(){select(el.dataset.id,true);};});
+}
+function byId(id){for(var i=0;i<results.length;i++)if(results[i].id===id)return results[i];return saved[id]||null;}
+
+/* ================= DETAIL ================= */
+
+/* For places that came from the base map (website unknown): look up address, phone, hours and website on OpenStreetMap */
+function normName(x){return String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');}
+function enrich(b){
+  if(b.status!=='unk'||b.enriched)return Promise.resolve(false);
+  b.enriched=true;
+  return fetch(CONFIG.REVERSE+'?format=jsonv2&zoom=18&addressdetails=1&extratags=1&namedetails=1&lat='+b.lat+'&lon='+b.lon,{headers:{'Accept':'application/json'}})
+    .then(function(r){if(!r.ok)throw new Error('reverse');return r.json();})
+    .then(function(j){
+      if(!j||j.error)return false;
+      var a=j.address||{},x=j.extratags||{},changed=false;
+      var street=((a.road||a.pedestrian||a.footway||'')+' '+(a.house_number||'')).trim(),city=a.city||a.town||a.village||a.suburb||'';
+      var addr=[street,city].filter(Boolean).join(', ');
+      if(addr&&!b.addr){b.addr=addr;changed=true;}
+      var n1=normName(b.name),n2=normName(j.name);
+      if(n1&&n2&&(n1===n2||n1.indexOf(n2)>-1||n2.indexOf(n1)>-1)){
+        b.phone=b.phone||x.phone||x['contact:phone']||'';
+        b.hours=b.hours||x.opening_hours||'';
+        b.web=x.website||x['contact:website']||x.url||'';
+        var soc=x['contact:facebook']||x['contact:instagram']||x.facebook||x.instagram||'';
+        b.social=soc;
+        b.status=b.web?'web':(soc?'social':'noweb');
+        changed=true;
+      }
+      return changed;
+    })
+    .catch(function(){return false;});
+}
+var cur=null;
+function select(id,fly){
+  var b=byId(id);if(!b)return;cur=b;setSel(id);track('map_select',{category:b.cat,status:b.status});
+  if(fly&&map)map.flyTo({center:[b.lon,b.lat],zoom:17.6,pitch:66,duration:1100,essential:true,offset:window.innerWidth>820?[200,0]:[0,-120]});
+  if(window.innerWidth<=820)$('side').classList.remove('min');
+  renderDetail(b);
+  enrich(b).then(function(ch){if(ch&&cur===b){renderDetail(b);pushData();}});
+}
+function renderDetail(b){
+  var c=catOf(b),d=$('detail');
+  var stat={
+    noweb:'<div class="status noweb"><b>No website listed</b>This business has no website recorded on the map. A clear page could help new customers find and choose it.</div>',
+    social:'<div class="status social"><b>Social media only</b>Only a social profile is listed. A page of its own gives it a home that shows up in search.</div>',
+    unk:'<div class="status unk"><b>Website unknown</b>The live business data service was not available, so this place comes from the base map, which does not say whether it has a website. Check before contacting.</div>',
+    web:'<div class="status web"><b>Already has a website</b>It lists a site. You can still preview a fresh concept for comparison.</div>'
+  }[b.status];
+  var facts='';
+  if(b.addr)facts+='<div><span>📍</span><span>'+esc(b.addr)+'</span></div>';
+  if(b.phone)facts+='<div><span>📞</span><a href="tel:'+esc(b.phone.replace(/[^\d+]/g,''))+'">'+esc(b.phone)+'</a></div>';
+  if(b.hours)facts+='<div><span>🕒</span><span>'+esc(b.hours)+'</span></div>';
+  if(b.web&&/^https?:\/\//i.test(b.web))facts+='<div><span>🌐</span><a href="'+esc(b.web)+'" target="_blank" rel="noopener">'+esc(b.web.replace(/^https?:\/\//,''))+'</a></div>';
+  facts+='<div><span>🧭</span><a href="https://www.openstreetmap.org/?mlat='+b.lat+'&mlon='+b.lon+'#map=19/'+b.lat+'/'+b.lon+'" target="_blank" rel="noopener">View on OpenStreetMap</a></div>';
+  var h='<button class="back" id="dBackBtn">← Results</button>'+
+   '<div class="dhead"><span class="ico">'+c.emoji+'</span><div><h2>'+esc(b.name)+'</h2><p>'+esc(c.label)+'</p></div></div>'+stat+
+   '<div class="facts">'+facts+'</div>'+
+   '<button class="btn p" id="dPrev">✨ Preview a page for this business</button>'+
+   '<button class="btn t" id="dMine">🙋 This is my business</button>'+
+   '<div class="ex"><span>See what we built for '+esc(c.label.toLowerCase())+'</span><button id="dEx">Open ↗</button></div>';
+  if(OUTREACH){
+    h+='<div class="row"><button class="btn l sm" id="dSave">'+(saved[b.id]?'★ Saved':'☆ Save')+'</button><button class="btn l sm" id="dCopyEn">Copy pitch EN</button><button class="btn l sm" id="dCopyEs">Copy pitch ES</button></div>'+
+       '<p class="note">Contact businesses only through their public channels and follow local marketing rules (GDPR, LSSI in Spain). The pitch includes a preview link, nothing is sent automatically.</p>';
+  }
+  d.innerHTML=h;$('list').hidden=true;d.hidden=false;d.scrollTop=0;$('side').classList.add('indetail');
+  $('dBackBtn').onclick=function(){setSel(null);cur=null;renderList();};
+  $('dPrev').onclick=function(){openPreview(b);};
+  $('dMine').onclick=function(){openWa('Hi! I found my business "'+b.name+'"'+(b.addr?' ('+b.addr+')':'')+' on your map and I would like my real page. Could you send me a courtesy sample?','detail_mine');};
+  $('dEx').onclick=function(){openViewer(c.exUrl,c.exTitle);};
+  if(OUTREACH){
+    $('dSave').onclick=function(){if(saved[b.id]){delete saved[b.id];this.textContent='☆ Save';}else{saved[b.id]=b;this.textContent='★ Saved';}persistSaved();};
+    $('dCopyEn').onclick=function(){copyText(pitch(b,'en'));};
+    $('dCopyEs').onclick=function(){copyText(pitch(b,'es'));};
+  }
+}
+function copyText(t){
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){toast('Copied to clipboard');},function(){toast('Could not copy');});}
+  else{var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Copied to clipboard');}catch(e){toast('Could not copy');}ta.remove();}
+}
+function pitch(b,lang){
+  var l=previewLink(b),unk=b.status==='unk';
+  if(lang==='es')return 'Hola! Encontré '+b.name+' en el mapa y '+(unk?'no encontré su web.':'vi que no tiene web registrada.')+' He preparado una propuesta gratuita de cómo podría ser su página: '+l+'\nSi le gusta, la creo en unas 24h, sin compromiso. — EasyLandX ('+CONFIG.SITE+')';
+  return 'Hi! I came across '+b.name+' on the map and '+(unk?'could not find a website for it.':'noticed there is no website listed.')+' I put together a free concept of what a page for it could look like: '+l+'\nIf you like it, I can build the real one in about 24h, no commitment. — EasyLandX ('+CONFIG.SITE+')';
+}
+$('side').addEventListener('click',function(){});
+$('handle').onclick=function(){$('side').classList.toggle('min');};
+
+/* ================= EXAMPLE VIEWER ================= */
+function openViewer(url,title){$('vTitle').textContent=title;$('vTab').href=url;$('vFrame').src=url;$('viewer').hidden=false;track('map_open_example',{niche:title});}
+$('vBack').onclick=function(){$('viewer').hidden=true;$('vFrame').src='about:blank';};
+
+/* ================= PREVIEW GENERATOR ================= */
+var THEMES=[
+ {id:'sun',name:'Sunrise',c:'#e8542f',bg1:'#fff1de',bg2:'#ffd9c2',bg3:'#fff9ef',acc:'#e8542f',ink:'#3b2417'},
+ {id:'fresh',name:'Fresh',c:'#0f9f7a',bg1:'#e3f8f0',bg2:'#c9efe2',bg3:'#f3fcf8',acc:'#0f9f7a',ink:'#12372d'},
+ {id:'lagoon',name:'Lagoon',c:'#2563eb',bg1:'#e2f1ff',bg2:'#c8e0fb',bg3:'#f2f8ff',acc:'#2563eb',ink:'#14284b'},
+ {id:'bloom',name:'Bloom',c:'#c2307a',bg1:'#ffe7f1',bg2:'#fbcfe2',bg3:'#fff5fa',acc:'#c2307a',ink:'#431433'},
+ {id:'citrus',name:'Citrus',c:'#d97706',bg1:'#fff6cc',bg2:'#ffe98a',bg3:'#fffbe8',acc:'#c26a05',ink:'#3a2a05'}
+];
+var GROUP_THEME={beauty:'bloom',food:'sun',fitness:'fresh',mind:'lagoon',pro:'lagoon',creative:'citrus',pets:'citrus',events:'bloom',outdoor:'fresh',generic:'sun'};
+var COPY={
+ beauty:{h:'Look and feel your best at {n}',s:'Services, prices and booking on one clean page.',cta:'Book now',f1:'Services & prices'},
+ food:{h:'Good food, easy to find: {n}',s:'Menu, hours and directions one tap away.',cta:'Reserve a table',f1:'Menu & highlights'},
+ fitness:{h:'Move better with {n}',s:'Classes, schedule and sign-up in seconds.',cta:'Join a class',f1:'Classes & schedule'},
+ mind:{h:'A calm first step: {n}',s:'See how we can help and book a first session.',cta:'Book a session',f1:'How we can help'},
+ pro:{h:'Clear answers from {n}',s:'Services, process and a simple way to get in touch.',cta:'Request a call',f1:'Services'},
+ creative:{h:'Made with care by {n}',s:'Browse the work and get in touch to commission.',cta:'Get in touch',f1:'Work & commissions'},
+ pets:{h:'Happy pets, happy owners: {n}',s:'Services, care and easy booking.',cta:'Book a visit',f1:'Services & care'},
+ events:{h:'Make it memorable with {n}',s:'See what is on offer and ask for a date.',cta:'Check dates',f1:'Packages'},
+ outdoor:{h:'Discover {n}',s:'Everything you need to plan your visit.',cta:'Plan your visit',f1:'What we offer'},
+ generic:{h:'Meet {n}',s:'Everything your customers need to know, in one place.',cta:'Get in touch',f1:'What we offer'}
+};
+function copyFor(b){var g=COPY[catOf(b).group]||COPY.generic;return{h:g.h.replace('{n}',b.name),s:g.s,cta:g.cta,f1:g.f1};}
+function themeById(id){for(var i=0;i<THEMES.length;i++)if(THEMES[i].id===id)return THEMES[i];return THEMES[0];}
+var pvB=null,pvT=null;
+function pageHTML(b,t){
+  var c=copyFor(b),cat=catOf(b);
+  var tel=b.phone?'tel:'+b.phone.replace(/[^\d+]/g,''):'#visit';
+  var map='https://www.openstreetmap.org/?mlat='+b.lat+'&mlon='+b.lon+'#map=19/'+b.lat+'/'+b.lon;
+  return '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base target="_blank"><style>'+
+  '*{box-sizing:border-box}body{margin:0;font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;color:'+t.ink+';background:'+t.bg3+';line-height:1.5}'+
+  '.ban{background:#fff;color:#555;font-size:11px;text-align:center;padding:6px 10px;border-bottom:1px solid #eee}'+
+  'nav{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;background:'+t.bg1+'}nav b{font-size:17px}'+
+  '.btn{display:inline-block;background:'+t.acc+';color:#fff;text-decoration:none;font-weight:800;padding:12px 20px;border-radius:999px;font-size:15px}.btn.o{background:#fff;color:'+t.acc+';border:2px solid '+t.acc+'}'+
+  '.hero{background:linear-gradient(160deg,'+t.bg1+','+t.bg2+');padding:44px 22px 52px;text-align:center}.hero .em{font-size:54px}.hero h1{font-size:clamp(26px,5vw,44px);line-height:1.15;margin:10px auto 12px;max-width:760px;letter-spacing:-.02em}.hero p{font-size:clamp(15px,2.4vw,19px);margin:0 auto 22px;max-width:560px;opacity:.85}'+
+  '.hero .b{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}'+
+  '.feat{padding:40px 22px;background:'+t.bg3+';display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));max-width:980px;margin:0 auto}.card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 6px 20px rgba(0,0,0,.06)}.card i{font-style:normal;font-size:28px}.card h3{margin:8px 0 4px;font-size:16px}.card p{margin:0;font-size:14px;opacity:.75}'+
+  '.visit{background:'+t.bg2+';padding:38px 22px;text-align:center}.visit h2{margin:0 0 12px;font-size:24px}.visit p{margin:4px 0}'+
+  '.cta{background:'+t.acc+';color:#fff;text-align:center;padding:34px 22px}.cta h2{margin:0 0 14px;font-size:24px}.cta .btn{background:#fff;color:'+t.acc+'}'+
+  'footer{padding:16px 22px;font-size:12px;text-align:center;background:'+t.bg1+';opacity:.95}footer a{color:'+t.ink+'}'+
+  '</style></head><body>'+
+  '<div class="ban">Concept preview by EasyLandX. Not the official website of '+esc(b.name)+'.</div>'+
+  '<nav><b>'+esc(b.name)+'</b><a class="btn" href="'+esc(tel)+'">'+esc(c.cta)+'</a></nav>'+
+  '<section class="hero"><div class="em">'+cat.emoji+'</div><h1>'+esc(c.h)+'</h1><p>'+esc(c.s)+'</p><div class="b"><a class="btn" href="'+esc(tel)+'">'+esc(c.cta)+'</a><a class="btn o" href="#visit">Find us</a></div></section>'+
+  '<section class="feat"><div class="card"><i>📋</i><h3>'+esc(c.f1)+'</h3><p>Everything you offer, easy to scan in seconds.</p></div><div class="card"><i>📱</i><h3>'+esc(c.cta)+' in one tap</h3><p>A clear button that turns visitors into customers.</p></div><div class="card"><i>📍</i><h3>Find you fast</h3><p>Address, hours and directions, always up to date.</p></div></section>'+
+  '<section class="visit" id="visit"><h2>Visit us</h2>'+(b.addr?'<p>📍 '+esc(b.addr)+'</p>':'')+(b.hours?'<p>🕒 '+esc(b.hours)+'</p>':'')+(b.phone?'<p>📞 '+esc(b.phone)+'</p>':'')+'<p><a class="btn o" href="'+esc(map)+'" style="margin-top:10px">Open map</a></p></section>'+
+  '<section class="cta"><h2>Ready when you are</h2><a class="btn" href="'+esc(tel)+'">'+esc(c.cta)+'</a></section>'+
+  '<footer>Concept preview built from public map data. Real pages use the owner\'s own photos, prices and booking. · <a href="'+CONFIG.SITE+'">EasyLandX</a> © 2026</footer>'+
+  '</body></html>';
+}
+function b64(o){return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function unb64(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return JSON.parse(decodeURIComponent(escape(atob(s))));}
+function previewLink(b){
+  var o={n:b.name,c:b.cat,a:b.addr,p:b.phone,h:b.hours,la:+b.lat.toFixed(6),lo:+b.lon.toFixed(6),t:(pvT&&pvB&&pvB.id===b.id)?pvT.id:undefined};
+  return location.origin+location.pathname+'#preview='+b64(o);
+}
+function openPreview(b,themeId){
+  pvB=b;pvT=themeById(themeId||GROUP_THEME[catOf(b).group]);
+  $('pTitle').textContent=b.name;
+  var th=$('themes');th.innerHTML='';
+  THEMES.forEach(function(t){var x=document.createElement('button');x.innerHTML='<i style="background:'+t.c+'"></i>'+t.name;if(t.id===pvT.id)x.className='on';x.onclick=function(){pvT=t;[].forEach.call(th.children,function(y){y.classList.remove('on');});x.className='on';renderFrame();track('map_theme',{theme:t.id});};th.appendChild(x);});
+  renderFrame();$('mPrev').hidden=false;track('map_preview_open',{category:b.cat,status:b.status});
+}
+function renderFrame(){$('pFrame').srcdoc=pageHTML(pvB,pvT);}
+$('pBack').onclick=function(){$('mPrev').hidden=true;$('pFrame').srcdoc='';if(location.hash.indexOf('#preview=')===0)history.replaceState(null,'',location.pathname+location.search);};
+$('dMob').onclick=function(){$('device').classList.remove('desk');$('dMob').classList.add('on');$('dDesk').classList.remove('on');};
+$('dDesk').onclick=function(){$('device').classList.add('desk');$('dDesk').classList.add('on');$('dMob').classList.remove('on');};
+$('pCopy').onclick=function(){copyText(previewLink(pvB));track('map_copy_link');};
+$('pWa').onclick=function(){openWa('Hi! I saw the concept page for "'+pvB.name+'" on your map and I would like the real one. Could you send me a courtesy sample?','preview');};
+$('pEx').onclick=function(){var c=catOf(pvB);openViewer(c.exUrl,c.exTitle);};
+
+/* ================= AR ================= */
+var arLibs=null;
+function loadScript(src,mod){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;if(mod)s.type='module';s.onload=res;s.onerror=function(){rej(new Error('load '+src));};document.head.appendChild(s);});}
+function loadARLibs(){
+  if(arLibs)return arLibs;
+  arLibs=loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js')
+    .then(function(){return loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/GLTFExporter.js');})
+    .then(function(){return loadScript('https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js',true);});
+  arLibs.catch(function(){arLibs=null;});
+  return arLibs;
+}
+function wrapText(ctx,text,x,y,maxW,lh,maxLines){
+  var words=text.split(' '),line='',lines=[];
+  words.forEach(function(w){var t=line?line+' '+w:w;if(ctx.measureText(t).width>maxW&&line){lines.push(line);line=w;}else line=t;});
+  if(line)lines.push(line);
+  lines.slice(0,maxLines).forEach(function(l,i){ctx.fillText(l,x,y+i*lh);});
+  return Math.min(lines.length,maxLines)*lh;
+}
+function screenCanvas(b,t){
+  var W=720,H=1500,cv=document.createElement('canvas');cv.width=W;cv.height=H;var x=cv.getContext('2d'),c=copyFor(b),cat=catOf(b);
+  var F='"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif',E='"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+  x.fillStyle=t.bg3;x.fillRect(0,0,W,H);
+  x.fillStyle='#fff';x.fillRect(0,0,W,52);x.fillStyle='#666';x.font='500 22px '+F;x.textAlign='center';x.textBaseline='middle';x.fillText('Concept preview by EasyLandX',W/2,27);
+  x.fillStyle=t.bg1;x.fillRect(0,52,W,96);x.fillStyle=t.ink;x.textAlign='left';x.font='800 32px '+F;x.fillText(b.name.length>22?b.name.slice(0,21)+'…':b.name,34,101);
+  x.fillStyle=t.acc;rr(x,W-230,76,196,50,25);x.fill();x.fillStyle='#fff';x.font='800 22px '+F;x.textAlign='center';x.fillText(c.cta,W-132,102);
+  var g=x.createLinearGradient(0,148,W,760);g.addColorStop(0,t.bg1);g.addColorStop(1,t.bg2);x.fillStyle=g;x.fillRect(0,148,W,600);
+  x.font='120px '+E;x.textAlign='center';x.fillStyle='#000';x.fillText(cat.emoji,W/2,260);
+  x.fillStyle=t.ink;x.font='800 54px '+F;x.textAlign='center';
+  var hh=wrapText(x,c.h,W/2,370,W-90,64,4);
+  x.font='500 29px '+F;x.globalAlpha=.85;wrapText(x,c.s,W/2,370+hh+22,W-140,40,3);x.globalAlpha=1;
+  x.fillStyle=t.acc;rr(x,W/2-190,640,380,74,37);x.fill();x.fillStyle='#fff';x.font='800 30px '+F;x.fillText(c.cta,W/2,678);
+  var cards=[['📋',c.f1],['📱',c.cta+' in one tap'],['📍','Find you fast']];
+  cards.forEach(function(k,i){var cx=34,cy=780+i*170,cw=W-68;x.fillStyle='#fff';rr(x,cx,cy,cw,148,26);x.fill();x.font='56px '+E;x.textAlign='left';x.fillStyle='#000';x.fillText(k[0],cx+26,cy+78);x.fillStyle=t.ink;x.font='800 31px '+F;x.fillText(k[1],cx+112,cy+66);x.font='500 24px '+F;x.globalAlpha=.7;x.fillText(['Everything you offer, easy to scan','A clear button that brings customers','Address, hours and directions'][i],cx+112,cy+106);x.globalAlpha=1;});
+  x.fillStyle=t.bg2;x.fillRect(0,1300,W,200);x.fillStyle=t.ink;x.textAlign='center';x.font='800 34px '+F;x.fillText('Visit us',W/2,1350);x.font='500 26px '+F;
+  wrapText(x,b.addr||'Address, hours and directions',W/2,1400,W-100,36,2);
+  return cv;
+}
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function buildGLB(b,t){
+  return new Promise(function(res,rej){
+    try{
+      var T=THREE,g=new T.Group();
+      var bw=0.30,bh=0.62,bd=0.028,r=0.035;
+      var sh=new T.Shape();sh.moveTo(-bw/2+r,-bh/2);sh.lineTo(bw/2-r,-bh/2);sh.quadraticCurveTo(bw/2,-bh/2,bw/2,-bh/2+r);sh.lineTo(bw/2,bh/2-r);sh.quadraticCurveTo(bw/2,bh/2,bw/2-r,bh/2);sh.lineTo(-bw/2+r,bh/2);sh.quadraticCurveTo(-bw/2,bh/2,-bw/2,bh/2-r);sh.lineTo(-bw/2,-bh/2+r);sh.quadraticCurveTo(-bw/2,-bh/2,-bw/2+r,-bh/2);
+      var body=new T.Mesh(new T.ExtrudeGeometry(sh,{depth:bd,bevelEnabled:false}),new T.MeshStandardMaterial({color:0xf3efe6,metalness:.25,roughness:.45}));
+      body.position.z=-bd/2;
+      var tex=new T.CanvasTexture(screenCanvas(b,t));tex.anisotropy=8;tex.flipY=true;
+      var scr=new T.Mesh(new T.PlaneGeometry(bw-0.022,bh-0.03),new T.MeshStandardMaterial({color:0x000000,emissive:0xffffff,emissiveMap:tex,map:tex,roughness:1,metalness:0}));
+      scr.position.z=bd/2+0.0008;
+      var phone=new T.Group();phone.add(body);phone.add(scr);phone.rotation.x=-0.16;phone.position.set(0,bh/2*Math.cos(0.16)+0.012,0);
+      var base=new T.Mesh(new T.BoxGeometry(0.26,0.016,0.16),new T.MeshStandardMaterial({color:0xffc9b5,roughness:.6}));base.position.set(0,0.008,0.02);
+      g.add(base);g.add(phone);
+      new T.GLTFExporter().parse(g,function(buf){res(buf);},{binary:true,onlyVisible:true});
+    }catch(e){rej(e);}
+  });
+}
+var glbUrl=null;
+function openAR(){
+  if(!pvB)return;
+  $('mAR').hidden=false;$('arLoad').hidden=false;$('arLoad').textContent='Building your 3D model…';
+  $('arInfo').textContent='Preparing a phone model that shows your page.';
+  var old=$('arStage').querySelector('model-viewer');if(old)old.remove();
+  var oldb=$('arStage').querySelector('.arbtn');if(oldb)oldb.remove();
+  track('map_ar_open',{category:pvB.cat});
+  var theme=pvT,biz=pvB;
+  loadARLibs().then(function(){return buildGLB(biz,theme);}).then(function(buf){
+    if(glbUrl)URL.revokeObjectURL(glbUrl);
+    glbUrl=URL.createObjectURL(new Blob([buf],{type:'model/gltf-binary'}));
+    var mv=document.createElement('model-viewer');
+    mv.setAttribute('src',glbUrl);mv.setAttribute('alt','Your page on a phone, placed in your space');
+    mv.setAttribute('ar','');mv.setAttribute('ar-modes','webxr scene-viewer quick-look');mv.setAttribute('ar-scale','auto');mv.setAttribute('ar-placement','floor');
+    mv.setAttribute('camera-controls','');mv.setAttribute('touch-action','pan-y');mv.setAttribute('shadow-intensity','1');mv.setAttribute('exposure','1.45');mv.setAttribute('camera-orbit','-20deg 78deg 1.6m');
+    mv.setAttribute('interaction-prompt','none');
+    var btn=document.createElement('button');btn.slot='ar-button';btn.className='arbtn';btn.textContent='📱 View in your space';mv.appendChild(btn);
+    $('arStage').insertBefore(mv,$('arStage').firstChild);
+    mv.addEventListener('load',function(){
+      $('arLoad').hidden=true;
+      var ok=mv.canActivateAR;
+      var ios=/iPad|iPhone|iPod/.test(navigator.userAgent);
+      $('arInfo').innerHTML=ok?(ios?'Tap <b>View in your space</b>, then point your camera at your counter or floor. On iPhone the model is a still preview of your page, and you can resize it with two fingers.':'Tap <b>View in your space</b>, point your camera at your counter or floor, then move the phone slowly until it is placed. Pinch to resize.'):'AR needs a phone or tablet with AR support. You can still rotate this 3D model here. Tap <b>Copy link</b> in the preview and open it on your phone.';
+    });
+    mv.addEventListener('error',function(){$('arLoad').hidden=false;$('arLoad').textContent='Could not show the 3D model on this device.';});
+  }).catch(function(){$('arLoad').textContent='Could not load AR on this connection. Please try again.';$('arInfo').textContent='AR files could not be loaded.';});
+}
+$('pAR').onclick=openAR;
+$('aBack').onclick=function(){$('mAR').hidden=true;};
+
+/* ================= DEEP LINK + START ================= */
+function geoFromQuery(){}
+function handleHash(){
+  var h=location.hash;
+  if(h.indexOf('#preview=')===0){
+    try{
+      var o=unb64(h.slice(9));
+      var b={id:'shared',name:String(o.n||'Your business').slice(0,80),cat:CAT[o.c]?o.c:'generic',addr:String(o.a||'').slice(0,160),phone:String(o.p||'').slice(0,40),hours:String(o.h||'').slice(0,160),lat:+o.la||0,lon:+o.lo||0,web:'',social:'',status:'noweb'};
+      openPreview(b,o.t);
+    }catch(e){toast('That preview link looks broken.');}
+  }
+}
+initMap();
+handleHash();
+window.addEventListener('hashchange',handleHash);
+window.addEventListener('keydown',function(e){if(e.key==='Escape'){if(!$('mAR').hidden)$('mAR').hidden=true;else if(!$('viewer').hidden)$('vBack').click();else if(!$('mPrev').hidden)$('pBack').click();}});
+window.__elx={get map(){return map;},get results(){return results;},select:select,openPreview:openPreview};
+})();
+</script>
+</body>
+</html>
