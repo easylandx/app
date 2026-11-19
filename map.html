@@ -920,7 +920,7 @@ function openPreview(b,themeId){
 }
 function renderFrame(){$('pFrame').srcdoc=pageHTML(pvB,pvT);refreshSend();}
 /* ===== Send the preview to the business by WhatsApp (outreach mode only) ===== */
-var sendLang=store('elx_sendlang')==='en'?'en':'es',sendEdited=false;
+var sendLang=LANG,sendEdited=false;   // the WhatsApp message follows the site language (EN/ES switch)
 function waNumber(ph){
   var d=String(ph||'').split(/[;,\/]/)[0].replace(/[^\d+]/g,'');if(!d)return '';
   if(d.charAt(0)==='+')d=d.slice(1);else if(d.indexOf('00')===0)d=d.slice(2);
@@ -1067,7 +1067,7 @@ function handleHash(){
 }
 function buildLangUI(){}
 function refreshUI(){
-  document.documentElement.lang=LANG;
+  document.documentElement.lang=LANG;sendLang=LANG;
   document.title=T(TITLE_EN);
   var md=document.querySelector('meta[name=description]');if(md)md.setAttribute('content',T(DESC_EN));
   applyStatic();relabelCats();
