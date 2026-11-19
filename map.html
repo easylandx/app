@@ -987,8 +987,8 @@ function copyText(t){
 }
 function pitch(b,lang){
   var l=previewLink(b,lang),unk=b.status==='unk';
-  if(lang==='es')return 'Hola! Encontré '+b.name+' en el mapa y '+(unk?'no encontré su web.':'vi que no tiene web registrada.')+' He preparado una propuesta gratuita de cómo podría ser su página: '+l+'\nSi le gusta, la creo en unas 24h, sin compromiso. — EasyLandX ('+CONFIG.SITE+')';
-  return 'Hi! I came across '+b.name+' on the map and '+(unk?'could not find a website for it.':'noticed there is no website listed.')+' I put together a free concept of what a page for it could look like: '+l+'\nIf you like it, I can build the real one in about 24h, no commitment. — EasyLandX ('+CONFIG.SITE+')';
+  if(lang==='es')return 'Hola! Encontré '+b.name+' en el mapa y '+(unk?'no encontré su web.':'vi que no tiene web registrada.')+' He preparado una propuesta gratuita de cómo podría ser su página: '+l+'\nSi le gusta, la creo en unas 24h, sin compromiso.\n\nNota: este mensaje no es spam ni phishing. El enlace es seguro y solo muestra una propuesta de página web, sin pedir datos ni pagos. — EasyLandX ('+CONFIG.SITE+')';
+  return 'Hi! I came across '+b.name+' on the map and '+(unk?'could not find a website for it.':'noticed there is no website listed.')+' I put together a free concept of what a page for it could look like: '+l+'\nIf you like it, I can build the real one in about 24h, no commitment.\n\nNote: this message is neither spam nor phishing. The link is safe to open and only shows a website concept, with no data or payment requested. — EasyLandX ('+CONFIG.SITE+')';
 }
 $('side').addEventListener('click',function(){});
 /* ===== Mobile bottom sheet: drag the handle (or the title) to any height ===== */
@@ -1116,10 +1116,10 @@ function buildMsg(b,lang){
   var link=previewLink(b,lang),c=catOf(b),ex=c.exUrl,order='https://wa.me/'+CONFIG.WA;
   if(lang==='es')return 'Hola! Encontré '+b.name+' en el mapa y preparé una propuesta gratuita de cómo podría ser su página web:\n'+link+
     '\n\nAsí son nuestras webs reales para este tipo de negocio:\n'+ex+
-    '\n\nSi le gusta, la creamos en unas 24 h y sin compromiso. Para encargarla, responda a este mensaje o escríbanos aquí: '+order+'\n— EasyLandX';
+    '\n\nSi le gusta, la creamos en unas 24 h y sin compromiso. Para encargarla, responda a este mensaje o escríbanos aquí: '+order+'\n\nNota: este mensaje no es spam ni phishing. El enlace es seguro y solo muestra una propuesta de página web, sin pedir datos ni pagos.\n— EasyLandX';
   return 'Hi! I found '+b.name+' on the map and prepared a free concept of what its website could look like:\n'+link+
     '\n\nHere are real websites we built for this kind of business:\n'+ex+
-    '\n\nIf you like it, we can build yours in about 24 h with no commitment. To order it, reply to this message or message us here: '+order+'\n— EasyLandX';
+    '\n\nIf you like it, we can build yours in about 24 h with no commitment. To order it, reply to this message or message us here: '+order+'\n\nNote: this message is neither spam nor phishing. The link is safe to open and only shows a website concept, with no data or payment requested.\n— EasyLandX';
 }
 function refreshSend(force){
   var box=$('sendBox');
