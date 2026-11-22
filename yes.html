@@ -285,7 +285,13 @@ function applyApp(){
  $('ap-buy').href=AP_LINKS[lang].buy;$('ap-ex').href=AP_LINKS[lang].ex;
  $('ap-phone').setAttribute('aria-label',T.ph_aria);
 }
-let mode='yes',lang='en',q='',catf='all';
+// Optional deep-link settings. The plain page URL keeps its original English/YES default.
+const pageParams=new URLSearchParams(window.location.search);
+const requestedLang=(pageParams.get('lang')||'').toLowerCase();
+const requestedMode=(pageParams.get('mode')||'').toLowerCase();
+let mode=requestedMode==='no'?'no':'yes',
+    lang=requestedLang==='es'?'es':'en',
+    q='',catf='all';
 const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
 function applyStatic(){
