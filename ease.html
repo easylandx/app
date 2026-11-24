@@ -208,7 +208,7 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
   body{grid-template-rows:auto minmax(0,1fr) auto auto}
   .deck{display:block; padding:8px; overflow:hidden}
   .col{display:none; height:100%; overflow-y:auto; scrollbar-width:none}
-  .col>.panel{flex:none; min-height:auto} /* panels keep their content height; the column scrolls instead of squashing them */
+  .col-m>.panel{flex:none; min-height:auto} /* panels keep their content height; the column scrolls instead of squashing them */
   .col{overscroll-behavior:contain; -webkit-overflow-scrolling:touch}
   body[data-pane=mission] .col-m,body[data-pane=display] .col-d,body[data-pane=systems] .col-s{display:flex}
   .top{gap:8px; padding:0 10px} .top .tick,.top .clock,.top .chat{display:none} .top .brand{margin-right:auto}
