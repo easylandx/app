@@ -250,9 +250,9 @@ async function loadDoc(fr,i){
   try{
     let h=cache.get(i);
     if(!h){
-      const r=await fetch(S[i].u);if(!r.ok)throw 0;
+      const r=await fetch(S[i].u+(S[i].u.includes('?')?'&':'?')+'_='+Date.now(),{cache:'no-store'});if(!r.ok)throw 0; // bypass browser + CDN cache
       h=await r.text();
-      const b='<base href="'+S[i].u+'">';
+      const b='<base href="'+S[i].u+'">'+'<style>@media(min-width:601px){.wrap{padding-left:max(28px,env(safe-area-inset-left,0px))!important;padding-right:max(28px,env(safe-area-inset-right,0px))!important}}</style>'; // desktop-width gutter
       h=/<head(\s[^>]*)?>/i.test(h)?h.replace(/<head(\s[^>]*)?>/i,m=>m+b):b+h;
       cache.set(i,h);
     }
