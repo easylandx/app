@@ -209,6 +209,10 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
   body{grid-template-rows:auto minmax(0,1fr) auto auto}
   .deck{display:block; padding:8px; overflow:hidden}
   .col{display:none; height:100%; overflow-y:auto; scrollbar-width:none}
+  .col-m>.panel{flex:none; min-height:auto}
+  .col-m{padding-bottom:12px; -webkit-overflow-scrolling:touch}
+  .col-m .ctas .btn{min-height:42px}
+  .col-m .ctas3 .btn{white-space:normal; line-height:1.15}
   body[data-pane=mission] .col-m,body[data-pane=display] .col-d,body[data-pane=systems] .col-s{display:flex}
   .top{gap:8px; padding:0 10px} .top .tick,.top .clock,.top .chat{display:none} .top .brand{margin-right:auto}
   .mbtn .ml{display:none}
@@ -433,6 +437,7 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
     if (!el || !base) return;
     var col = document.querySelector(".col-m");
     el.style.fontSize = "";
+    if (window.matchMedia && window.matchMedia("(max-width:900px)").matches) return;
     var size = base, n = 0;
     while (col && col.scrollHeight > col.clientHeight + 1 && size > 15 && n++ < 14) {
       size *= 0.93; el.style.fontSize = size.toFixed(1) + "px";
