@@ -574,7 +574,7 @@ function hook(fr){
     if(mode==='h')endH(dxs,performance.now()-t0);
     else if(mode==='v'&&Math.abs(vy)>.1){
       let v=vy;
-      const step=()=>{root().scrollTop-=v*16;v*=.965;if(Math.abs(v)>.02)fr._raf=requestAnimationFrame(step)};
+      const step=()=>{userAct();root().scrollTop-=v*16;v*=.965;if(Math.abs(v)>.02)fr._raf=requestAnimationFrame(step)};
       step();
     }
   };
@@ -587,6 +587,9 @@ function hook(fr){
     const j=S.findIndex(s=>s.u===a.href);
     if(j>=0)go(j);else window.open(a.href,'_blank','noopener');
   },true);
+  ['pointerdown','pointermove','touchstart','touchmove','wheel','keydown','click','scroll'].forEach(ev=>d.addEventListener(ev,userAct,{passive:true,capture:true}));
+  d.addEventListener('pointerdown',()=>{held=true},true);
+  ['pointerup','pointercancel'].forEach(ev=>d.addEventListener(ev,()=>{held=false;userAct()},true));
   d.addEventListener('wheel',wheelNav,{passive:false});
   d.addEventListener('keydown',e=>{
     if(/^(INPUT|TEXTAREA)$/.test(e.target.tagName))return;
@@ -683,18 +686,23 @@ setInterval(()=>{
   });
 },12000);
 
-// auto-advance: next slide every 8 s; any touch/click/key/wheel stops it, and it resumes after 16 s without activity
+// auto-advance: next slide every 8 s, but only while idle. Any touch/click/drag/scroll/key/wheel (in the page or inside a slide) pauses it; it resumes after 16 s without activity
 const AP_EVERY=8000, AP_IDLE=16000;
-let apTimer=null, idleTimer=null;
+let apTimer=null, lastAct=0, lastAdv=Date.now(), held=false;
 function apStart(){
-  clearInterval(apTimer);
-  apTimer=setInterval(()=>{ if(document.hidden||document.activeElement===q||S.length<2)return; go(cur+1) },AP_EVERY);
+  clearInterval(apTimer);lastAdv=Date.now();
+  apTimer=setInterval(()=>{
+    const n=Date.now();
+    if(held||document.hidden||document.activeElement===q||S.length<2)return;
+    if(n-lastAct<AP_IDLE)return;          // user touched something recently: stay put
+    if(n-lastAdv<AP_EVERY)return;
+    lastAdv=n;go(cur+1);
+  },500);
 }
-function userAct(){
-  clearInterval(apTimer);apTimer=null;
-  clearTimeout(idleTimer);idleTimer=setTimeout(apStart,AP_IDLE);
-}
-['pointerdown','touchstart','wheel','keydown'].forEach(ev=>document.addEventListener(ev,userAct,{passive:true,capture:true}));
+function userAct(){lastAct=Date.now()}
+['pointerdown','pointermove','pointerup','touchstart','touchmove','touchend','wheel','keydown','click','scroll'].forEach(ev=>document.addEventListener(ev,userAct,{passive:true,capture:true}));
+['pointerdown','touchstart'].forEach(ev=>document.addEventListener(ev,()=>{held=true},{passive:true,capture:true}));
+['pointerup','pointercancel','touchend','touchcancel'].forEach(ev=>document.addEventListener(ev,()=>{held=false;userAct()},{passive:true,capture:true}));
 // clicks inside a cross-origin page can't be seen directly, but they move focus into the iframe
 addEventListener('blur',()=>{ if(document.activeElement&&document.activeElement.tagName==='IFRAME')userAct() });
 
