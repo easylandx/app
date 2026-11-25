@@ -225,10 +225,13 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
 #pwa-tip{position:fixed; right:12px; bottom:calc(92px + env(safe-area-inset-bottom,0px)); z-index:90; max-width:260px; padding:12px; background:#06141C; border:.5px solid var(--a); font-size:12px}
 #pwa-tip button{display:block; margin-top:8px; padding:5px 10px; background:none; border:.5px solid var(--line); color:var(--tx); font:inherit; cursor:pointer}
 
-/* promo note + paid banner */
-.promo-note{margin:-2px 0 0; text-align:center; font-size:11.5px; color:var(--dim); letter-spacing:.01em}
-.promo-note b{color:var(--ok); font-weight:600; letter-spacing:.06em}
-.promo-note span{opacity:.8}
+/* promo + currency switch + paid banner */
+.promo{grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:4px 10px; margin:-2px 0 0; color:var(--dim); font-size:11px; line-height:1.4}
+.promo .code{display:inline-block; padding:0 6px; border:.5px solid var(--a); border-radius:3px; color:var(--a); font-weight:600; letter-spacing:.08em}
+.cur{display:inline-flex; border:.5px solid var(--line); border-radius:99px; overflow:hidden; flex:none}
+.cur button{background:none; border:0; color:var(--dim); font:500 10.5px var(--f); letter-spacing:.04em; padding:1px 9px; cursor:pointer}
+.cur button+button{border-left:.5px solid var(--line)}
+.cur button[aria-pressed=true]{background:rgba(77,227,255,.14); color:var(--a)}
 .paid-banner{position:fixed; left:50%; top:calc(10px + env(safe-area-inset-top,0px)); transform:translateX(-50%); z-index:10001; display:flex; align-items:center; gap:12px; width:max-content; max-width:calc(100vw - 24px); padding:12px 16px; background:#06141C; border:.5px solid var(--ok); border-radius:3px; color:var(--tx); font:500 13px/1.4 var(--f); box-shadow:0 12px 40px #000c,0 0 28px -6px var(--ok)}
 .paid-banner .pb-ico{flex:none; width:22px; height:22px; border-radius:50%; background:var(--ok); color:#02170F; display:grid; place-items:center; font-weight:700; font-size:13px}
 .paid-banner span.pb-t b{display:block; color:var(--ok); font-weight:600}
@@ -315,8 +318,8 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
       <p class="tagline">Tu propia app, en el bolsillo de tus clientes.</p>
       <p class="lede m">EasyLandX crea tu landing page y una app móvil a medida, juntas: un solo pack para negocios, con un mensaje claro y un clic seguro.</p>
       <div class="ctas">
-        <a class="btn btn-main wide" href="https://buy.stripe.com/28E7sK3I3ad186WcQo0Jq06?prefilled_promo_code=easyx" target="_blank" rel="noopener">Comprar ahora</a>
-        <p class="promo-note wide">Usa el código <b>EASYX</b> · 50% de descuento <span>(89 € → 44,50 €)</span></p>
+        <a class="btn btn-main wide" data-stripe href="https://buy.stripe.com/28E7sK3I3ad186WcQo0Jq06?prefilled_promo_code=easyx" target="_blank" rel="noopener">Comprar ahora</a>
+        <p class="promo"><span class="ptxt">50% dto. con código <b class="code">EASYX</b>, ya aplicado</span><span class="cur" role="group" aria-label="Moneda"><button type="button" data-cur="usd" aria-pressed="false">USD</button><button type="button" data-cur="eur" aria-pressed="true">EUR</button></span></p>
         <div class="sample wide" id="sample">
           <button type="button" class="btn" id="sample-btn" aria-expanded="false" aria-controls="sample-menu" aria-haspopup="true">Recibe una maqueta de cortesía</button>
           <div class="sample-menu" id="sample-menu" hidden>
@@ -336,8 +339,8 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
       <div class="cgrid">
         <a class="btn btn-wa wide" href="https://api.whatsapp.com/send/?phone=34609204298&text=%C2%A1Hola!%20Me%20gustar%C3%ADa%20recibir%20una%20maqueta%20de%20cortes%C3%ADa%20para%20mi%20negocio.">Chat por WhatsApp</a>
         <div class="sample sample-x sample-up wide"><button type="button" class="btn btn-main" aria-expanded="false" aria-haspopup="true">Quiero mi página + app</button><div class="sample-menu" hidden></div></div>
-        <a class="btn btn-stripe wide" href="https://buy.stripe.com/28E7sK3I3ad186WcQo0Jq06?prefilled_promo_code=easyx" target="_blank" rel="noopener">Pagar con Stripe</a>
-        <p class="promo-note wide">Código <b>EASYX</b> aplicado automáticamente: 50% de descuento</p>
+        <a class="btn btn-stripe wide" data-stripe href="https://buy.stripe.com/28E7sK3I3ad186WcQo0Jq06?prefilled_promo_code=easyx" target="_blank" rel="noopener">Pagar con Stripe</a>
+        <p class="promo"><span class="ptxt">50% dto. con código <b class="code">EASYX</b>, ya aplicado</span><span class="cur" role="group" aria-label="Moneda"><button type="button" data-cur="usd" aria-pressed="false">USD</button><button type="button" data-cur="eur" aria-pressed="true">EUR</button></span></p>
       </div>
     </div>
   </section>
@@ -749,6 +752,39 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
     tip.textContent=isIOS?T.ios:T.other;
     var c=document.createElement('div'), x=document.createElement('button'); x.type='button'; x.textContent=T.close;
     x.addEventListener('click',function(){ tip.hidden=true; }); c.appendChild(x); tip.appendChild(c); tip.hidden=false;
+  });
+})();
+</script>
+
+<script>
+/* ===== Enlaces de Stripe: USD / EUR (detección automática, conmutable) ===== */
+(function(){
+  var LINKS={
+    usd:'https://buy.stripe.com/14A14m0vRdpdaf42bK0Jq07?prefilled_promo_code=easyx',
+    eur:'https://buy.stripe.com/28E7sK3I3ad186WcQo0Jq06?prefilled_promo_code=easyx'
+  };
+  var K='elx-cur', cur='';
+  function guess(){
+    var tz='', lang='';
+    try{ tz=Intl.DateTimeFormat().resolvedOptions().timeZone||''; }catch(e){}
+    try{ lang=(navigator.languages&&navigator.languages[0])||navigator.language||''; }catch(e){}
+    var region=(lang.split('-')[1]||'').toUpperCase();
+    var EU=' AT BE CY DE EE ES FI FR GR HR IE IT LT LU LV MT NL PT SI SK AD MC SM VA ME XK ';
+    if(/^Europe\//.test(tz) && !/London|Belfast|Jersey|Guernsey|Isle_of_Man|Moscow|Istanbul|Minsk|Kyiv|Kiev/.test(tz)) return 'eur';
+    if(/^(Atlantic\/(Canary|Madeira|Azores)|Africa\/Ceuta)$/.test(tz)) return 'eur';
+    if(region && EU.indexOf(' '+region+' ')>-1) return 'eur';
+    return 'usd';
+  }
+  function apply(c){
+    cur=(c==='eur')?'eur':'usd';
+    document.querySelectorAll('a[data-stripe]').forEach(function(a){ a.href=LINKS[cur]; });
+    document.querySelectorAll('.cur button').forEach(function(b){ b.setAttribute('aria-pressed',b.getAttribute('data-cur')===cur?'true':'false'); });
+  }
+  var saved=''; try{ saved=localStorage.getItem(K)||''; }catch(e){}
+  apply(saved==='usd'||saved==='eur' ? saved : guess());
+  document.addEventListener('click',function(e){
+    var b=e.target.closest && e.target.closest('.cur button'); if(!b) return;
+    apply(b.getAttribute('data-cur')); try{ localStorage.setItem(K,cur); }catch(_){}
   });
 })();
 </script>
