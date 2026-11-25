@@ -96,6 +96,17 @@ h1 em{font-style:normal; font-weight:600; color:var(--a)}
 .ptitle{display:flex; align-items:center; gap:8px; margin:0 0 clamp(6px,1.4vh,12px); color:var(--dim); font-size:11.5px; font-weight:500}
 .dot{width:6px; height:6px; border-radius:50%; background:var(--ok); box-shadow:0 0 8px var(--ok); flex:none}
 
+/* ---------- offer banner (top of the hero box) ---------- */
+.offer{position:relative; overflow:hidden; display:flex; align-items:center; flex-wrap:wrap; gap:6px 10px; margin:0 0 clamp(8px,1.6vh,14px); padding:7px 10px; border:.5px solid var(--a); border-radius:3px; background:linear-gradient(100deg,rgba(77,227,255,.14),rgba(77,227,255,.03) 70%); background:linear-gradient(100deg,color-mix(in srgb,var(--a) 15%,transparent),color-mix(in srgb,var(--a) 3%,transparent) 70%); box-shadow:0 0 22px -12px var(--a)}
+.offer::after{content:""; position:absolute; top:0; bottom:0; left:-40%; width:30%; background:linear-gradient(100deg,transparent,rgba(255,255,255,.16),transparent); transform:skewX(-18deg); animation:offerSheen 5.5s ease-in-out 1.2s infinite; pointer-events:none}
+@keyframes offerSheen{0%,55%{left:-40%} 100%{left:130%}}
+.offer-t{display:inline-flex; align-items:center; gap:8px; margin-right:auto; color:var(--tx); font-size:12.5px; font-weight:600; letter-spacing:.01em; white-space:nowrap}
+.offer-d{display:inline-flex; align-items:baseline; gap:4px; padding:2px 9px; border-radius:99px; background:var(--a); color:var(--a-ink); font-size:11.5px; font-weight:600; letter-spacing:.06em; white-space:nowrap; box-shadow:0 0 14px -3px var(--a)}
+.offer-d b{font-size:13px; font-weight:600}
+.offer-c{display:inline-flex; align-items:center; gap:6px; padding:2px 8px; border:.5px dashed var(--a); border-radius:3px; color:var(--dim); font-size:9.5px; font-weight:500; letter-spacing:.14em; white-space:nowrap}
+.offer-c b{color:var(--a); font-size:12px; font-weight:600; letter-spacing:.12em}
+@media (prefers-reduced-motion:reduce){.offer::after{animation:none; display:none}}
+
 /* buttons */
 .btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:clamp(7px,1.3vh,10px) 12px; border:.5px solid var(--line); border-radius:3px; background:rgba(77,227,255,.04); color:var(--tx); font:500 12.5px/1.2 var(--f); text-decoration:none; cursor:pointer; text-align:center; transition:border-color .15s,box-shadow .15s,background .15s}
 .btn:hover{border-color:var(--a); background:rgba(77,227,255,.10); box-shadow:0 0 18px -6px var(--a)}
@@ -299,7 +310,7 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
   <!-- LEFT: mission -->
   <section class="col col-m" aria-label="EasyLandX">
     <div class="panel mission appsec-wrap">
-      <p class="ptitle"><span class="dot"></span>Landing page + app</p>
+      <div class="offer" role="note" aria-label="Landing page + app: 50% de descuento con el código EASYX"><span class="offer-t"><span class="dot"></span>Landing page + app</span><span class="offer-d"><b>50%</b> DTO.</span><span class="offer-c">CÓDIGO <b>EASYX</b></span></div>
       <h1 id="hero-title"></h1>
       <p class="tagline">Tu propia app, en el bolsillo de tus clientes.</p>
       <p class="lede m">EasyLandX crea tu landing page y una app móvil a medida, juntas: un solo pack para negocios, con un mensaje claro y un clic seguro.</p>
