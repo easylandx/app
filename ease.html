@@ -214,6 +214,16 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
 #pwa-tip{position:fixed; right:12px; bottom:calc(92px + env(safe-area-inset-bottom,0px)); z-index:90; max-width:260px; padding:12px; background:#06141C; border:.5px solid var(--a); font-size:12px}
 #pwa-tip button{display:block; margin-top:8px; padding:5px 10px; background:none; border:.5px solid var(--line); color:var(--tx); font:inherit; cursor:pointer}
 
+/* promo note + paid banner */
+.promo-note{margin:-2px 0 0; text-align:center; font-size:11.5px; color:var(--dim); letter-spacing:.01em}
+.promo-note b{color:var(--ok); font-weight:600; letter-spacing:.06em}
+.promo-note span{opacity:.8}
+.paid-banner{position:fixed; left:50%; top:calc(10px + env(safe-area-inset-top,0px)); transform:translateX(-50%); z-index:10001; display:flex; align-items:center; gap:12px; width:max-content; max-width:calc(100vw - 24px); padding:12px 16px; background:#06141C; border:.5px solid var(--ok); border-radius:3px; color:var(--tx); font:500 13px/1.4 var(--f); box-shadow:0 12px 40px #000c,0 0 28px -6px var(--ok)}
+.paid-banner .pb-ico{flex:none; width:22px; height:22px; border-radius:50%; background:var(--ok); color:#02170F; display:grid; place-items:center; font-weight:700; font-size:13px}
+.paid-banner span.pb-t b{display:block; color:var(--ok); font-weight:600}
+.paid-banner span.pb-t{color:var(--dim); font-size:12px}
+.paid-banner button{flex:none; width:28px; height:28px; border:.5px solid var(--line); border-radius:50%; background:none; color:var(--tx); font-size:16px; cursor:pointer}
+
 .tabbar{display:none}
 
 /* ---------- compact viewports: one panel at a time, still zero page scroll ---------- */
@@ -266,13 +276,18 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
 </head>
 <body data-pane="mission">
 
+<div class="paid-banner" id="paid-banner" role="status" aria-live="polite" hidden>
+  <span class="pb-ico" aria-hidden="true">✓</span>
+  <span class="pb-t"><b>¡Pago completado, gracias!</b>Hemos recibido tu pedido. Te escribiremos muy pronto para empezar con tu página + app.</span>
+  <button type="button" id="paid-close" aria-label="Cerrar aviso">&times;</button>
+</div>
+
 <header class="top nav">
   <a class="brand" href="https://easylandx.github.io/ease.html" target="_self" aria-label="Inicio de EasyLandX">
     <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width=".7" opacity=".5"/><path d="M16 3a13 13 0 0 1 11.3 6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10.5 11h11M10.5 16h8M10.5 21h11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
     <span>EasyLandX</span>
   </a>
   <a class="chip chat" href="https://easylandx.github.io/chatapp/" target="_blank" rel="noopener" aria-label="ChatApp (se abre en una ventana nueva)"><i></i>ChatApp</a>
-  <a class="chip offerbar" id="offer" href="89e.html"><i></i>Oferta: consíguela</a>
   <div class="tick" id="tick" aria-hidden="true"><div class="tick-track" id="tick-track"></div></div>
   <span class="clock" id="clock" aria-hidden="true"></span>
   <button type="button" class="mbtn" id="modeBtn" aria-pressed="false" aria-label="Cambiar el color de estado a esmeralda" title="Cambiar el color de estado"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg><span class="ml" id="modeLbl">Esmeralda</span></button>
@@ -289,7 +304,8 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
       <p class="tagline">Tu propia app, en el bolsillo de tus clientes.</p>
       <p class="lede m">EasyLandX crea tu landing page y una app móvil a medida, juntas: un solo pack para negocios, con un mensaje claro y un clic seguro.</p>
       <div class="ctas">
-        <a class="btn btn-main wide" href="https://buy.stripe.com/28E7sK3I3ad186WcQo0Jq06" target="_blank" rel="noopener">Comprar ahora</a>
+        <a class="btn btn-main wide" href="https://buy.stripe.com/28E7sK3I3ad186WcQo0Jq06?prefilled_promo_code=easyx" target="_blank" rel="noopener">Comprar ahora</a>
+        <p class="promo-note wide">Usa el código <b>EASYX</b> · 50% de descuento <span>(89 € → 44,50 €)</span></p>
         <div class="sample wide" id="sample">
           <button type="button" class="btn" id="sample-btn" aria-expanded="false" aria-controls="sample-menu" aria-haspopup="true">Recibe una maqueta de cortesía</button>
           <div class="sample-menu" id="sample-menu" hidden>
@@ -309,8 +325,8 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
       <div class="cgrid">
         <a class="btn btn-wa wide" href="https://api.whatsapp.com/send/?phone=34609204298&text=%C2%A1Hola!%20Me%20gustar%C3%ADa%20recibir%20una%20maqueta%20de%20cortes%C3%ADa%20para%20mi%20negocio.">Chat por WhatsApp</a>
         <div class="sample sample-x sample-up wide"><button type="button" class="btn btn-main" aria-expanded="false" aria-haspopup="true">Quiero mi página + app</button><div class="sample-menu" hidden></div></div>
-        <a class="btn btn-stripe" href="https://buy.stripe.com/28E7sK3I3ad186WcQo0Jq06" target="_blank" rel="noopener">Pagar con Stripe</a>
-        <a class="btn btn-offer" href="89e.html">Oferta especial</a>
+        <a class="btn btn-stripe wide" href="https://buy.stripe.com/28E7sK3I3ad186WcQo0Jq06?prefilled_promo_code=easyx" target="_blank" rel="noopener">Pagar con Stripe</a>
+        <p class="promo-note wide">Código <b>EASYX</b> aplicado automáticamente: 50% de descuento</p>
       </div>
     </div>
   </section>
@@ -726,6 +742,16 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
 })();
 </script>
 
+<script>
+/* ===== Pago correcto: ?pagado=ok (redirección de Stripe) ===== */
+(function(){
+  var ok=false; try{ ok=(new URLSearchParams(location.search).get('pagado')||'').toLowerCase()==='ok'; }catch(e){}
+  var b=document.getElementById('paid-banner'); if(!ok||!b) return;
+  b.hidden=false;
+  document.getElementById('paid-close').addEventListener('click',function(){ b.hidden=true; });
+  if(window.gtag){ try{ gtag('event','payment_success',{page_language:'es',transport_type:'beacon'}); }catch(e){} }
+})();
+</script>
 <script>
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
   window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });

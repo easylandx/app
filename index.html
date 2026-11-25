@@ -265,9 +265,29 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
   .tick-track,.chip i,.screen::after{animation:none}
   .gauge .val{transition:none}
 }
+/* ---------- code notice + currency switch + payment success banner ---------- */
+.promo{grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:4px 10px; margin:-2px 0 0; color:var(--dim); font-size:11px; line-height:1.4}
+.promo .code{display:inline-block; padding:0 6px; border:.5px solid var(--a); border-radius:3px; color:var(--a); font-weight:600; letter-spacing:.08em}
+.cur{display:inline-flex; border:.5px solid var(--line); border-radius:99px; overflow:hidden; flex:none}
+.cur button{background:none; border:0; color:var(--dim); font:500 10.5px var(--f); letter-spacing:.04em; padding:1px 9px; cursor:pointer}
+.cur button+button{border-left:.5px solid var(--line)}
+.cur button[aria-pressed=true]{background:rgba(77,227,255,.14); color:var(--a)}
+.paid{display:flex; align-items:center; gap:12px; margin:8px 12px 0; padding:10px 12px; border:.5px solid var(--ok); background:rgba(52,245,168,.09); background:color-mix(in srgb,var(--ok) 9%,transparent); box-shadow:0 0 26px -10px var(--ok)}
+.paid-ic{width:24px; height:24px; flex:none; color:var(--ok); filter:drop-shadow(0 0 6px var(--ok))}
+.paid p{flex:1; min-width:0; line-height:1.4; font-size:12px; color:var(--dim)}
+.paid b{display:block; color:var(--ok); font-weight:600; font-size:13px}
+.paid button{flex:none; width:28px; height:28px; border:.5px solid var(--line); border-radius:50%; background:none; color:var(--tx); font-size:16px; line-height:1; cursor:pointer}
+body.paid-on{grid-template-rows:auto auto minmax(0,1fr) auto}
+@media (max-width:900px){ body.paid-on{grid-template-rows:auto auto minmax(0,1fr) auto auto} }
 </style>
 </head>
 <body data-pane="mission">
+
+<div class="paid" id="paid-banner" role="status" aria-live="polite" hidden>
+  <svg class="paid-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <p><b>Payment successful. Thank you!</b>We’ve received your order and will be in touch shortly to get started.</p>
+  <button type="button" id="paid-close" aria-label="Close message">&times;</button>
+</div>
 
 <header class="top nav">
   <a class="brand" href="https://easylandx.github.io/" target="_self" aria-label="EasyLandX home">
@@ -275,7 +295,6 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
     <span>EasyLandX</span>
   </a>
   <a class="chip chat" href="https://easylandx.github.io/chatapp/" target="_blank" rel="noopener" aria-label="ChatApp (opens in a new window)"><i></i>ChatApp</a>
-  <a class="chip offerbar" id="offer" href="89.html"><i></i>Offer: get yours</a>
   <div class="tick" id="tick" aria-hidden="true"><div class="tick-track" id="tick-track"></div></div>
   <span class="clock" id="clock" aria-hidden="true"></span>
   <button type="button" class="mbtn" id="modeBtn" aria-pressed="false" aria-label="Switch status color to emerald" title="Switch status color"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg><span class="ml" id="modeLbl">Emerald</span></button>
@@ -292,7 +311,8 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
       <p class="tagline">Your own app, in your customers’ pocket.</p>
       <p class="lede m">EasyLandX builds your landing page and a custom mobile app together: one pack for businesses, a clear message and a confident click.</p>
       <div class="ctas">
-        <a class="btn btn-main wide" href="https://buy.stripe.com/14A14m0vRdpdaf42bK0Jq07" target="_blank" rel="noopener">Buy now</a>
+        <a class="btn btn-main wide" data-stripe href="https://buy.stripe.com/14A14m0vRdpdaf42bK0Jq07?prefilled_promo_code=easyx" target="_blank" rel="noopener">Buy now</a>
+        <p class="promo"><span class="ptxt">50% off with code <b class="code">EASYX</b>, applied automatically</span><span class="cur" role="group" aria-label="Currency"><button type="button" data-cur="usd" aria-pressed="true">USD</button><button type="button" data-cur="eur" aria-pressed="false">EUR</button></span></p>
         <div class="sample wide" id="sample">
           <button type="button" class="btn" id="sample-btn" aria-expanded="false" aria-controls="sample-menu" aria-haspopup="true">Get a courtesy sample</button>
           <div class="sample-menu" id="sample-menu" hidden>
@@ -311,9 +331,9 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
       <h2>Your next client is one page, and one app, away.</h2>
       <div class="cgrid">
         <a class="btn btn-wa wide" href="https://api.whatsapp.com/send/?phone=34609204298&text=Hi!%20I'd%20like%20to%20get%20a%20courtesy%20sample%20for%20my%20business.">Chat on WhatsApp</a>
-        <div class="sample sample-x sample-up wide"><button type="button" class="btn btn-main" aria-expanded="false" aria-haspopup="true">Get my page + app</button><div class="sample-menu" hidden></div></div>
-        <a class="btn btn-stripe" href="https://buy.stripe.com/14A14m0vRdpdaf42bK0Jq07" target="_blank" rel="noopener">Pay with Stripe</a>
-        <a class="btn btn-offer" href="89.html">Special offer</a>
+        <a class="btn btn-main wide" data-stripe href="https://buy.stripe.com/14A14m0vRdpdaf42bK0Jq07?prefilled_promo_code=easyx" target="_blank" rel="noopener">Get my page + app</a>
+        <a class="btn btn-stripe wide" data-stripe href="https://buy.stripe.com/14A14m0vRdpdaf42bK0Jq07?prefilled_promo_code=easyx" target="_blank" rel="noopener">Pay with Stripe</a>
+        <p class="promo"><span class="ptxt">50% off with code <b class="code">EASYX</b>, applied automatically</span><span class="cur" role="group" aria-label="Currency"><button type="button" data-cur="usd" aria-pressed="true">USD</button><button type="button" data-cur="eur" aria-pressed="false">EUR</button></span></p>
       </div>
     </div>
   </section>
@@ -672,6 +692,51 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
   }
   document.addEventListener('click', handle, true);
   document.addEventListener('auxclick', handle, true);
+})();
+</script>
+
+<script>
+/* ===== Stripe checkout links: USD / EUR (auto-detected, switchable) ===== */
+(function(){
+  var LINKS={
+    usd:'https://buy.stripe.com/14A14m0vRdpdaf42bK0Jq07?prefilled_promo_code=easyx',
+    eur:'https://buy.stripe.com/28E7sK3I3ad186WcQo0Jq06?prefilled_promo_code=easyx'
+  };
+  var K='elx-cur', cur='';
+  function guess(){
+    var tz='', lang='';
+    try{ tz=Intl.DateTimeFormat().resolvedOptions().timeZone||''; }catch(e){}
+    try{ lang=(navigator.languages&&navigator.languages[0])||navigator.language||''; }catch(e){}
+    var region=(lang.split('-')[1]||'').toUpperCase();
+    var EU=' AT BE CY DE EE ES FI FR GR HR IE IT LT LU LV MT NL PT SI SK AD MC SM VA ME XK ';
+    if(/^Europe\//.test(tz) && !/London|Belfast|Jersey|Guernsey|Isle_of_Man|Moscow|Istanbul|Minsk|Kyiv|Kiev/.test(tz)) return 'eur';
+    if(/^(Atlantic\/(Canary|Madeira|Azores)|Africa\/Ceuta)$/.test(tz)) return 'eur';
+    if(region && EU.indexOf(' '+region+' ')>-1) return 'eur';
+    return 'usd';
+  }
+  function apply(c){
+    cur=(c==='eur')?'eur':'usd';
+    document.querySelectorAll('a[data-stripe]').forEach(function(a){ a.href=LINKS[cur]; });
+    document.querySelectorAll('.cur button').forEach(function(b){ b.setAttribute('aria-pressed',b.getAttribute('data-cur')===cur?'true':'false'); });
+  }
+  var saved=''; try{ saved=localStorage.getItem(K)||''; }catch(e){}
+  apply(saved==='usd'||saved==='eur' ? saved : guess());
+  document.addEventListener('click',function(e){
+    var b=e.target.closest && e.target.closest('.cur button'); if(!b) return;
+    apply(b.getAttribute('data-cur')); try{ localStorage.setItem(K,cur); }catch(_){}
+  });
+})();
+</script>
+
+<script>
+/* ===== Payment success: Stripe redirects back with ?pagado=ok ===== */
+(function(){
+  var paid=false;
+  try{ paid=new URLSearchParams(location.search).get('pagado')==='ok'; }catch(e){}
+  var b=document.getElementById('paid-banner'); if(!paid||!b) return;
+  function setShown(s){ b.hidden=!s; document.body.classList.toggle('paid-on',s); window.dispatchEvent(new Event('resize')); }
+  var x=document.getElementById('paid-close'); if(x) x.addEventListener('click',function(){ setShown(false); });
+  setShown(true);
 })();
 </script>
 
