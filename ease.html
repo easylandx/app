@@ -45,7 +45,7 @@
 :root{
   color-scheme:dark;
   --bg:#03070B; --panel:rgba(6,17,25,.80); --line:rgba(110,225,255,.30); --line2:rgba(110,225,255,.10);
-  --a:#4DE3FF; --a-ink:#02161C; --ok:#34F5A8; --warn:#FFC857; --tx:#DCEFF5; --dim:#8AA6B2;
+  --a:#4DE3FF; --a-ink:#02161C; --ok:#34F5A8; --warn:#FFC857; --neon:#F4FF3D; --vio:#B48CFF; --tx:#DCEFF5; --dim:#8AA6B2;
   --f:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
 }
 html.emerald{--a:#34F5A8; --a-ink:#02170F; --ok:#4DE3FF; --line:rgba(52,245,168,.30); --line2:rgba(52,245,168,.10)}
@@ -104,6 +104,19 @@ h1 em{font-style:normal; font-weight:600; color:var(--a)}
 .btn-wa{border-color:rgba(52,245,168,.55); color:var(--ok)}
 html.emerald .btn-wa{border-color:rgba(77,227,255,.55)}
 .btn-wa:hover{border-color:var(--ok); box-shadow:0 0 18px -6px var(--ok)}
+/* ---- color roles: yellow = see it live, violet = proof, amber = offers, stripe blue = payment ---- */
+.btn-demo{border-color:rgba(244,255,61,.6); color:var(--neon)}
+.btn-demo:hover,.btn-demo:active{border-color:var(--neon); background:rgba(244,255,61,.10); box-shadow:0 0 18px -6px var(--neon)}
+.btn-proof{border-color:rgba(180,140,255,.6); color:var(--vio)}
+.btn-proof:hover,.btn-proof:active{border-color:var(--vio); background:rgba(180,140,255,.10); box-shadow:0 0 18px -6px var(--vio)}
+.btn-offer{border-color:rgba(255,200,87,.6); color:var(--warn)}
+.btn-offer:hover,.btn-offer:active{border-color:var(--warn); background:rgba(255,200,87,.10); box-shadow:0 0 18px -6px var(--warn)}
+.btn-stripe{border-color:rgba(99,91,255,.75)}
+.btn-stripe:hover,.btn-stripe:active{border-color:#635BFF; background:rgba(99,91,255,.12); box-shadow:0 0 18px -6px #635BFF}
+.btn-wa:active{border-color:var(--ok); box-shadow:0 0 18px -6px var(--ok)}
+.chip.offerbar{border-color:rgba(255,200,87,.5)}
+.chip.offerbar:hover{border-color:var(--warn); box-shadow:0 0 14px -5px var(--warn)}
+.demo-hint{display:none}
 .sample{position:relative; display:flex}
 .sample>.btn{flex:1}
 .sample-menu{position:absolute; left:0; top:calc(100% + 6px); z-index:60; display:flex; flex-direction:column; gap:6px; min-width:100%; width:max-content; max-width:calc(100vw - 24px); padding:8px; background:#06141C; border:.5px solid var(--a); box-shadow:0 14px 40px #000d,0 0 22px -8px var(--a)}
@@ -221,6 +234,13 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
   .tabbar button,.tabbar a{display:flex; align-items:center; justify-content:center; min-height:46px; background:none; border:0; border-right:.5px solid var(--line2); color:var(--dim); font:500 12px var(--f); text-decoration:none; cursor:pointer}
   .tabbar button[aria-selected=true]{color:var(--a); box-shadow:inset 0 1.5px 0 var(--a)}
   .tabbar a{color:var(--ok); border-right:0}
+  .tabbar .demos{color:var(--neon); gap:6px; font-weight:600; letter-spacing:.01em; text-shadow:0 0 10px rgba(244,255,61,.55); animation:demosGlow 1.6s ease-in-out 3}
+  .tabbar .demos svg{width:9px; height:9px; flex:none; filter:drop-shadow(0 0 4px var(--neon))}
+  .tabbar .demos[aria-selected=true]{color:var(--neon); box-shadow:inset 0 1.5px 0 var(--neon); background:rgba(244,255,61,.07); animation:none}
+  .tabbar{position:relative}
+  .demo-hint{display:block; position:absolute; left:50%; bottom:calc(100% + 10px); transform:translateX(-50%); max-width:calc(100vw - 32px); width:max-content; padding:7px 12px; border:.5px solid var(--neon); border-radius:3px; background:#06141C; color:var(--neon); font:500 11.5px var(--f); text-align:center; box-shadow:0 0 18px -6px var(--neon); z-index:50; animation:hintIn .35s ease both, hintBob 1.8s ease-in-out .4s infinite}
+  .demo-hint::after{content:""; position:absolute; left:50%; top:100%; width:8px; height:8px; margin:-4px 0 0 -4px; background:#06141C; border:solid var(--neon); border-width:0 .5px .5px 0; transform:rotate(45deg)}
+  .demo-hint[hidden]{display:none}
   #pwa-install{bottom:calc(128px + env(safe-area-inset-bottom,0px))} #pwa-tip{bottom:calc(176px + env(safe-area-inset-bottom,0px))}
 }
 @media (min-width:901px) and (max-width:1180px){
@@ -230,7 +250,15 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
   .gauge span{font-size:9.5px}
 }
 @media (max-width:900px) and (max-height:820px){.seq li div span{display:none} .seq li{align-items:center}}
+@keyframes hintIn{from{opacity:0; transform:translate(-50%,6px)} to{opacity:1; transform:translate(-50%,0)}}
+@keyframes hintBob{0%,100%{margin-bottom:0} 50%{margin-bottom:4px}}
+@keyframes demosGlow{
+  0%,100%{background:rgba(244,255,61,.04); text-shadow:0 0 8px rgba(244,255,61,.45); box-shadow:inset 0 0 0 0 rgba(244,255,61,0)}
+  50%{background:rgba(244,255,61,.16); text-shadow:0 0 16px rgba(244,255,61,.95); box-shadow:inset 0 0 18px 0 rgba(244,255,61,.35)}
+}
 @media (prefers-reduced-motion:reduce){
+  .tabbar .demos{animation:none}
+  .demo-hint{animation:none}
   .tick-track,.chip i,.screen::after{animation:none}
   .gauge .val{transition:none}
 }
@@ -270,8 +298,8 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
           </div>
         </div>
         <div class="ctas3">
-          <a class="btn" href="https://easylandx.github.io/app/hubes.html">Ver ejemplos</a>
-          <a class="btn" href="https://easylandx.github.io/all">Resultados reales</a>
+          <a class="btn btn-demo" data-demo="0" href="https://easylandx.github.io/app/hubes.html">Ver ejemplos</a>
+          <a class="btn btn-proof" data-demo="1" href="https://easylandx.github.io/all">Resultados reales</a>
           <button type="button" class="btn" id="share-btn" aria-label="Compartir EasyLandX con un amigo por WhatsApp">Compartir</button>
         </div>
       </div>
@@ -281,8 +309,8 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
       <div class="cgrid">
         <a class="btn btn-wa wide" href="https://api.whatsapp.com/send/?phone=34609204298&text=%C2%A1Hola!%20Me%20gustar%C3%ADa%20recibir%20una%20maqueta%20de%20cortes%C3%ADa%20para%20mi%20negocio.">Chat por WhatsApp</a>
         <div class="sample sample-x sample-up wide"><button type="button" class="btn btn-main" aria-expanded="false" aria-haspopup="true">Quiero mi página + app</button><div class="sample-menu" hidden></div></div>
-        <a class="btn" href="https://buy.stripe.com/28E7sK3I3ad186WcQo0Jq06" target="_blank" rel="noopener">Pagar con Stripe</a>
-        <a class="btn" href="89e.html">Oferta especial</a>
+        <a class="btn btn-stripe" href="https://buy.stripe.com/28E7sK3I3ad186WcQo0Jq06" target="_blank" rel="noopener">Pagar con Stripe</a>
+        <a class="btn btn-offer" href="89e.html">Oferta especial</a>
       </div>
     </div>
   </section>
@@ -319,8 +347,9 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
 </footer>
 
 <nav class="tabbar" id="tabbar" aria-label="Paneles">
+  <div class="demo-hint" id="demo-hint" role="status" hidden>Mira ejemplos reales en acción</div>
   <button type="button" data-pane="mission" aria-selected="true">Misión</button>
-  <button type="button" data-pane="display" aria-selected="false">Pantalla</button>
+  <button type="button" class="demos" data-pane="display" aria-selected="false"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9.5 5 1 9.5z" fill="currentColor"/></svg>Demos</button>
   <a id="mbar-wa" href="https://api.whatsapp.com/send/?phone=34609204298&text=%C2%A1Hola!%20Me%20gustar%C3%ADa%20recibir%20una%20maqueta%20de%20cortes%C3%ADa%20para%20mi%20negocio." target="_blank" rel="noopener">WhatsApp</a>
 </nav>
 
@@ -701,6 +730,30 @@ body.live .gauge .val{stroke-dasharray:calc(122.52px * var(--fill)) 163.36}
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
   window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
 }
+</script>
+<script>
+(function(){
+  var mq=window.matchMedia('(max-width:900px)'), bar=document.getElementById('tabbar'), hint=document.getElementById('demo-hint');
+  if(!bar) return;
+  var demosBtn=bar.querySelector('.demos');
+  // "See examples" / "Real results" open the Display panel (mobile: switches to the Demos tab first)
+  // data-demo=0 -> Examples tab, data-demo=1 -> Frameworks tab. Ctrl/Cmd/middle-click still follows the link.
+  document.querySelectorAll('[data-demo]').forEach(function(a){
+    a.addEventListener('click',function(e){
+      if(e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||e.button===1) return;
+      var t=document.getElementById(a.getAttribute('data-demo')==='1'?'tab-ipad':'tab-hub');
+      if(!t) return;
+      e.preventDefault();
+      if(mq.matches && demosBtn) demosBtn.click();
+      t.click();
+    });
+  });
+  if(!hint||!demosBtn) return;
+  var seen=false; try{ seen=localStorage.getItem('demoHintSeen')==='1'; }catch(e){}
+  function hide(){ hint.hidden=true; try{ localStorage.setItem('demoHintSeen','1'); }catch(e){} }
+  demosBtn.addEventListener('click',hide);
+  if(!seen && mq.matches){ setTimeout(function(){ if(document.body.getAttribute('data-pane')==='mission'){ hint.hidden=false; setTimeout(hide,9000); } },1500); }
+})();
 </script>
 </body>
 </html>
