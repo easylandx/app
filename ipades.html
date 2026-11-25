@@ -683,6 +683,21 @@ setInterval(()=>{
   });
 },12000);
 
+// auto-advance: next slide every 8 s; any touch/click/key/wheel stops it, and it resumes after 16 s without activity
+const AP_EVERY=8000, AP_IDLE=16000;
+let apTimer=null, idleTimer=null;
+function apStart(){
+  clearInterval(apTimer);
+  apTimer=setInterval(()=>{ if(document.hidden||document.activeElement===q||S.length<2)return; go(cur+1) },AP_EVERY);
+}
+function userAct(){
+  clearInterval(apTimer);apTimer=null;
+  clearTimeout(idleTimer);idleTimer=setTimeout(apStart,AP_IDLE);
+}
+['pointerdown','touchstart','wheel','keydown'].forEach(ev=>document.addEventListener(ev,userAct,{passive:true,capture:true}));
+// clicks inside a cross-origin page can't be seen directly, but they move focus into the iframe
+addEventListener('blur',()=>{ if(document.activeElement&&document.activeElement.tagName==='IFRAME')userAct() });
+
 loadList().then(list=>{
   S=list;
   track.innerHTML='';
@@ -693,6 +708,7 @@ loadList().then(list=>{
   const k=want?S.findIndex(o=>o.u===want||o.u.endsWith('/'+want+'.html')):-1;
   cur=k>=0?k:Math.floor(Math.random()*S.length);
   go(cur);
+  apStart();
 });
 </script>
 </body>
