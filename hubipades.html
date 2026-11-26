@@ -150,6 +150,8 @@ function parseHub(html,base){
   const add=(a,strict)=>{
     let u;try{u=new URL(a.getAttribute('href'),base).href}catch(e){return}
     u=u.split('#')[0];
+    // Exclude the example that links to app/89e.html
+    if(/\/app\/89e\.html(?:$|[?#])/i.test(u))return;
     if(!/^https?:/.test(u)||seen.has(u)||u===base)return;
     if(!strict&&(!/\.html?$/i.test(u)||u.indexOf(B)!==0))return;
     const h=a.querySelector('h1,h2,h3,h4,strong,b'),i=a.querySelector('.card-icon,.icon,.emoji');
