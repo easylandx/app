@@ -391,14 +391,12 @@ html.m-violet{--bg:#C98CFF; --solid:#F0DDFF; --n1:#F4FF3D; --n-cyan:#00E5FF; --n
         <div class="tabs" role="tablist" aria-label="Example view">
           <button type="button" role="tab" id="tab-hub" aria-selected="true" data-frame="0">Examples</button>
           <button type="button" role="tab" id="tab-ipad" aria-selected="false" data-frame="1">Frameworks</button>
-          <button type="button" role="tab" id="tab-apps" aria-selected="false" data-frame="2">Apps</button>
         </div>
         <a class="openfull" id="openfull" href="https://easylandx.github.io/app/hubipad.html" target="_blank" rel="noopener">Open full screen ↗</a>
       </div>
       <div class="screen" id="dscreen">
         <iframe id="f0" data-vw="1024" src="https://easylandx.github.io/app/hubipad.html" title="EasyLandX business examples" allow="fullscreen"></iframe>
         <iframe id="f1" data-vw="1280" data-src="https://easylandx.github.io/app/ipad.html?desk=1" title="EasyLandX Frameworks" allow="fullscreen" hidden></iframe>
-        <iframe id="f2" data-vw="390" data-src="https://easylandx.github.io/app/easy.html" title="EasyLandX Apps" allow="fullscreen" hidden></iframe>
       </div>
       <p class="dcap" id="dcap">We create high converting pages that turn visitors into customers.</p>
     </div>
@@ -487,14 +485,14 @@ html.m-violet{--bg:#C98CFF; --solid:#F0DDFF; --n1:#F4FF3D; --n-cyan:#00E5FF; --n
 </script>
 
 <script>
-/* ===== Display: scale the embedded sites to fill the screen, swap Examples / Frameworks / Apps ===== */
+/* ===== Display: scale the embedded sites to fill the screen, swap Examples / Frameworks ===== */
 (function(){
   var scr=document.getElementById('dscreen'); if(!scr) return;
-  var frames=[document.getElementById('f0'),document.getElementById('f1'),document.getElementById('f2')];
-  var tabs=[document.getElementById('tab-hub'),document.getElementById('tab-ipad'),document.getElementById('tab-apps')];
+  var frames=[document.getElementById('f0'),document.getElementById('f1')];
+  var tabs=[document.getElementById('tab-hub'),document.getElementById('tab-ipad')];
   var cap=document.getElementById('dcap'), open=document.getElementById('openfull');
-  var CAP=["We create high converting pages that turn visitors into customers.","Proven principles, frameworks, and patterns for high-converting web pages based on how real people make decisions.","Your own app, in your customers’ pocket. Explore our apps."];
-  var HREF=["https://easylandx.github.io/app/hubipad.html","https://easylandx.github.io/app/ipad.html","https://easylandx.github.io/app/easy.html"];
+  var CAP=["We create high converting pages that turn visitors into customers.","Proven principles, frameworks, and patterns for high-converting web pages based on how real people make decisions."];
+  var HREF=["https://easylandx.github.io/app/hubipad.html","https://easylandx.github.io/app/ipad.html"];
   function fit(){
     var w=scr.clientWidth,h=scr.clientHeight; if(!w||!h) return;
     frames.forEach(function(fr){
