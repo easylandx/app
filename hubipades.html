@@ -68,7 +68,7 @@ const B='https://easylandx.github.io/';
 let W=390; // page width in CSS px: phone width, or the real window width on desktop
 const $=s=>document.querySelector(s), track=$('#track'), scr=$('#screen'), q=$('#q'), res=$('#res');
 
-// Examples taken from the links in hubes.html: [icon, title, path]
+// Examples copied from the cards in hubes.html: [icon, title, path]
 const DATA=[
   ["🏡", "Alojamientos Rurales", "why/rural.html"],
   ["🏕️", "Turismo de Aventura y Experiencias", "why/aventura.html"],
@@ -130,7 +130,11 @@ const DATA=[
   ["🧺", "Organizadores Profesionales y Servicios de Orden", "why/organizerses.html"],
   ["🏠", "Vendedor profesional inmobiliario independiente", "why/ventas.html"],
   ["💰", "Asesores Financieros y Planificadores Independientes", "why/financiales.html"],
-  ["🔥", "La Idea Principal", "app/ease.html"]
+  ["🔧", "Fontaneros y desatascos", "why/plumberes.html"],
+  ["❄️", "Climatización y aire acondicionado", "why/climatees.html"],
+  ["🏗️", "Empresas de reformas", "why/reformes.html"],
+  ["🔑", "Cerrajeros 24h", "why/keyses.html"],
+  ["🚗", "Car Detailing y limpieza de vehículos", "why/carses.html"]
 ];
 const HUB=B+'app/hubes.html';
 const HUBS=[HUB,B+'hubes.html',B+'app/hubes/index.html',B+'hubes/index.html']; // possible locations of the hub page
@@ -423,7 +427,7 @@ function userAct(){
 // clicks inside a cross-origin page can't be seen directly, but they move focus into the iframe
 addEventListener('blur',()=>{ if(document.activeElement&&document.activeElement.tagName==='IFRAME')userAct() });
 
-// Build slides from the embedded DATA list in the exact order of hubes.html.
+// Build all slides from the embedded DATA list in the exact order of hubes.html.
 // Do not fetch the live hub here: its cached/older order would override this list.
 S=FALLBACK;
 const hint=document.querySelector('.hint');
