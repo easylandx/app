@@ -92,7 +92,7 @@ const DATA=[
 ["🧱", "Muralistas y Artistas Urbanos", "why/murales.html"],
 ["🐾", "Peluquerías y Salones Caninos", "web/mascotas.html"],
 ["💄", "Maquilladores Profesionales", "web/makeupes.html"],
-["✂️", "Peluquerías y Estilistas", "why/hair.html"],
+["✂️", "Peluquerías y Estilistas", "why/haires.html"],
 ["🧴", "Esteticistas y Cuidado de la Piel", "why/beautyes.html"],
 ["🎨", "Tatuadores y Estudios de Tatuaje", "why/tatooes.html"],
 ["🏡", "Alojamientos Rurales", "why/rural.html"],
@@ -105,7 +105,7 @@ const DATA=[
 ["🧠", "Hipnoterapeutas", "why/hypnosises.html"],
 ["🐎", "Terapia Equina y Cuidado del Caballo", "why/horsees.html"],
 ["🌸", "Floristerías y Diseñadores Florales", "web/floristeria.html"],
-["🌱", "Jardineros y Diseñadores de Jardines", "why/garden.html"],
+["🌱", "Jardineros y Diseñadores de Jardines", "why/gardenes.html"],
 ["🐝", "Cursos de Apicultura y Mentores", "why/beeses.html"],
 ["💃", "Profesores y Academias de Baile", "why/danza.html"],
 ["🎹", "Profesores de Piano y Academias de Música", "why/pianoes.html"],
@@ -150,6 +150,14 @@ function parseHub(html,base){
   const add=(a,strict)=>{
     let u;try{u=new URL(a.getAttribute('href'),base).href}catch(e){return}
     u=u.split('#')[0];
+    // Force Spanish versions for these two examples, even if the fetched hub
+    // still contains links to the old English pages.
+    try{
+      const parsed=new URL(u);
+      if(parsed.pathname.replace(/\/$/,'').toLowerCase().endsWith('/why/hair.html')) parsed.pathname=parsed.pathname.replace(/hair\.html$/i,'haires.html');
+      if(parsed.pathname.replace(/\/$/,'').toLowerCase().endsWith('/why/garden.html')) parsed.pathname=parsed.pathname.replace(/garden\.html$/i,'gardenes.html');
+      u=parsed.href;
+    }catch(e){}
     // Exclude the example that links to app/89e.html
     if(/\/app\/89e\.html(?:$|[?#])/i.test(u))return;
     if(!/^https?:/.test(u)||seen.has(u)||u===base)return;
