@@ -70,68 +70,67 @@ const $=s=>document.querySelector(s), track=$('#track'), scr=$('#screen'), q=$('
 
 // Examples taken from the links in hub.html: [icon, title, path]
 const DATA=[
-['🧘‍♀️','Yoga Teachers & Studios','web/yoga.html'],
-['🧘🏻‍♀️','Pilates Studios','why/pilates.html'],
-['🏋️‍♂️','Personal Trainers & Studios','web/trainer.html'],
-['🧠','Psychologists & Practices','web/psychologist.html'],
-['💼','Business Leadership and Executive Coaches','why/leaders.html'],
-['💼','LinkedIn Consultant','why/linkedin.html'],
-['⚖️','Lawyers & Legal Services','why/lawyer.html'],
-['💰','Financial Advisors & Independent Planners','why/financial.html'],
-['🌌','Astrology & Tarot Readers','why/tarot.html'],
-['🍞','Bakeries & Specialty Food','web/bakeries.html'],
-['🧀','Artisan Cheese Makers','why/cheese.html'],
-['☕','Independent Cafés & Coffee Shops','why/cafes.html'],
-['🎂','Cake Designers & Custom Bakeries','why/cakes.html'],
-['🍫','Chocolatier & Chocolate Makers','why/chocolat.html'],
-['🍳','Private Chefs & Catering','why/chef.html'],
-['🧬','Nutritionists & Dietitians','why/nutrition.html'],
-['🎨','Artists & Art Workshops','web/art.html'],
-['🏺','Ceramic Artists & Pottery Studios','why/ceramics.html'],
-['💎','Jewelry Designers & Makers','why/jewelry.html'],
-['🧱','Muralists & Street Artists','why/mural.html'],
-['🐾','Pet Groomers & Salons','web/pets.html'],
-['💄','Makeup Artists','web/makeup.html'],
-['✂️','Hair Stylists & Hair Salons','why/hair.html'],
-['🧴','Estheticians & Skincare Specialists','why/beauty.html'],
-['🎨','Tattoo Artists & Studios','why/tatoo.html'],
-['🏡','Rural Accommodation','why/rental.html'],
-['🏠','Independent Real Estate Sales Professional','why/sales.html'],
-['🧘‍♀️','Wellness & Health Coaches','why/wellness.html'],
-['🧘','Sound Healers & Sound Bath Facilitators','why/sound.html'],
-['🌿','Reiki Practitioners & Energy Healers','why/reiki.html'],
-['🌿','Holistic Therapists','why/holistic.html'],
-['🧘‍♀️','Meditation Teachers & Mindfulness Coaches','why/meditation.html'],
-['🧠','Hypnotherapists','why/hypnosis.html'],
-['🐎','Equine Therapists & Horse Care','why/horse.html'],
-['🌸','Florists & Floral Designers','why/florists.html'],
-['🌱','Gardeners & Garden Designers','why/garden.html'],
-['🐝','Beekeeping Courses & Mentors','why/bees.html'],
-['💃','Dance Teachers & Dance Studios','why/dance.html'],
-['🎹','Piano Teachers & Private Music Studios','why/piano.html'],
-['🎸','Independent Musicians & Bands','why/music.html'],
-['🎸','Luthiers','why/luthier.html'],
-['🏕️','Adventure & Outdoor Experiences','why/adventure.html'],
-['🏂','Ski & Snowboard Instructors','why/snow.html'],
-['🎈',"Children's Party & Entertainment Businesses",'why/kids.html'],
-['🪄','Magicians & Illusionists','why/magic.html'],
-['📸','Photographers','why/photos.html'],
-['📷','Photo Booth & Event Photography Services','why/booth.html'],
-['🧺','Professional Organizers & Decluttering Services','why/organizers.html'],
-['🧼','Eco-Friendly / Zero-Waste Product Makers','why/zerowaste.html'],
-['🛡️','Preppers & Preparedness Coaches','why/prepp.html'],
-['🧰','Emergency Preparedness Consultants','why/emergency.html'],
-['🌾','Permaculture & Resilient Gardening Instructors','why/permaculture.html'],
-['🏠','Homesteading Instructors & Coaches','why/homesteading.html'],
-['🥫','Food Storage & Long-Term Preservation Experts','why/harvest.html'],
-['🩹','Wilderness & Disaster First Aid Instructors','why/firstaid.html'],
-['🔫','Self-Defense & Situational Awareness Coaches','why/sentryline.html'],
-['⚡','Off-Grid Living & Self-Sufficiency Coaches','why/offgrid.html'],
-['🔋','Solar / Alternative Energy for Preppers','why/solar.html'],
-['💧','Water Purification & Off-Grid Water Systems Specialists','why/water.html'],
-['🎒','Bug-Out / Go-Bag Specialists','why/bugout.html'],
-['🔥','The Core Idea',''],
-['🏠','EasyLandX Homepage','']
+  ['🏡', 'Rural Accommodation', 'why/rental.html'],
+  ['🏕️', 'Adventure & Outdoor Experiences', 'why/adventure.html'],
+  ['🌸', 'Florists & Floral Designers', 'why/florists.html'],
+  ['🏂', 'Ski & Snowboard Instructors', 'why/snow.html'],
+  ['🐝', 'Beekeeping Courses & Mentors', 'why/bees.html'],
+  ['🌱', 'Gardeners & Garden Designers', 'why/garden.html'],
+  ['🐎', 'Equine Therapists & Horse Care', 'why/horse.html'],
+  ['🧠', 'Psychologists & Practices', 'web/psychologist.html'],
+  ['🌌', 'Astrology & Tarot Readers', 'why/tarot.html'],
+  ['🌿', 'Holistic Therapists', 'why/holistic.html'],
+  ['🧘\u200d♀️', 'Meditation Teachers & Mindfulness Coaches', 'why/meditation.html'],
+  ['🧠', 'Hypnotherapists', 'why/hypnosis.html'],
+  ['🧘', 'Sound Healers & Sound Bath Facilitators', 'why/sound.html'],
+  ['🌿', 'Reiki Practitioners & Energy Healers', 'why/reiki.html'],
+  ['🧰', 'Emergency Preparedness Consultants', 'why/emergency.html'],
+  ['🛡️', 'Preppers & Preparedness Coaches', 'why/prepp.html'],
+  ['🎒', 'Bug-Out / Go-Bag Specialists', 'why/bugout.html'],
+  ['💧', 'Water Purification & Off-Grid Water Systems Specialists', 'why/water.html'],
+  ['🔋', 'Solar / Alternative Energy for Preppers', 'why/solar.html'],
+  ['🩹', 'Wilderness & Disaster First Aid Instructors', 'why/firstaid.html'],
+  ['🥫', 'Food Storage & Long-Term Preservation Experts', 'why/harvest.html'],
+  ['🔫', 'Self-Defense & Situational Awareness Coaches', 'why/sentryline.html'],
+  ['⚡', 'Off-Grid Living & Self-Sufficiency Coaches', 'why/offgrid.html'],
+  ['🏠', 'Homesteading Instructors & Coaches', 'why/homesteading.html'],
+  ['🌾', 'Permaculture & Resilient Gardening Instructors', 'why/permaculture.html'],
+  ['🧘🏻\u200d♀️', 'Pilates Studios', 'why/pilates.html'],
+  ['🧘\u200d♀️', 'Yoga Teachers & Studios', 'web/yoga.html'],
+  ['🏋️\u200d♂️', 'Personal Trainers & Studios', 'web/trainer.html'],
+  ['🧬', 'Nutritionists & Dietitians', 'why/nutrition.html'],
+  ['🧘\u200d♀️', 'Wellness & Health Coaches', 'why/wellness.html'],
+  ['🎨', 'Artists & Art Workshops', 'web/art.html'],
+  ['🏺', 'Ceramic Artists & Pottery Studios', 'why/ceramics.html'],
+  ['💎', 'Jewelry Designers & Makers', 'why/jewelry.html'],
+  ['🧼', 'Eco-Friendly / Zero-Waste Product Makers', 'why/zerowaste.html'],
+  ['🧱', 'Muralists & Street Artists', 'why/mural.html'],
+  ['📸', 'Photographers', 'why/photos.html'],
+  ['✂️', 'Hair Stylists & Hair Salons', 'why/hair.html'],
+  ['🧴', 'Estheticians & Skincare Specialists', 'why/beauty.html'],
+  ['🐾', 'Pet Groomers & Salons', 'web/pets.html'],
+  ['🎨', 'Tattoo Artists & Studios', 'why/tatoo.html'],
+  ['💄', 'Makeup Artists', 'web/makeup.html'],
+  ['☕', 'Independent Cafés & Coffee Shops', 'why/cafes.html'],
+  ['🎂', 'Cake Designers & Custom Bakeries', 'why/cakes.html'],
+  ['🍳', 'Private Chefs & Catering', 'why/chef.html'],
+  ['🍞', 'Bakeries & Specialty Food', 'web/bakeries.html'],
+  ['🍫', 'Chocolatier & Chocolate Makers', 'why/chocolat.html'],
+  ['🧀', 'Artisan Cheese Makers', 'why/cheese.html'],
+  ['🎈', "Children's Party & Entertainment Businesses", 'why/kids.html'],
+  ['💃', 'Dance Teachers & Dance Studios', 'why/dance.html'],
+  ['📷', 'Photo Booth & Event Photography Services', 'why/booth.html'],
+  ['🎹', 'Piano Teachers & Private Music Studios', 'why/piano.html'],
+  ['🎸', 'Independent Musicians & Bands', 'why/music.html'],
+  ['🪄', 'Magicians & Illusionists', 'why/magic.html'],
+  ['🎸', 'Luthiers', 'why/luthier.html'],
+  ['⚖️', 'Lawyers & Legal Services', 'why/lawyer.html'],
+  ['💼', 'LinkedIn Consultant', 'why/linkedin.html'],
+  ['💼', 'Business Leadership and Executive Coaches', 'why/leaders.html'],
+  ['🧺', 'Professional Organizers & Decluttering Services', 'why/organizers.html'],
+  ['🏠', 'Independent Real Estate Sales Professional', 'why/sales.html'],
+  ['💰', 'Financial Advisors & Independent Planners', 'why/financial.html'],
+  ['🔥', 'The Core Idea', 'app/ease.html']
 ];
 const HUB=B+'app/hub.html';
 const HUBS=[HUB,B+'hub.html',B+'app/hub/index.html',B+'hub/index.html'];
@@ -406,22 +405,17 @@ function userAct(){
 // clicks inside a cross-origin page can't be seen directly, but they move focus into the iframe
 addEventListener('blur',()=>{ if(document.activeElement&&document.activeElement.tagName==='IFRAME')userAct() });
 
-// build slides in the saved sequence and start at the first example
-loadList().then(list=>{
-  // Keep the main EasyLandX homepage as its own example (the replacement for 89.html).
-  const home=B;
-  if(!list.some(s=>s.u.replace(/\/$/,'')===home.replace(/\/$/,''))) list.push({t:'🏠 EasyLandX Homepage',n:'EasyLandX Homepage',u:home});
-  S=list;
-  const hint=document.querySelector('.hint');
-  hint.textContent=(LIVE?'Loaded '+S.length+' examples from hub.html':'Could not access hub.html — using saved list ('+S.length+')')+' · swipe ⇄ · © 2026 EasyLandX';
-  hint.style.animation='none';hint.style.opacity=1;setTimeout(()=>hint.style.opacity=0,6000);
-  track.innerHTML='';
-  S.forEach(s=>{const d=document.createElement('div'),p=document.createElement('div');d.className='slide';p.className='ph';p.textContent=s.t;d.appendChild(p);track.appendChild(d)});
-  // Start at the first slide in the saved sequence.
-  cur=0;
-  go(cur);
-  apStart();
-});
+// Build slides directly from the corrected embedded DATA order.
+// Avoid loading the live hub, which could replace this sequence with an older cached order.
+S=FALLBACK;
+const hint=document.querySelector('.hint');
+hint.textContent='Loaded '+S.length+' examples in hub.html order · swipe ⇄ · © 2026 EasyLandX';
+hint.style.animation='none';hint.style.opacity=1;setTimeout(()=>hint.style.opacity=0,6000);
+track.innerHTML='';
+S.forEach(s=>{const d=document.createElement('div'),p=document.createElement('div');d.className='slide';p.className='ph';p.textContent=s.t;d.appendChild(p);track.appendChild(d)});
+cur=0;
+go(cur);
+apStart();
 </script>
 </body>
 </html>
