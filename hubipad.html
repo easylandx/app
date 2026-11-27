@@ -413,7 +413,8 @@ hint.textContent='Loaded '+S.length+' examples in hub.html order · swipe ⇄ ·
 hint.style.animation='none';hint.style.opacity=1;setTimeout(()=>hint.style.opacity=0,6000);
 track.innerHTML='';
 S.forEach(s=>{const d=document.createElement('div'),p=document.createElement('div');d.className='slide';p.className='ph';p.textContent=s.t;d.appendChild(p);track.appendChild(d)});
-cur=0;
+// Start on a different randomly selected slide each time the page loads.
+cur=Math.floor(Math.random()*S.length);
 go(cur);
 apStart();
 </script>
