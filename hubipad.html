@@ -68,7 +68,7 @@ const B='https://easylandx.github.io/';
 let W=390; // page width in CSS px: phone width, or the real window width on desktop
 const $=s=>document.querySelector(s), track=$('#track'), scr=$('#screen'), q=$('#q'), res=$('#res');
 
-// All examples taken from the cards in hub.html: [icon, title, path]
+// All 80 examples synchronized from the cards in hub(5).html: [icon, title, path]
 const DATA=[
   ["🏡", "Rural Accommodation", "why/rental.html"],
   ["🏕️", "Adventure & Outdoor Experiences", "why/adventure.html"],
@@ -77,6 +77,7 @@ const DATA=[
   ["🐝", "Beekeeping Courses & Mentors", "why/bees.html"],
   ["🌱", "Gardeners & Garden Designers", "why/garden.html"],
   ["🐎", "Equine Therapists & Horse Care", "why/horse.html"],
+  ["🏕️", "Camping & Glamping", "why/glamp.html"],
   ["🧠", "Psychologists & Practices", "web/psychologist.html"],
   ["🌌", "Astrology & Tarot Readers", "why/tarot.html"],
   ["🌿", "Holistic Therapists", "why/holistic.html"],
@@ -107,8 +108,9 @@ const DATA=[
   ["🧱", "Muralists & Street Artists", "why/mural.html"],
   ["📸", "Photographers", "why/photos.html"],
   ["💇‍♀️", "Hair Stylists & Hair Salons", "why/hair.html"],
+  ["💅", "Nail Salons & Manicure", "why/nails.html"],
+  ["👁️", "Lash, Brow & PMU Studios", "why/lashes.html"],
   ["🧴", "Estheticians & Skincare Specialists", "why/beauty.html"],
-  ["🐾", "Pet Groomers & Salons", "web/pets.html"],
   ["🎨", "Tattoo Artists & Studios", "why/tatoo.html"],
   ["💄", "Makeup Artists", "web/makeup.html"],
   ["☕", "Independent Cafés & Coffee Shops", "why/cafes.html"],
@@ -130,11 +132,24 @@ const DATA=[
   ["🧺", "Professional Organizers & Decluttering Services", "why/organizers.html"],
   ["🏠", "Independent Real Estate Sales Professional", "why/sales.html"],
   ["💰", "Financial Advisors & Independent Planners", "why/financial.html"],
-  ["🔧", "Plumbers & Drain Unblocking", "why/plumber.html"],
-  ["❄️", "Heating, Cooling & Air Conditioning", "why/climate.html"],
+  ["📚", "Language Schools & Academic Tutoring", "why/learn.html"],
+  ["🐾", "Pet Groomers & Salons", "web/pets.html"],
+  ["🐾", "Veterinary Clinics", "why/vet.html"],
   ["🏗️", "Home Renovation Companies", "why/reform.html"],
+  ["🛋️", "Interior Designers & Home Styling", "why/home.html"],
+  ["🪟", "Windows, Enclosures & Awnings", "why/wind.html"],
+  ["❄️", "Heating, Cooling & Air Conditioning", "why/climate.html"],
+  ["🔧", "Plumbers & Drain Unblocking", "why/plumber.html"],
+  ["⚡", "Electricians", "why/elect.html"],
   ["🔑", "24/7 Locksmiths", "why/keys.html"],
-  ["🚗", "Car Detailing & Valeting", "why/cars.html"]
+  ["🧹", "Cleaning Services", "why/clean.html"],
+  ["🛞", "Auto Repair & Mechanics", "why/mech.html"],
+  ["🚗", "Car Detailing & Valeting", "why/cars.html"],
+  ["🚚", "Moving & Removals", "why/moving.html"],
+  ["🦷", "Dental Clinics", "why/dent.html"],
+  ["🩺", "Physiotherapy", "why/fisio.html"],
+  ["🦶", "Podiatry", "why/podo.html"],
+  ["👓", "Opticians & Hearing Centres", "why/optices.html"]
 ];
 const HUB=B+'app/hub.html';
 const HUBS=[HUB,B+'hub.html',B+'app/hub/index.html',B+'hub/index.html'];
@@ -409,11 +424,11 @@ function userAct(){
 // clicks inside a cross-origin page can't be seen directly, but they move focus into the iframe
 addEventListener('blur',()=>{ if(document.activeElement&&document.activeElement.tagName==='IFRAME')userAct() });
 
-// Build all slides directly from the current hub.html card order.
+// Build all slides directly from the synchronized hub card order.
 // Avoid loading the live hub, which could replace this sequence with an older cached order.
 S=FALLBACK;
 const hint=document.querySelector('.hint');
-hint.textContent='Loaded '+S.length+' examples in hub.html order · swipe ⇄ · © 2026 EasyLandX';
+hint.textContent='Loaded '+S.length+' examples from all hub cards · swipe ⇄ · © 2026 EasyLandX';
 hint.style.animation='none';hint.style.opacity=1;setTimeout(()=>hint.style.opacity=0,6000);
 track.innerHTML='';
 S.forEach(s=>{const d=document.createElement('div'),p=document.createElement('div');d.className='slide';p.className='ph';p.textContent=s.t;d.appendChild(p);track.appendChild(d)});
